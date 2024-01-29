@@ -2,6 +2,7 @@ package br.jus.trf1.sap.security;
 
 import br.jus.trf1.sap.usuarios.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,10 +21,13 @@ public class WebSecurityConfiguration {
     private UsuarioRepository usuarioRepository;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity.csrf(c -> c.ignoringRequestMatchers(PathRequest.toH2Console())
+                        .disable()
+                )
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/", "/home").permitAll()
+                        .requestMatchers(PathRequest.toH2Console()).permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
@@ -32,7 +36,7 @@ public class WebSecurityConfiguration {
                 )
                 .logout((logout) -> logout.permitAll());
 
-        return http.build();
+        return httpSecurity.build();
     }
 
     @Bean
