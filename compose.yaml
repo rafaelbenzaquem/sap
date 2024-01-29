@@ -1,0 +1,45 @@
+version: '3.6'
+
+networks:
+  network-sap:
+    driver: bridge
+    attachable: true
+
+volumes:
+  volume-db-sap:
+
+services:
+  springapp:
+    build:
+      dockerfile: ./dockerfile
+      context: .
+    image: sjrr/seinf/sap
+    restart: on-failure
+    hostname: springapp
+    ports:
+      - "8081:8080"
+#    environment:
+#      BANCO_URL: jdbc:mysql://mysqldb:3306/desafio_votos_db?allowPublicKeyRetrieval=true&sslMode=DISABLED
+#      SPLUNK_URL: http://splunk:8088
+#      SPLUNK_TOKEN: 1d2e47dc-5ec1-4300-9e41-9c38375022f2
+#      KAFKA_BSS_URL: http://kafka:29092
+#    depends_on:
+#      - mysqldb
+#      - splunk-desafio-votos
+#    networks:
+#      - network-desafio-votos
+#
+#  mysqldb:
+#    image: mysql:latest
+#    command: --default-authentication-plugin=mysql_native_password
+#    restart: always
+#    hostname: mysqldb
+#    ports:
+#      - "3306:3306"
+#    environment:
+#      MYSQL_ROOT_PASSWORD: 123456
+#      MYSQL_DATABASE: desafio_votos_db
+#    volumes:
+#      - volume-mysql-desafio-votos:/var/lib/mysql
+#    networks:
+#      - network-desafio-votos
