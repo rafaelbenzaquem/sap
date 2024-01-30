@@ -4,10 +4,18 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Objects;
 
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class Usuario {
 
@@ -17,61 +25,14 @@ public class Usuario {
 
     private String nome;
 
+    private String email;
+
     private String chave;
 
     private short papel;
 
     private String cpf;
 
-    public Usuario() {
-    }
-
-    public Usuario(String nome, String chave, short papel, String cpf) {
-        this.nome = nome;
-        this.chave = chave;
-        this.papel = papel;
-        this.cpf = cpf;
-    }
-
-    public double getId() {
-        return id;
-    }
-
-    public void setId(double id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getChave() {
-        return chave;
-    }
-
-    public void setChave(String chave) {
-        this.chave = chave;
-    }
-
-    public short getPapel() {
-        return papel;
-    }
-
-    public void setPapel(short papel) {
-        this.papel = papel;
-    }
-
-    public String getCpf() {
-        return cpf;
-    }
-
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -91,6 +52,7 @@ public class Usuario {
         return "Usuario{" +
                 "id=" + id +
                 ", nome='" + nome + '\'' +
+                ", email='" + email + '\'' +
                 ", papel=" + papel +
                 ", cpf='" + cpf + '\'' +
                 '}';
