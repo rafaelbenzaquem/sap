@@ -1,19 +1,20 @@
+server:
+  port: 8084
 spring:
-  sql:
-    init:
-      mode: always
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-  datasource:
-    url: jdbc:h2:~/test;MODE=MySQL;DATABASE_TO_LOWER=TRUE
-    username: sa
-    password: sa123456
-    driver-class-name: org.h2.Driver
-
+  application:
+    name: auth
   jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: update
-    defer-datasource-initialization: false
+    properties:
+      hibernate:
+#        physical_naming_strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        show_sql: true
+  datasource:
+    url: ${BANCO_URL:jdbc:mysql://localhost:3306/nucre?allowPublicKeyRetrieval=true&sslMode=DISABLED}
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_USER_PASSWORD:DevUsrNucre2010}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+ponto:
+  coletor:
+    url: ${COLETOR_URL:localhost:8082}

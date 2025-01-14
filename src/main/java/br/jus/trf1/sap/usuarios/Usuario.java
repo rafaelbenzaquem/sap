@@ -1,14 +1,12 @@
 package br.jus.trf1.sap.usuarios;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.sql.Timestamp;
 import java.util.Objects;
 
 
@@ -16,22 +14,36 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-public class Usuario {
+@Entity(name = "usuario")
+public class Usuario{
 
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private double id;
+    private long id;
 
-    private String nome;
+    @Column(name = "username")
+    private String username;
 
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "lotacao")
+    private String lotacao;
+
+    @Column(name = "password")
+    private String password;
+
+    @Column(name = "criado_em")
+    private Timestamp criadoEm;
+
+    @Column(name = "atualiado_em")
+    private Timestamp atualizadoEm;
+
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    private String chave;
-
-    private short papel;
-
-    private String cpf;
+    private Perfil perfil;
 
 
     @Override
@@ -51,10 +63,14 @@ public class Usuario {
     public String toString() {
         return "Usuario{" +
                 "id=" + id +
-                ", nome='" + nome + '\'' +
+                ", username='" + username + '\'' +
+                ", name='" + name + '\'' +
+                ", lotacao='" + lotacao + '\'' +
+                ", password='" + password + '\'' +
+                ", criadoEm=" + criadoEm +
+                ", atualizadoEm=" + atualizadoEm +
                 ", email='" + email + '\'' +
-                ", papel=" + papel +
-                ", cpf='" + cpf + '\'' +
+                ", perfil=" + perfil +
                 '}';
     }
 }
