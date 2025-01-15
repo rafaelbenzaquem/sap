@@ -25,14 +25,14 @@ public class Usuario{
     @Column(name = "username")
     private String username;
 
+    @Column(name = "password")
+    private String password;
+
     @Column(name = "name")
-    private String name;
+    private String nome;
 
     @Column(name = "lotacao")
     private String lotacao;
-
-    @Column(name = "password")
-    private String password;
 
     @Column(name = "criado_em")
     private Timestamp criadoEm;
@@ -64,7 +64,7 @@ public class Usuario{
         return "Usuario{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
-                ", name='" + name + '\'' +
+                ", nome='" + nome + '\'' +
                 ", lotacao='" + lotacao + '\'' +
                 ", password='" + password + '\'' +
                 ", criadoEm=" + criadoEm +
