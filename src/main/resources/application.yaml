@@ -6,11 +6,13 @@ spring:
   jpa:
     properties:
       hibernate:
-#        physical_naming_strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-        dialect: org.hibernate.dialect.MySQL8Dialect
+        dialect: org.hibernate.dialect.MySQLDialect
         show_sql: true
+        hbm2ddl:
+          auto: update
+  #        physical_naming_strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   datasource:
-    url: ${BANCO_URL:jdbc:mysql://localhost:3306/nucre?allowPublicKeyRetrieval=true&sslMode=DISABLED}
+    url: ${BANCO_URL:jdbc:mysql://localhost:3306/syspontodb?allowPublicKeyRetrieval=true&sslMode=DISABLED}
     username: ${MYSQL_USER:root}
     password: ${MYSQL_USER_PASSWORD:DevUsrNucre2010}
     driver-class-name: com.mysql.cj.jdbc.Driver

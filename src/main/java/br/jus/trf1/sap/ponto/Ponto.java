@@ -22,6 +22,8 @@ public class Ponto {
     @EmbeddedId
     private PontoId id;
 
+    private String descricao;
+
     @OneToMany
     private List<Registro> registros;
 

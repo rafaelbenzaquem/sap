@@ -25,7 +25,15 @@ public class Registro {
 
     private Integer versao;
 
+    @OneToOne
+    @JoinColumn(name = "registro_atualizado_id")
+    private Registro registroAtualizado;
+
     @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name = "ponto_matricula", referencedColumnName = "matricula"),
+            @JoinColumn(name = "ponto_dia", referencedColumnName = "dia")
+    })
     private Ponto ponto;
 
 }
