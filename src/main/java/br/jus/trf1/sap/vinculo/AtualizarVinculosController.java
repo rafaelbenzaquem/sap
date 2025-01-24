@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
-@RequestMapping(value = "/vinculos")
+@RequestMapping(value = "/sap/v1//vinculos")
 public class AtualizarVinculosController {
 
     private final VinculoRepository repository;

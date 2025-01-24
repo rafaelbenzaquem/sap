@@ -12,7 +12,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "/vinculos")
+@RequestMapping(value = "/sap/v1/vinculos")
 public class CriarVinculosController {
 
     private final VinculoRepository repository;
