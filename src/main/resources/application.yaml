@@ -10,7 +10,7 @@ spring:
         show_sql: true
         hbm2ddl:
           auto: update
-    database-platform:
+  #        physical_naming_strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   datasource:
     url: ${BANCO_URL:jdbc:mysql://localhost:3306/syspontodb?allowPublicKeyRetrieval=true&sslMode=DISABLED}
     username: ${MYSQL_USER:root}
@@ -20,9 +20,3 @@ spring:
 ponto:
   coletor:
     url: ${COLETOR_URL:localhost:8082}
-
-formato:
-  data: "ddMMyyyy"
-  tempo: "HHmmss"
-
-#        physical_naming_strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl

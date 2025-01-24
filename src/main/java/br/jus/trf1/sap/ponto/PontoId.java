@@ -17,7 +17,6 @@ import java.util.Objects;
 public class PontoId {
 
     private Integer matricula;
-
     private LocalDate dia;
 
     @Override
