@@ -1,4 +1,4 @@
-package br.jus.trf1.sap.ponto.registro;
+package br.jus.trf1.sap.registro;
 
 import br.jus.trf1.sap.ponto.Ponto;
 import jakarta.persistence.*;

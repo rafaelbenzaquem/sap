@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface PontoRepository extends JpaRepository<Ponto, PontoId> {
 
@@ -15,4 +16,11 @@ public interface PontoRepository extends JpaRepository<Ponto, PontoId> {
             """)
     List<Ponto> buscarPontosPorMatriculaMaisRangeDeData(@Param("matricula") Integer matricula,
                                                         @Param("inicio") LocalDate inicio, @Param("fim") LocalDate fim);
+
+    @Query(nativeQuery = true, value = """
+                        SELECT * FROM PONTO WHERE PONTO.MATRICULA = :matricula AND
+                        PONTO.DIA = :dia
+            """)
+    Optional<Ponto> buscarPontoPorMatriculaMaisDia(@Param("matricula") Integer matricula,
+                                                   @Param("dia") LocalDate dia);
 }

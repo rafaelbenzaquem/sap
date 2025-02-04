@@ -9,4 +9,15 @@ public record HistoricoResponse(@JsonProperty("acesso")Integer acesso,
                                 @JsonProperty("id_pedestre")Integer idPedestre,
                                 @JsonProperty("cracha")String cracha,
                                 @JsonProperty("sentido")Character sentido) {
+
+    @Override
+    public String toString() {
+        return "HistoricoResponse{" +
+                "acesso=" + acesso +
+                ", dataHora=" + dataHora +
+                ", idPedestre=" + idPedestre +
+                ", cracha='" + cracha + '\'' +
+                ", sentido=" + sentido +
+                '}';
+    }
 }

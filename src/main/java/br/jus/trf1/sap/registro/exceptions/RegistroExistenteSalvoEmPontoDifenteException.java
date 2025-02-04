@@ -1,4 +1,4 @@
-package br.jus.trf1.sap.ponto.registro.exceptions;
+package br.jus.trf1.sap.registro.exceptions;
 
 public class RegistroExistenteSalvoEmPontoDifenteException extends RuntimeException {
     public RegistroExistenteSalvoEmPontoDifenteException(String message) {

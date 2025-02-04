@@ -1,7 +1,7 @@
 package br.jus.trf1.sap.ponto.web.dto;
 
 import br.jus.trf1.sap.ponto.Ponto;
-import br.jus.trf1.sap.ponto.registro.web.RegistroResponse;
+import br.jus.trf1.sap.registro.web.RegistroResponse;
 
 import java.time.LocalDate;
 import java.util.List;

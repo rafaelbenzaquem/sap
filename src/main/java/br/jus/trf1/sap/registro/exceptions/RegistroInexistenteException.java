@@ -1,4 +1,4 @@
-package br.jus.trf1.sap.ponto.registro.exceptions;
+package br.jus.trf1.sap.registro.exceptions;
 
 public class RegistroInexistenteException extends RuntimeException {
     public RegistroInexistenteException(String message) {

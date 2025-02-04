@@ -1,6 +1,6 @@
-package br.jus.trf1.sap.ponto.registro.web;
+package br.jus.trf1.sap.registro.web;
 
-import br.jus.trf1.sap.ponto.registro.Registro;
+import br.jus.trf1.sap.registro.Registro;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 

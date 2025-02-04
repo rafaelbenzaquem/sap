@@ -14,7 +14,7 @@ import static br.jus.trf1.sap.util.DateTimeUtils.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/sap/v1/pontos")
+@RequestMapping("/v1/sap/pontos")
 public class PontoController {
 
     private final PontoService pontoService;
@@ -26,7 +26,17 @@ public class PontoController {
     @GetMapping("/{matricula}/{dia}")
     public ResponseEntity<PontoResponse> buscarPonto(@PathVariable Integer matricula, @PathVariable String dia) {
 
+        log.info("Buscando Ponto - {} - {}", matricula, dia);
         Optional<Ponto> pontoOpt = pontoService.buscarPonto(matricula, criaLocalDate(dia));
+        return pontoOpt.map(ponto -> ResponseEntity.ok(PontoResponse.of(ponto))).
+                orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/{matricula}/{dia}")
+    public ResponseEntity<PontoResponse> buscarAtualizacaoPonto(@PathVariable Integer matricula, @PathVariable String dia) {
+
+        log.info("Atualizando Ponto - {} - {}", matricula, dia);
+        Optional<Ponto> pontoOpt = pontoService.buscarAtualizarRegistrosPonto(matricula, criaLocalDate(dia));
         return pontoOpt.map(ponto -> ResponseEntity.ok(PontoResponse.of(ponto))).
                 orElseGet(() -> ResponseEntity.notFound().build());
     }

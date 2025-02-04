@@ -17,6 +17,7 @@ import java.util.Objects;
 public class PontoId {
 
     private Integer matricula;
+
     private LocalDate dia;
 
     @Override
@@ -31,5 +32,13 @@ public class PontoId {
         int result = Objects.hashCode(matricula);
         result = 31 * result + Objects.hashCode(dia);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "PontoId{" +
+                "matricula=" + matricula +
+                ", dia=" + dia +
+                '}';
     }
 }

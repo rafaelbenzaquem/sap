@@ -1,6 +1,6 @@
 package br.jus.trf1.sap.ponto;
 
-import br.jus.trf1.sap.ponto.registro.Registro;
+import br.jus.trf1.sap.registro.Registro;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +22,7 @@ public class Ponto {
 
     private String descricao;
 
-    @OneToMany(mappedBy = "ponto", fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "ponto", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Registro> registros;
 
     @Override
@@ -38,5 +38,13 @@ public class Ponto {
         result = 31 * result + Objects.hashCode(descricao);
         result = 31 * result + Objects.hashCode(registros);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Ponto{" +
+                "id=" + id +
+                ", descricao='" + descricao + '\'' +
+                '}';
     }
 }
