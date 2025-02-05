@@ -6,6 +6,7 @@ import br.jus.trf1.sap.ponto.web.dto.PontoResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,19 @@ public class PontoController {
 
     public PontoController(PontoService pontoService) {
         this.pontoService = pontoService;
+    }
+
+    @PostMapping("/{matricula}/{dia}")
+    public ResponseEntity<PontoResponse> criarPonto(@PathVariable Integer matricula, @PathVariable String dia) {
+
+        log.info("Criando Ponto - {} - {}", matricula, dia);
+        var ponto = pontoService.salvarPontoPorMatriculaMaisData(matricula, criaLocalDate(dia));
+        var uriResponse = ServletUriComponentsBuilder.fromCurrentContextPath().path("/{matricula}/{dia}")
+                .buildAndExpand(matricula, dia).
+
+                toUri();
+
+        return ResponseEntity.created(uriResponse).body(PontoResponse.of(ponto));
     }
 
     @GetMapping("/{matricula}/{dia}")

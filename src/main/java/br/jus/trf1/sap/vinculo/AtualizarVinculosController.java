@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
-@RequestMapping(value = "/sap/v1//vinculos")
+@RequestMapping(value = "/sap/v1/vinculos")
 public class AtualizarVinculosController {
 
     private final VinculoRepository repository;
@@ -30,7 +30,7 @@ public class AtualizarVinculosController {
 
             var vinculoSalvo = repository.save(vinculo);
 
-            var uriResponse = ServletUriComponentsBuilder.fromCurrentContextPath().path("/vinculos/{id}").buildAndExpand(vinculoSalvo.getId()).toUri();
+            var uriResponse = ServletUriComponentsBuilder.fromCurrentContextPath().path("/{id}").buildAndExpand(vinculoSalvo.getId()).toUri();
 
             return ResponseEntity.created(uriResponse).body(vinculoSalvo.toResponse());
         }

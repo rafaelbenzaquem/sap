@@ -6,6 +6,7 @@ import br.jus.trf1.sap.registro.exceptions.RegistroExistenteSalvoEmPontoDifenteE
 import br.jus.trf1.sap.registro.exceptions.RegistroInexistenteException;
 import br.jus.trf1.sap.registro.RegistroRepository;
 import br.jus.trf1.sap.vinculo.Vinculo;
+import br.jus.trf1.sap.vinculo.VinculoInexistenteException;
 import br.jus.trf1.sap.vinculo.VinculoRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -63,9 +64,9 @@ public class PontoService {
                     filter(hr ->
                             {
                                 log.info("historico {}", hr);
-                                return ponto.getRegistros().stream().anyMatch(r ->
+                                return ponto.getRegistros().stream().noneMatch(r ->
                                         {
-                                            var filtered = !Objects.equals(hr.acesso(), r.getCodigoAcesso());
+                                            var filtered = Objects.equals(hr.acesso(), r.getCodigoAcesso());
                                             log.info("registro {} - {}",
                                                     !filtered ? "foi filtrado" : "não foi filtrado", r);
                                             return filtered;
@@ -191,5 +192,14 @@ public class PontoService {
     @Transactional
     public void salvarPontoDeHojeDeUmVinculo(Vinculo vinculo) {
         salvarPontoDeUmVinculoPorData(vinculo, LocalDate.now());
+    }
+
+    @Transactional
+    public Ponto salvarPontoPorMatriculaMaisData(Integer matricula, LocalDate data) {
+        var optVinculo = vinculoRepository.findVinculoByMatricula(matricula);
+        if (optVinculo.isPresent()) {
+            return  salvarPontoDeUmVinculoPorData(optVinculo.get(),data);
+        }
+        throw new VinculoInexistenteException("Não foi possível encontrar vinculo de matrícula:"+matricula);
     }
 }
