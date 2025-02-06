@@ -1,0 +1,139 @@
+<!-- Created with Jaspersoft Studio version 7.0.1.final using JasperReports Library version 7.0.1-573496633c2b4074e32f433154b543003f7d2498  -->
+<jasperReport name="folha_de_ponto_A4" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="998feb22-a15e-4703-b403-8bca47f4aaf4">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="AdapterTeste"/>
+	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<dataset name="Dataset-Teste" uuid="bc875ee4-e04f-4306-94e7-f56f12779594">
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="AdapterTeste"/>
+		<query language="SQL"><![CDATA[select ponto.*,registro.* from registro inner join ponto on ponto.dia=registro.ponto_dia and ponto.matricula=registro.ponto_matricula]]></query>
+		<field name="dia" class="java.sql.Date">
+			<property name="com.jaspersoft.studio.field.name" value="dia"/>
+			<property name="com.jaspersoft.studio.field.label" value="dia"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="ponto"/>
+		</field>
+		<field name="hora" class="java.sql.Time">
+			<property name="com.jaspersoft.studio.field.name" value="hora"/>
+			<property name="com.jaspersoft.studio.field.label" value="hora"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="registro"/>
+		</field>
+		<field name="sentido" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="sentido"/>
+			<property name="com.jaspersoft.studio.field.label" value="sentido"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="registro"/>
+		</field>
+		<field name="descricao" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="descricao"/>
+			<property name="com.jaspersoft.studio.field.label" value="descricao"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="ponto"/>
+		</field>
+	</dataset>
+	<query language="sql"><![CDATA[]]></query>
+	<background splitType="Stretch"/>
+	<title height="79" splitType="Stretch"/>
+	<pageHeader height="35" splitType="Stretch"/>
+	<columnHeader height="61" splitType="Stretch"/>
+	<detail>
+		<band height="260" splitType="Stretch">
+			<element kind="component" uuid="ab239d05-74a0-49a2-ae6f-2a9a99ea09ae" x="0" y="60" width="560" height="200">
+				<component kind="table">
+					<datasetRun uuid="d0e17cd2-20c7-458e-8aee-3b6639828ed6" subDataset="Dataset-Teste">
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<column kind="single" uuid="de06e7b7-72b9-47e9-be0c-52bec737eb15" width="50">
+						<tableHeader height="30" style="Table_TH"/>
+						<tableFooter height="30" style="Table_TH"/>
+						<columnHeader height="30" style="Table_CH">
+							<element kind="staticText" uuid="cba557df-0f19-484e-b5d7-8db9e2cc0fc1" x="0" y="0" width="50" height="30">
+								<text><![CDATA[dia]]></text>
+							</element>
+						</columnHeader>
+						<columnFooter height="30" style="Table_CH"/>
+						<detailCell height="30" style="Table_TD">
+							<element kind="textField" uuid="eaad14ab-8cc7-4513-90e2-7d7e96e074b0" x="0" y="0" width="50" height="30">
+								<expression><![CDATA[$F{dia}]]></expression>
+							</element>
+						</detailCell>
+					</column>
+					<column kind="single" uuid="e82e3e1c-d0f5-407d-a8d2-4c5594edf5ac" width="50">
+						<tableHeader height="30" style="Table_TH"/>
+						<tableFooter height="30" style="Table_TH"/>
+						<columnHeader height="30" style="Table_CH">
+							<element kind="staticText" uuid="731aa911-84d9-4cc6-bb0b-3884ccfa29ca" x="0" y="0" width="50" height="30">
+								<text><![CDATA[hora]]></text>
+							</element>
+						</columnHeader>
+						<columnFooter height="30" style="Table_CH"/>
+						<detailCell height="30" style="Table_TD">
+							<element kind="textField" uuid="19afb863-8054-4cb5-9670-657b7fbaa9c4" x="0" y="0" width="50" height="30">
+								<expression><![CDATA[$F{hora}]]></expression>
+							</element>
+						</detailCell>
+					</column>
+					<column kind="single" uuid="5c170baf-ffa8-448a-884e-cb5be4727f50" width="60">
+						<tableHeader height="30" style="Table_TH"/>
+						<tableFooter height="30" style="Table_TH"/>
+						<columnHeader height="30" style="Table_CH">
+							<element kind="staticText" uuid="e0241a22-4d72-4314-8783-b32bb7e08647" x="0" y="0" width="60" height="30">
+								<text><![CDATA[sentido]]></text>
+							</element>
+						</columnHeader>
+						<columnFooter height="30" style="Table_CH"/>
+						<detailCell height="30" style="Table_TD">
+							<element kind="textField" uuid="4a2d643c-b319-4fc5-a91e-7e39728daa54" x="0" y="0" width="60" height="30">
+								<expression><![CDATA[$F{sentido}]]></expression>
+							</element>
+						</detailCell>
+					</column>
+					<column kind="single" uuid="b5c106bc-5426-4488-80fd-2a94727be824" width="70">
+						<tableHeader height="30" style="Table_TH"/>
+						<tableFooter height="30" style="Table_TH"/>
+						<columnHeader height="30" style="Table_CH">
+							<element kind="staticText" uuid="05a37bda-403f-47da-80b6-70b5ff7a60ba" x="0" y="0" width="70" height="30">
+								<text><![CDATA[descricao]]></text>
+							</element>
+						</columnHeader>
+						<columnFooter height="30" style="Table_CH"/>
+						<detailCell height="30" style="Table_TD">
+							<element kind="textField" uuid="8e1b6560-a080-4c7f-8fea-f971807b546b" x="0" y="0" width="70" height="30">
+								<expression><![CDATA[$F{descricao}]]></expression>
+							</element>
+						</detailCell>
+					</column>
+				</component>
+				<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+				<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
+				<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
+				<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
+			</element>
+		</band>
+	</detail>
+	<columnFooter height="45" splitType="Stretch"/>
+	<pageFooter height="54" splitType="Stretch"/>
+	<summary height="42" splitType="Stretch"/>
+</jasperReport>
