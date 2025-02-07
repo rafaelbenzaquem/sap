@@ -1,7 +1,5 @@
 package br.jus.trf1.sap.util;
 
-import org.springframework.beans.factory.annotation.Value;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -43,10 +41,17 @@ public class DateTimeUtils {
         return criaLocalDate(textoData, padraoData);
     }
 
-    public static String formatarParaString(LocalDate data) {
+    public static String dataParaString(LocalDate data) {
+        return dataParaString(data, padraoData);
+    }
+    public static String tempoParaString(LocalTime tempo) {
+        return tempoParaString(tempo, padraoTempo);
+    }
+
+    public static String dataParaString(LocalDate data, String padraoData) {
         return data.format(DateTimeFormatter.ofPattern(padraoData));
     }
-    public static String formatarParaString(LocalTime tempo) {
+    public static String tempoParaString(LocalTime tempo, String padraoTempo) {
         return tempo.format(DateTimeFormatter.ofPattern(padraoTempo));
     }
 

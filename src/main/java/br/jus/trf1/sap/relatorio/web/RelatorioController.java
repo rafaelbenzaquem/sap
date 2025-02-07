@@ -1,9 +1,8 @@
-package br.jus.trf1.sap.relatorio;
+package br.jus.trf1.sap.relatorio.web;
 
+import br.jus.trf1.sap.relatorio.RelatorioService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
 
 import static br.jus.trf1.sap.util.DateTimeUtils.criaLocalDate;
 
