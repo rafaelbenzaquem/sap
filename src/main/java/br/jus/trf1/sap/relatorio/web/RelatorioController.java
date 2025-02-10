@@ -1,6 +1,7 @@
 package br.jus.trf1.sap.relatorio.web;
 
 import br.jus.trf1.sap.relatorio.RelatorioService;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -9,10 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
 
 import static br.jus.trf1.sap.util.DateTimeUtils.criaLocalDate;
 
@@ -29,7 +26,7 @@ public class RelatorioController {
     @GetMapping("/{matricula}")
     public ResponseEntity<Resource> downloadRelatorio(@PathVariable("matricula") Integer matricula,
                                                       @RequestParam("inicio") String inicio,
-                                                      @RequestParam("fim") String fim) throws IOException {
+                                                      @RequestParam("fim") String fim) throws JRException{
 
         byte[] bytes = relatorioService.gerarRelatorio(matricula, criaLocalDate(inicio), criaLocalDate(fim));
 

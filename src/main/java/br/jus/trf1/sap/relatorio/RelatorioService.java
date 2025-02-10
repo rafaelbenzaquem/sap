@@ -1,100 +1,100 @@
 package br.jus.trf1.sap.relatorio;
 
+import br.jus.trf1.sap.arquivo.ArquivoRepository;
 import br.jus.trf1.sap.ponto.Ponto;
 import br.jus.trf1.sap.ponto.PontoRepository;
-import br.jus.trf1.sap.vinculo.Vinculo;
+import br.jus.trf1.sap.relatorio.model.RelatorioModel;
 import br.jus.trf1.sap.vinculo.VinculoRepository;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 
-import javax.imageio.ImageIO;
-import java.awt.image.DataBufferByte;
-import java.io.*;
+import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 import static br.jus.trf1.sap.util.DateTimeUtils.dataParaString;
 import static br.jus.trf1.sap.util.DateTimeUtils.tempoParaString;
+import static net.sf.jasperreports.engine.JasperExportManager.exportReportToPdf;
+import static net.sf.jasperreports.engine.JasperFillManager.fillReport;
 
 @Service
 public class RelatorioService {
 
+
+    private static final String PADRAO_DATA = "dd/MM/yyyy";
+    private static final String PADRAO_TEMPO = "HH:mm:ss";
+    private static final Logger log = LoggerFactory.getLogger(RelatorioService.class);
     private final VinculoRepository vinculoRepository;
     private final PontoRepository pontoRepository;
-    public static final String PATH = "classpath:relatorios/";
+    private final ArquivoRepository arquivoRepository;
 
-    public RelatorioService(VinculoRepository vinculoRepository, PontoRepository pontoRepository) {
+    public RelatorioService(VinculoRepository vinculoRepository, PontoRepository pontoRepository, ArquivoRepository arquivoRepository) {
         this.vinculoRepository = vinculoRepository;
         this.pontoRepository = pontoRepository;
+        this.arquivoRepository = arquivoRepository;
     }
 
-    public byte[] gerarRelatorio(Integer matricula, LocalDate inicio, LocalDate fim) throws IOException {
+    public byte[] gerarRelatorio(Integer matricula, LocalDate inicio, LocalDate fim) throws  JRException {
 
-        var logoImagem = loadFile(PATH + "img/logoSJRRHorizontal.png");
-
+        var logoImagem = arquivoRepository.findByNome("logoImagem.png");
+        var logoImagem2 = arquivoRepository.findByNome("logoImagem2.png");
+        var relatorioPonto = arquivoRepository.findByNome("relatorioA4.jasper");
         var pontos = pontoRepository.buscarPontosPorMatriculaMaisRangeDeData(matricula, inicio, fim);
-        Optional<Vinculo> vinculoByMatricula = vinculoRepository.findVinculoByMatricula(matricula);
-        var vinculo = vinculoByMatricula.get();
-        Map<String, Object> parametros = new HashMap<>();
+        var vinculoByMatricula = vinculoRepository.findVinculoByMatricula(matricula);
+        var vinculo = vinculoByMatricula.orElseThrow();
+        Map<String, Object> parametrosPonto = new HashMap<>();
 
-        List<RelatorioModel> pontoDataSet = new ArrayList<>();
+        List<RelatorioModel> pontosDataSource = new ArrayList<>();
 
+        var sizePontos = pontos.size();
+        log.info("Relatorio de Pontos - total = {}", sizePontos);
+        IntStream.range(0, sizePontos).forEach(index -> {
 
-        IntStream.range(0, pontos.size()).forEach(index -> {
             Ponto p = pontos.get(index);
-            p.getRegistros().forEach(r ->
-                    pontoDataSet.add(new RelatorioModel(index + 1, dataParaString(p.getId().getDia(), "dd/MM/yyyy"),
-                            tempoParaString(r.getHora(), "HH:mm:ss"), r.getSentido().equals('S') ? "Saída" : "Entrada",
-                            p.getDescricao())));
+            log.info("Ponto {}", p);
+            if (p.getRegistros().isEmpty()) {
+                pontosDataSource.add(new RelatorioModel(index + 1, dataParaString(p.getId().getDia(), PADRAO_DATA),
+                        "----", "----",
+                        "----", p.getDescricao()));
+            }
+            p.getRegistros().forEach(
+                    r ->
+                            pontosDataSource.add(new RelatorioModel(index + 1, dataParaString(p.getId().getDia(), PADRAO_DATA),
+                                    tempoParaString(r.getHora(), PADRAO_TEMPO), r.getSentido().equals('S') ? "Saída" : "Entrada",
+                                    "RR" + matricula, p.getDescricao())
+
+                            )
+            );
         });
 
 
-        var datasource = new JRBeanCollectionDataSource(pontoDataSet);
+        var pontoDataset = new JRBeanCollectionDataSource(pontosDataSource);
 
 
-        parametros.put("pontoDataset", datasource);
-        parametros.put("logoImagem", logoImagem);
-        parametros.put("nome", vinculo.getNome());
-        parametros.put("matricula", "RR" + vinculo.getMatricula());
-        parametros.put("lotacao", "SEÇÃO DE MODERNIZAÇÃO ADMINISTRATIVA/SEMAD");
-        parametros.put("periodo", dataParaString(inicio, "dd/MM/yyyy")+" a "+dataParaString(fim, "dd/MM/yyyy"));
+        parametrosPonto.put("pontoDataset", pontoDataset);
+        parametrosPonto.put("logoImagem", logoImagem.orElseThrow().getConteudo());
+        parametrosPonto.put("logo2Imagem", logoImagem2.orElseThrow().getConteudo());
+        parametrosPonto.put("nome", vinculo.getNome());
+        parametrosPonto.put("cargo", "TÉCNICO JUDICIÁRIO/ APOIO ESPECIALIZADO (TECNOLOGIA DA INFORMAÇÃO)");
+        parametrosPonto.put("funcao", "ASSISTENTE ADJUNTO III");
+        parametrosPonto.put("matricula", "RR" + matricula);
+        parametrosPonto.put("lotacao", "SERVIÇO DE SUPORTE TÉCNICO AOS USUÁRIOS/SERSUT/SEINF/NUCAD/SECAD/SJRR");
+        parametrosPonto.put("periodo", dataParaString(inicio, PADRAO_DATA) + " a " + dataParaString(fim, PADRAO_DATA));
 
 
-        try {
-            var relatorioPonto = loadFile(PATH + "/Ponto_A4.jasper");
-            var stream = new ByteArrayInputStream(relatorioPonto);
-            var print = JasperFillManager.fillReport(stream, parametros, new JREmptyDataSource());
-            return JasperExportManager.exportReportToPdf(print);
-        } catch (JRException | FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
-    private byte[] loadFile(String pathFile) throws IOException {
-        var absolutePathFile = ResourceUtils.getFile(pathFile).getAbsolutePath();
-        var file = new File(absolutePathFile);
-        try (InputStream inputStream = new FileInputStream(file)) {
-            return IOUtils.toByteArray(inputStream);
-        }
-    }
+        var streamRelatorioPonto = new ByteArrayInputStream(relatorioPonto.orElseThrow().getConteudo());
+        var printRelatorioPonto = fillReport(streamRelatorioPonto, parametrosPonto, new JREmptyDataSource());
+        return exportReportToPdf(printRelatorioPonto);
 
-    public byte[] extractBytes(String pathFile) throws IOException {
-        // open image
-        var imgPath = new File(pathFile);
-        var bufferedImage = ImageIO.read(imgPath);
-
-        // get DataBufferBytes from Raster
-        var raster = bufferedImage.getRaster();
-        var data = (DataBufferByte) raster.getDataBuffer();
-
-        return (data.getData());
     }
 
 }
