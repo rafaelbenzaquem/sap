@@ -1,15 +1,13 @@
 package br.jus.trf1.sap.relatorio.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class RegistroRelatorioModel {
+public class RegistroRelatorioListModel {
 
     private String sentido;
     private String hora;

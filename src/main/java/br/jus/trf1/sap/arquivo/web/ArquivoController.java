@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 @Slf4j
-@RequestMapping("/v1/sap/imagens")
+@RequestMapping("/v1/sap/arquivos")
 @RestController
 public class ArquivoController {
 
@@ -37,7 +37,7 @@ public class ArquivoController {
                 .descricao(descricao)
                 .conteudo(conteudo.getBytes())
                 .build());
-        var uriResponse = ServletUriComponentsBuilder.fromCurrentContextPath().path("/imagens/{id}").buildAndExpand(arquivo.getId()).toUri();
+        var uriResponse = ServletUriComponentsBuilder.fromCurrentContextPath().path("/arquivos/{id}").buildAndExpand(arquivo.getId()).toUri();
         return ResponseEntity.created(uriResponse).build();
     }
 
@@ -59,7 +59,7 @@ public class ArquivoController {
                     .descricao(descricao)
                     .conteudo(conteudo.getBytes())
                     .build());
-            var uriResponse = ServletUriComponentsBuilder.fromCurrentContextPath().path("/imagens/{id}").buildAndExpand(arquivo.getId()).toUri();
+            var uriResponse = ServletUriComponentsBuilder.fromCurrentContextPath().path("/arquivos/{id}").buildAndExpand(arquivo.getId()).toUri();
             return ResponseEntity.created(uriResponse).build();
         }
 

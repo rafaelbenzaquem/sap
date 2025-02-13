@@ -3,7 +3,8 @@ package br.jus.trf1.sap.relatorio;
 import br.jus.trf1.sap.arquivo.ArquivoRepository;
 import br.jus.trf1.sap.ponto.Ponto;
 import br.jus.trf1.sap.ponto.PontoRepository;
-import br.jus.trf1.sap.relatorio.model.RelatorioModel;
+import br.jus.trf1.sap.relatorio.model.PontoRelatorioTableModel;
+import br.jus.trf1.sap.relatorio.model.RegistroRelatorioListModel;
 import br.jus.trf1.sap.vinculo.VinculoRepository;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -14,10 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.format.TextStyle;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static br.jus.trf1.sap.util.DateTimeUtils.dataParaString;
@@ -42,7 +41,7 @@ public class RelatorioService {
         this.arquivoRepository = arquivoRepository;
     }
 
-    public byte[] gerarRelatorio(Integer matricula, LocalDate inicio, LocalDate fim) throws  JRException {
+    public byte[] gerarRelatorio(Integer matricula, LocalDate inicio, LocalDate fim) throws JRException {
 
         var logoImagem = arquivoRepository.findByNome("logoImagem.png");
         var logoImagem2 = arquivoRepository.findByNome("logoImagem2.png");
@@ -52,7 +51,8 @@ public class RelatorioService {
         var vinculo = vinculoByMatricula.orElseThrow();
         Map<String, Object> parametrosPonto = new HashMap<>();
 
-        List<RelatorioModel> pontosDataSource = new ArrayList<>();
+        List<PontoRelatorioTableModel> pontosDataSource = new ArrayList<>();
+        List<RegistroRelatorioListModel> relatoriosDataSource = new ArrayList<>();
 
         var sizePontos = pontos.size();
         log.info("Relatorio de Pontos - total = {}", sizePontos);
@@ -60,26 +60,30 @@ public class RelatorioService {
 
             Ponto p = pontos.get(index);
             log.info("Ponto {}", p);
-            if (p.getRegistros().isEmpty()) {
-                pontosDataSource.add(new RelatorioModel(index + 1, dataParaString(p.getId().getDia(), PADRAO_DATA),
-                        "----", "----",
-                        "----", p.getDescricao()));
-            }
+
+            pontosDataSource.add(PontoRelatorioTableModel.builder()
+                    .numero(index + 1)
+                    .dia(dataParaString(p.getId().getDia(), PADRAO_DATA) + " - " + p.getId().getDia().getDayOfWeek().
+                            getDisplayName(TextStyle.SHORT, Locale.of("pt", "BR")))
+                    .build());
             p.getRegistros().forEach(
                     r ->
-                            pontosDataSource.add(new RelatorioModel(index + 1, dataParaString(p.getId().getDia(), PADRAO_DATA),
-                                    tempoParaString(r.getHora(), PADRAO_TEMPO), r.getSentido().equals('S') ? "Saída" : "Entrada",
-                                    "RR" + matricula, p.getDescricao())
-
+                            relatoriosDataSource.add(
+                                    RegistroRelatorioListModel.builder()
+                                            .sentido(String.valueOf(r.getSentido()))
+                                            .hora(tempoParaString(r.getHora(), PADRAO_TEMPO))
+                                            .build()
                             )
             );
         });
 
 
         var pontoDataset = new JRBeanCollectionDataSource(pontosDataSource);
+        var registroDataset = new JRBeanCollectionDataSource(relatoriosDataSource);
 
 
         parametrosPonto.put("pontoDataset", pontoDataset);
+        parametrosPonto.put("registroDataset", registroDataset);
         parametrosPonto.put("logoImagem", logoImagem.orElseThrow().getConteudo());
         parametrosPonto.put("logo2Imagem", logoImagem2.orElseThrow().getConteudo());
         parametrosPonto.put("nome", vinculo.getNome());
@@ -88,7 +92,6 @@ public class RelatorioService {
         parametrosPonto.put("matricula", "RR" + matricula);
         parametrosPonto.put("lotacao", "SERVIÇO DE SUPORTE TÉCNICO AOS USUÁRIOS/SERSUT/SEINF/NUCAD/SECAD/SJRR");
         parametrosPonto.put("periodo", dataParaString(inicio, PADRAO_DATA) + " a " + dataParaString(fim, PADRAO_DATA));
-
 
 
         var streamRelatorioPonto = new ByteArrayInputStream(relatorioPonto.orElseThrow().getConteudo());

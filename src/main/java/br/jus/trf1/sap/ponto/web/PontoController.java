@@ -3,11 +3,15 @@ package br.jus.trf1.sap.ponto.web;
 import br.jus.trf1.sap.ponto.Ponto;
 import br.jus.trf1.sap.ponto.PontoService;
 import br.jus.trf1.sap.ponto.web.dto.PontoResponse;
+import br.jus.trf1.sap.ponto.web.dto.UsuariosPontoResponse;
+import br.jus.trf1.sap.vinculo.VinculoRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,10 +23,13 @@ import static br.jus.trf1.sap.util.DateTimeUtils.*;
 public class PontoController {
 
     private final PontoService pontoService;
+    private final VinculoRepository vinculoRepository;
 
-    public PontoController(PontoService pontoService) {
+    public PontoController(PontoService pontoService, VinculoRepository vinculoRepository) {
         this.pontoService = pontoService;
+        this.vinculoRepository = vinculoRepository;
     }
+
 
     @PostMapping("/{matricula}/{dia}")
     public ResponseEntity<PontoResponse> criarPonto(@PathVariable Integer matricula, @PathVariable String dia) {
@@ -35,6 +42,20 @@ public class PontoController {
                 toUri();
 
         return ResponseEntity.created(uriResponse).body(PontoResponse.of(ponto));
+    }
+
+
+    @PostMapping("/{dia}")
+    public ResponseEntity<List<UsuariosPontoResponse>> criarPontos(@PathVariable String dia) {
+        var usuariosPonto = new ArrayList<UsuariosPontoResponse>();
+        log.info("Criando Pontos do dia {} ", dia);
+        vinculoRepository.findAll().forEach(vinculo -> {
+            var ponto = pontoService.salvarPontoDeUmVinculoPorData(vinculo, criaLocalDate(dia));
+            usuariosPonto.add(new UsuariosPontoResponse(vinculo.getNome(), ponto.getId().toString()));
+        });
+
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuariosPonto);
     }
 
     @GetMapping("/{matricula}/{dia}")
