@@ -51,21 +51,14 @@ public class RelatorioService {
         var vinculo = vinculoByMatricula.orElseThrow();
         Map<String, Object> parametrosPonto = new HashMap<>();
 
-        List<PontoRelatorioTableModel> pontosDataSource = new ArrayList<>();
-        List<RegistroRelatorioListModel> relatoriosDataSource = new ArrayList<>();
+        List<PontoRelatorioTableModel> pontosModels = new ArrayList<>();
+
 
         var sizePontos = pontos.size();
         log.info("Relatorio de Pontos - total = {}", sizePontos);
-        IntStream.range(0, sizePontos).forEach(index -> {
-
-            Ponto p = pontos.get(index);
+        pontos.forEach(p -> {
             log.info("Ponto {}", p);
-
-            pontosDataSource.add(PontoRelatorioTableModel.builder()
-                    .numero(index + 1)
-                    .dia(dataParaString(p.getId().getDia(), PADRAO_DATA) + " - " + p.getId().getDia().getDayOfWeek().
-                            getDisplayName(TextStyle.SHORT, Locale.of("pt", "BR")))
-                    .build());
+            List<RegistroRelatorioListModel> relatoriosDataSource = new ArrayList<>();
             p.getRegistros().forEach(
                     r ->
                             relatoriosDataSource.add(
@@ -75,15 +68,20 @@ public class RelatorioService {
                                             .build()
                             )
             );
+
+            pontosModels.add(PontoRelatorioTableModel.builder()
+                    .dia(dataParaString(p.getId().getDia(), PADRAO_DATA) + " - " + p.getId().getDia().getDayOfWeek().
+                            getDisplayName(TextStyle.SHORT, Locale.of("pt", "BR")))
+                    .descricao(" ")
+                    .registros(relatoriosDataSource)
+                    .build());
         });
 
 
-        var pontoDataset = new JRBeanCollectionDataSource(pontosDataSource);
-        var registroDataset = new JRBeanCollectionDataSource(relatoriosDataSource);
+        var pontosDataSource = new JRBeanCollectionDataSource(pontosModels);
 
 
-        parametrosPonto.put("pontoDataset", pontoDataset);
-        parametrosPonto.put("registroDataset", registroDataset);
+        parametrosPonto.put("pontosDataSource", pontosDataSource);
         parametrosPonto.put("logoImagem", logoImagem.orElseThrow().getConteudo());
         parametrosPonto.put("logo2Imagem", logoImagem2.orElseThrow().getConteudo());
         parametrosPonto.put("nome", vinculo.getNome());
