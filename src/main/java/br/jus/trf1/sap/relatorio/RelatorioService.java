@@ -1,20 +1,22 @@
 package br.jus.trf1.sap.relatorio;
 
 import br.jus.trf1.sap.arquivo.ArquivoRepository;
-import br.jus.trf1.sap.ponto.Ponto;
 import br.jus.trf1.sap.ponto.PontoRepository;
+import br.jus.trf1.sap.registro.Registro;
+import br.jus.trf1.sap.registro.Sentido;
 import br.jus.trf1.sap.relatorio.model.PontoRelatorioTableModel;
 import br.jus.trf1.sap.relatorio.model.RegistroRelatorioListModel;
 import br.jus.trf1.sap.vinculo.VinculoRepository;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.IntStream;
@@ -24,13 +26,13 @@ import static br.jus.trf1.sap.util.DateTimeUtils.tempoParaString;
 import static net.sf.jasperreports.engine.JasperExportManager.exportReportToPdf;
 import static net.sf.jasperreports.engine.JasperFillManager.fillReport;
 
+@Slf4j
 @Service
 public class RelatorioService {
 
 
     private static final String PADRAO_DATA = "dd/MM/yyyy";
     private static final String PADRAO_TEMPO = "HH:mm:ss";
-    private static final Logger log = LoggerFactory.getLogger(RelatorioService.class);
     private final VinculoRepository vinculoRepository;
     private final PontoRepository pontoRepository;
     private final ArquivoRepository arquivoRepository;
@@ -43,14 +45,19 @@ public class RelatorioService {
 
     public byte[] gerarRelatorio(Integer matricula, LocalDate inicio, LocalDate fim) throws JRException {
 
+        log.info("Gerando Relatorio");
+        log.info("Carregando image da logo superior esquerda: {}", "logoImagem.png");
         var logoImagem = arquivoRepository.findByNome("logoImagem.png");
+        log.info("Carregando image da logo superior direita: {}", "logoImagem2.png");
         var logoImagem2 = arquivoRepository.findByNome("logoImagem2.png");
+        log.info("Carregando arquivo de relatório Jasper: {}", "relatorioA4.jasper");
         var relatorioPonto = arquivoRepository.findByNome("relatorioA4.jasper");
+
         var pontos = pontoRepository.buscarPontosPorMatriculaMaisRangeDeData(matricula, inicio, fim);
         var vinculoByMatricula = vinculoRepository.findVinculoByMatricula(matricula);
         var vinculo = vinculoByMatricula.orElseThrow();
-        Map<String, Object> parametrosPonto = new HashMap<>();
 
+        Map<String, Object> parametrosPonto = new HashMap<>();
         List<PontoRelatorioTableModel> pontosModels = new ArrayList<>();
 
 
@@ -59,15 +66,39 @@ public class RelatorioService {
         pontos.forEach(p -> {
             log.info("Ponto {}", p);
             List<RegistroRelatorioListModel> relatoriosDataSource = new ArrayList<>();
-            p.getRegistros().forEach(
-                    r ->
+            var registros = p.getRegistros();
+            var permanencia = p.calculaHorasRegistros();
+            IntStream.range(0, 12).forEach(
+                    index -> {
+                        if (index < registros.size()) {
+                            var r = registros.get(index);
                             relatoriosDataSource.add(
                                     RegistroRelatorioListModel.builder()
-                                            .sentido(String.valueOf(r.getSentido()))
+                                            .sentido(r.getSentido().getPalavra())
                                             .hora(tempoParaString(r.getHora(), PADRAO_TEMPO))
                                             .build()
-                            )
+                            );
+                        } else {
+                            relatoriosDataSource.add(
+                                    RegistroRelatorioListModel.builder()
+                                            .sentido("-----")
+                                            .hora("--:--")
+                                            .build());
+                        }
+                    }
             );
+
+            var horas = permanencia.toHours();
+            var minutos = permanencia.toMinutes();
+            var segundos = permanencia.toSeconds();
+
+            relatoriosDataSource.add(
+                    RegistroRelatorioListModel.builder()
+                            .sentido("Total")
+                            .hora("%02d:%02d:%02d".formatted(horas,
+                                    minutos == 0 ? 0 : minutos % horas,
+                                    segundos == 0 ? 0 : segundos % minutos))
+                            .build());
 
             pontosModels.add(PontoRelatorioTableModel.builder()
                     .dia(dataParaString(p.getId().getDia(), PADRAO_DATA) + " - " + p.getId().getDia().getDayOfWeek().
@@ -83,7 +114,7 @@ public class RelatorioService {
 
         parametrosPonto.put("pontosDataSource", pontosDataSource);
         parametrosPonto.put("logoImagem", logoImagem.orElseThrow().getConteudo());
-        parametrosPonto.put("logo2Imagem", logoImagem2.orElseThrow().getConteudo());
+        parametrosPonto.put("logoImagem2", logoImagem2.orElseThrow().getConteudo());
         parametrosPonto.put("nome", vinculo.getNome());
         parametrosPonto.put("cargo", "TÉCNICO JUDICIÁRIO/ APOIO ESPECIALIZADO (TECNOLOGIA DA INFORMAÇÃO)");
         parametrosPonto.put("funcao", "ASSISTENTE ADJUNTO III");
@@ -97,5 +128,6 @@ public class RelatorioService {
         return exportReportToPdf(printRelatorioPonto);
 
     }
+
 
 }

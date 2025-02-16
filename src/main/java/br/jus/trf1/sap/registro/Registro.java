@@ -40,4 +40,12 @@ public class Registro {
     })
     private Ponto ponto;
 
+
+    public Sentido getSentido() {
+        return Sentido.toEnum(sentido);
+    }
+
+    public void setSentido(Sentido sentido) {
+        this.sentido = sentido.getCodigo();
+    }
 }
