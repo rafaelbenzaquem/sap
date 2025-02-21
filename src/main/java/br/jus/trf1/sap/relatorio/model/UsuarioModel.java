@@ -7,7 +7,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DadosUsuarioModel {
+public class UsuarioModel {
 
     private String nome;
     private String cargo;
