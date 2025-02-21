@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
 
-import static br.jus.trf1.sap.util.DateTimeUtils.criaLocalDate;
+import static br.jus.trf1.sap.util.DataTempoUtil.criaLocalDate;
 
 @RestController
 @RequestMapping("/v1/sap/relatorios")

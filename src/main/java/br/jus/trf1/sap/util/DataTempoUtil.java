@@ -5,19 +5,16 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
+import static br.jus.trf1.sap.util.ConstantesDataTempoUtil.*;
 
-public class DateTimeUtils {
 
+public class DataTempoUtil {
 
-    private static final String padraoData = "ddMMyyyy";
-
-    private static final String padraoTempo = "HHmmss";
-
-    private DateTimeUtils() {
+    private DataTempoUtil() {
     }
 
     public static LocalDateTime criaLocalDateTime(String textoData, String textoTempo) {
-        return criaLocalDateTime(textoData, textoTempo, padraoData, padraoTempo);
+        return criaLocalDateTime(textoData, textoTempo, PADRAO_ENTRADA_DATA, PADRAO_ENTRADA_TEMPO);
     }
 
     public static LocalDateTime criaLocalDateTime(String textoData, String textoTempo, String padraoData, String padraoTempo) {
@@ -29,7 +26,7 @@ public class DateTimeUtils {
     }
 
     public static LocalTime criaLocalTime(String textoTempo) {
-        return criaLocalTime(textoTempo, padraoTempo);
+        return criaLocalTime(textoTempo, PADRAO_ENTRADA_TEMPO);
     }
 
     public static LocalTime criaLocalTime(String textoTempo, String padraoTempo) {
@@ -38,19 +35,21 @@ public class DateTimeUtils {
     }
 
     public static LocalDate criaLocalDate(String textoData) {
-        return criaLocalDate(textoData, padraoData);
+        return criaLocalDate(textoData, PADRAO_ENTRADA_DATA);
     }
 
     public static String dataParaString(LocalDate data) {
-        return dataParaString(data, padraoData);
+        return dataParaString(data, PADRAO_ENTRADA_DATA);
     }
+
     public static String tempoParaString(LocalTime tempo) {
-        return tempoParaString(tempo, padraoTempo);
+        return tempoParaString(tempo, PADRAO_ENTRADA_TEMPO);
     }
 
     public static String dataParaString(LocalDate data, String padraoData) {
         return data.format(DateTimeFormatter.ofPattern(padraoData));
     }
+
     public static String tempoParaString(LocalTime tempo, String padraoTempo) {
         return tempo.format(DateTimeFormatter.ofPattern(padraoTempo));
     }

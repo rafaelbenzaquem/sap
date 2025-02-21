@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static br.jus.trf1.sap.util.DateTimeUtils.*;
+import static br.jus.trf1.sap.util.DataTempoUtil.*;
 
 @Slf4j
 @RestController
