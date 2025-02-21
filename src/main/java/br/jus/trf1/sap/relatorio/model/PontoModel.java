@@ -1,61 +1,60 @@
 package br.jus.trf1.sap.relatorio.model;
 
 import br.jus.trf1.sap.ponto.Ponto;
-import lombok.*;
-import lombok.extern.slf4j.Slf4j;
+import lombok.Getter;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
+import java.time.Duration;
 import java.time.LocalDate;
-import java.time.format.TextStyle;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.IntStream;
 
-import static br.jus.trf1.sap.util.DateTimeUtils.dataParaString;
+import static br.jus.trf1.sap.relatorio.model.util.CalculadoraPeriodosUtil.calculaHorasPermanencia;
+import static br.jus.trf1.sap.relatorio.model.util.FomatadorTextoUtil.formataTextoDia;
+import static br.jus.trf1.sap.relatorio.model.util.FomatadorTextoUtil.formataTextoTempoDiario;
 
-@Slf4j
+/**
+ * Representa um ponto no relatório, contendo os registros de entrada e saída.
+ */
 @Getter
 public class PontoModel {
 
-    private static final String PADRAO_DATA = "dd/MM/yyyy";
-
     private final LocalDate dia;
-    private final String textoDia;
     private final String descricao;
-
-    private final String textoPermanencia;
-    private final PermanenciaModel permanenciaModel;
-
-    private final List<RegistroModel> registrosModel = new ArrayList<>(Collections.nCopies(12, RegistroModel.VAZIO));
+    private final Duration permanencia;
+    private final List<RegistroModel> registrosModel;
     private final JRBeanCollectionDataSource registrosDataSource;
 
+    /**
+     * Constrói o modelo de ponto com base em um registro de ponto.
+     *
+     * @param ponto Registro de ponto.
+     */
     public PontoModel(Ponto ponto) {
         this.dia = ponto.getId().getDia();
-        this.textoDia = formataTextoDia();
         this.descricao = ponto.getDescricao();
-        this.permanenciaModel = PermanenciaModel.of(ponto.calculaHorasRegistros());
-        this.textoPermanencia = permanenciaModel.getTextoPermanencia();
-        populaRegistrosModel(ponto);
+        this.permanencia = calculaHorasPermanencia(ponto);
+        this.registrosModel = populaRegistrosModel(ponto);
         this.registrosDataSource = new JRBeanCollectionDataSource(registrosModel, false);
     }
 
-    private void populaRegistrosModel(Ponto ponto) {
-        var registros = ponto.getRegistros();
-        IntStream.range(0, registros.size()).forEach(
-                index -> {
-                    var r = registros.get(index);
-                    registrosModel.set(index,
-                            RegistroModel.of(r.getSentido().getPalavra(), r.getHora())
-                    );
-                }
-        );
+    public String getTextoDia() {
+        return formataTextoDia(dia);
     }
 
-
-    private String formataTextoDia() {
-        return dataParaString(dia, PADRAO_DATA) + " - " + dia.getDayOfWeek().
-                getDisplayName(TextStyle.SHORT, Locale.of("pt", "BR"));
+    public String getTextoPermanencia() {
+        return formataTextoTempoDiario(permanencia);
     }
+
+    private List<RegistroModel> populaRegistrosModel(Ponto ponto) {
+       return IntStream.range(0, 12)
+               .mapToObj(index -> {
+                   if (index < ponto.getRegistros().size()) {
+                       var registro = ponto.getRegistros().get(index);
+                       return RegistroModel.of(registro.getSentido().getPalavra(), registro.getHora());
+                   }
+                   return RegistroModel.VAZIO;
+               }).toList();
+    }
+
 }

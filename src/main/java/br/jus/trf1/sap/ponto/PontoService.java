@@ -2,10 +2,10 @@ package br.jus.trf1.sap.ponto;
 
 import br.jus.trf1.sap.historico.HistoricoService;
 import br.jus.trf1.sap.registro.Registro;
+import br.jus.trf1.sap.registro.RegistroRepository;
 import br.jus.trf1.sap.registro.exceptions.RegistroExistenteSalvoEmPontoDifenteException;
 import br.jus.trf1.sap.registro.exceptions.RegistroInexistenteException;
-import br.jus.trf1.sap.registro.RegistroRepository;
-import br.jus.trf1.sap.util.DateTimeUtils;
+import br.jus.trf1.sap.util.DataTempoUtil;
 import br.jus.trf1.sap.vinculo.Vinculo;
 import br.jus.trf1.sap.vinculo.VinculoInexistenteException;
 import br.jus.trf1.sap.vinculo.VinculoRepository;
@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
-
-import static br.jus.trf1.sap.util.DateTimeUtils.dataParaString;
 
 @Slf4j
 @Service
@@ -40,7 +38,7 @@ public class PontoService {
     }
 
     public Optional<Ponto> buscarPonto(Integer matricula, LocalDate dia) {
-        log.info("Buscando Ponto - {} - {} ", DateTimeUtils.dataParaString(dia), matricula);
+        log.info("Buscando Ponto - {} - {} ", DataTempoUtil.dataParaString(dia), matricula);
         return pontoRepository.findById(
                 PontoId.builder().
                         matricula(matricula).
@@ -50,7 +48,7 @@ public class PontoService {
     }
 
     public Optional<Ponto> buscarAtualizarRegistrosPonto(Integer matricula, LocalDate dia) {
-        log.info("Buscar Atualizacao Ponto - {} - {} ", DateTimeUtils.dataParaString(dia), matricula);
+        log.info("Buscar Atualizacao Ponto - {} - {} ", DataTempoUtil.dataParaString(dia), matricula);
         var optPonto = pontoRepository.buscarPontoPorMatriculaMaisDia(matricula, dia);
         log.info("ponto {}", optPonto.isPresent() ? "foi encontrato!" : "não foi encontrato!");
 
@@ -60,7 +58,7 @@ public class PontoService {
             var vinculo = vinculoRepository.findVinculoByMatricula(matricula).orElseThrow(RegistroInexistenteException::new);
             log.info("vinculo {}", vinculo);
             var historicos = historicoService.buscarHistoricoDeAcesso(
-                    DateTimeUtils.dataParaString(dia), vinculo.getCracha(), null, null);
+                    DataTempoUtil.dataParaString(dia), vinculo.getCracha(), null, null);
             var registros = historicos.stream().
                     filter(hr ->
                             {
@@ -101,12 +99,12 @@ public class PontoService {
 
 
     public List<Ponto> buscarPontos(Integer matricula, LocalDate inicio, LocalDate fim) {
-        log.info("Lista de Pontos - {} - {} - {} ", DateTimeUtils.dataParaString(inicio), DateTimeUtils.dataParaString(fim), matricula);
+        log.info("Lista de Pontos - {} - {} - {} ", DataTempoUtil.dataParaString(inicio), DataTempoUtil.dataParaString(fim), matricula);
         return pontoRepository.buscarPontosPorMatriculaMaisRangeDeData(matricula, inicio, fim);
     }
 
     public Ponto salvarPonto(Ponto ponto) {
-        log.info("Salvando Ponto - {} - {} ", DateTimeUtils.dataParaString(ponto.getId().getDia()), ponto.getId().getMatricula());
+        log.info("Salvando Ponto - {} - {} ", DataTempoUtil.dataParaString(ponto.getId().getDia()), ponto.getId().getMatricula());
         return pontoRepository.save(ponto);
     }
 
@@ -114,7 +112,7 @@ public class PontoService {
     @Transactional
     public Ponto salvarPontoDeUmVinculoPorData(Vinculo vinculo, LocalDate data) {
         var historicos = historicoService.buscarHistoricoDeAcesso(
-                DateTimeUtils.dataParaString(data)
+                DataTempoUtil.dataParaString(data)
                 , vinculo.getCracha(), null, null);
         var ponto = pontoRepository.save(
                 Ponto.builder()
@@ -171,7 +169,7 @@ public class PontoService {
 
     public Registro atualizaRegistro(Registro registro) {
         log.info("Atualizando Registro - {} - {} - {}", registro.getId()
-                , DateTimeUtils.tempoParaString(registro.getHora())
+                , DataTempoUtil.tempoParaString(registro.getHora())
                 , registro.getCodigoAcesso());
 
         if (registro.getId() != null) {
