@@ -1,18 +1,21 @@
 package br.jus.trf1.sap.relatorio.web;
 
 import br.jus.trf1.sap.relatorio.RelatorioService;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
+import java.time.LocalDate;
 
-import static br.jus.trf1.sap.util.DataTempoUtil.criaLocalDate;
-
+@Slf4j
 @RestController
 @RequestMapping("/v1/sap/relatorios")
 public class RelatorioController {
@@ -25,15 +28,23 @@ public class RelatorioController {
 
     @GetMapping("/{matricula}")
     public ResponseEntity<Resource> downloadRelatorio(@PathVariable("matricula") Integer matricula,
-                                                      @RequestParam("inicio") String inicio,
-                                                      @RequestParam("fim") String fim) throws JRException{
+                                                      @RequestParam("inicio")
+                                                      @DateTimeFormat(pattern = "ddMMyyyy")
+                                                      LocalDate inicio,
+                                                      @RequestParam("fim")
+                                                      @DateTimeFormat(pattern = "ddMMyyyy")
+                                                      LocalDate fim) throws JRException {
+        log.info("Relatorio gerado com sucesso");
+        log.info("Matricula: {}", matricula);
+        log.info("Inicio: {}", inicio);
+        log.info("Fim: {}", fim);
 
-        byte[] bytes = relatorioService.gerarRelatorio(matricula, criaLocalDate(inicio), criaLocalDate(fim));
+        byte[] bytes = relatorioService.gerarRelatorio(matricula, inicio, fim);
 
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(bytes));
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+matricula+".pdf");
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + matricula + ".pdf");
         headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
         headers.add("Pragma", "no-cache");
         headers.add("Expires", "0");
