@@ -62,7 +62,7 @@ public class RelatorioService {
                 orElseThrow(() -> new IllegalArgumentException("Arquivo 'logoImagem.png' não encontrado"));
         var logoImagem2 = arquivoRepository.findByNome("logoImagem2.png").
                 orElseThrow(() -> new IllegalArgumentException("Arquivo 'logoImagem2.png' não encontrado"));
-        var relatorioPonto = arquivoRepository.findByNome("relatorioA4.jasper").
+        var arquivoRelatorioPonto = arquivoRepository.findByNome("relatorioA4.jasper").
                 orElseThrow(() -> new IllegalArgumentException("Arquivo 'relatorioA4.jasper' não encontrado"));
 
         log.debug("Carregando pontos para o período especificado...");
@@ -89,8 +89,8 @@ public class RelatorioService {
         log.debug("Preparando parâmetros para o relatório...");
         var parametrosRelatorio = new HashMap<String, Object>();
 
-        parametrosRelatorio.put("logoImagem", logoImagem);
-        parametrosRelatorio.put("logoImagem2", logoImagem2);
+        parametrosRelatorio.put("logoImagem", logoImagem.getConteudo());
+        parametrosRelatorio.put("logoImagem2", logoImagem2.getConteudo());
         parametrosRelatorio.put("obs", "Sem observações...");
         parametrosRelatorio.put("totalHorasUteis", relatorioModel.getTextoHorasUteis());
         parametrosRelatorio.put("totalHorasPermanencia", relatorioModel.getTextoPermanenciaTotal());
@@ -106,7 +106,7 @@ public class RelatorioService {
         parametrosRelatorio.put("lotacao", usuario.lotacao());
         parametrosRelatorio.put("periodo", formataTextoPeriodo(inicio, fim));
 
-        var streamRelatorioPonto = new ByteArrayInputStream(relatorioPonto.getConteudo());
+        var streamRelatorioPonto = new ByteArrayInputStream(arquivoRelatorioPonto.getConteudo());
         var printRelatorioPonto = fillReport(streamRelatorioPonto, parametrosRelatorio, new JREmptyDataSource());
         return exportReportToPdf(printRelatorioPonto);
 
