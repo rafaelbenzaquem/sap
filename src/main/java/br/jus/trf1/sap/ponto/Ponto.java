@@ -2,18 +2,16 @@ package br.jus.trf1.sap.ponto;
 
 import br.jus.trf1.sap.registro.Registro;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 import java.util.Objects;
 
 @Builder
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Entity
 public class Ponto {
 
@@ -40,11 +38,15 @@ public class Ponto {
         return result;
     }
 
+    /**
+     * @return String de Ponto no formato Json
+     */
     @Override
     public String toString() {
-        return "Ponto{" +
-                "id=" + id +
-                ", descricao='" + descricao + '\'' +
-                '}';
+        return """
+                {
+                    "id":%s,
+                    "descricao": "%s"
+                }""".formatted(id, descricao);
     }
 }

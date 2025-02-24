@@ -14,7 +14,8 @@ public interface HistoricoService {
 
 
     @GetMapping(value = "/v1/coletor/acessos", produces = "application/json")
-    List<HistoricoResponse> buscarHistoricoDeAcesso(@RequestParam("data") String data,
+    List<HistoricoResponse> buscarHistoricoDeAcesso(@RequestParam("inicio") String inicio,
+                                                    @RequestParam(value = "fim", required = false) String fim,
                                                     @RequestParam(name = "cracha", required = false) String cracha,
                                                     @RequestParam(name = "nome", required = false) String nome,
                                                     @RequestParam(name = "codigo", required = false) Integer codigo);

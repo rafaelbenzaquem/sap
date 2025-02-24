@@ -1,7 +1,6 @@
 package br.jus.trf1.sap.relatorio.web;
 
 import br.jus.trf1.sap.relatorio.RelatorioService;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.core.io.InputStreamResource;
@@ -14,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
+
+import static br.jus.trf1.sap.util.ConstantesDataTempoUtil.PADRAO_ENTRADA_DATA;
 
 @Slf4j
 @RestController
@@ -29,10 +30,10 @@ public class RelatorioController {
     @GetMapping("/{matricula}")
     public ResponseEntity<Resource> downloadRelatorio(@PathVariable("matricula") Integer matricula,
                                                       @RequestParam("inicio")
-                                                      @DateTimeFormat(pattern = "ddMMyyyy")
+                                                      @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
                                                       LocalDate inicio,
                                                       @RequestParam("fim")
-                                                      @DateTimeFormat(pattern = "ddMMyyyy")
+                                                      @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
                                                       LocalDate fim) throws JRException {
         log.info("Relatorio gerado com sucesso");
         log.info("Matricula: {}", matricula);

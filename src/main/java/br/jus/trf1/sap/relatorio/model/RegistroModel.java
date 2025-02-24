@@ -11,12 +11,13 @@ import static br.jus.trf1.sap.util.DataTempoUtil.tempoParaString;
  * Representa um registro de ponto no relatório.
  */
 @Getter
-public class RegistroModel {
+public class RegistroModel implements Comparable<RegistroModel> {
 
     public static final RegistroModel VAZIO = new RegistroModel("-----", null);
 
     private final String sentido;
     private final LocalTime hora;
+    private RegistroModel oRegistroModel;
 
     private RegistroModel(String sentido, LocalTime hora) {
         this.sentido = sentido;
@@ -46,4 +47,11 @@ public class RegistroModel {
         return new RegistroModel(sentido, hora);
     }
 
+    @Override
+    public int compareTo(RegistroModel oRegistroModel) {
+        if (hora == null) {
+            return 1;
+        }
+        return hora.compareTo(oRegistroModel.getHora());
+    }
 }

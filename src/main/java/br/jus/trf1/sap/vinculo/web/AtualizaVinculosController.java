@@ -1,19 +1,20 @@
-package br.jus.trf1.sap.vinculo;
+package br.jus.trf1.sap.vinculo.web;
 
-import br.jus.trf1.sap.vinculo.dto.VinculoAtualizadoRequest;
-import br.jus.trf1.sap.vinculo.dto.VinculoResponse;
+import br.jus.trf1.sap.vinculo.VinculoInexistenteException;
+import br.jus.trf1.sap.vinculo.VinculoRepository;
+import br.jus.trf1.sap.vinculo.web.dto.VinculoAtualizadoRequest;
+import br.jus.trf1.sap.vinculo.web.dto.VinculoResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
-@RequestMapping(value = "/sap/v1/vinculos")
-public class AtualizarVinculosController {
+@RequestMapping(value = "/v1/sap/vinculos")
+public class AtualizaVinculosController {
 
     private final VinculoRepository repository;
 
-    public AtualizarVinculosController(VinculoRepository repository) {
+    public AtualizaVinculosController(VinculoRepository repository) {
         this.repository = repository;
     }
 
@@ -22,7 +23,7 @@ public class AtualizarVinculosController {
 
         var vinculoOpt = repository.findById(request.id());
 
-        if(vinculoOpt.isPresent()) {
+        if (vinculoOpt.isPresent()) {
             var vinculo = vinculoOpt.get();
             vinculo.setNome(request.nome());
             vinculo.setCracha(request.cracha());
@@ -30,11 +31,9 @@ public class AtualizarVinculosController {
 
             var vinculoSalvo = repository.save(vinculo);
 
-            var uriResponse = ServletUriComponentsBuilder.fromCurrentContextPath().path("/{id}").buildAndExpand(vinculoSalvo.getId()).toUri();
-
-            return ResponseEntity.created(uriResponse).body(vinculoSalvo.toResponse());
+            return ResponseEntity.ok().body(vinculoSalvo.toResponse());
         }
-        return ResponseEntity.notFound().build();
+        throw new VinculoInexistenteException("Vinculo id = %d não encontrado!".formatted(request.id()));
     }
 
 

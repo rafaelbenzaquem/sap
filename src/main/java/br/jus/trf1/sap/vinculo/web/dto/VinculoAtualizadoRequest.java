@@ -1,4 +1,4 @@
-package br.jus.trf1.sap.vinculo.dto;
+package br.jus.trf1.sap.vinculo.web.dto;
 
 
 import jakarta.validation.constraints.NotBlank;

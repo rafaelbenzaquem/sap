@@ -66,7 +66,7 @@ public class RelatorioService {
                 orElseThrow(() -> new IllegalArgumentException("Arquivo 'relatorioA4.jasper' não encontrado"));
 
         log.debug("Carregando pontos para o período especificado...");
-        var pontos = pontoRepository.buscarPontosPorMatriculaMaisRangeDeData(matricula, inicio, fim);
+        var pontos = pontoRepository.buscaPontosPorMatriculaEmPeriodoDetermiando(matricula, inicio, fim);
         log.debug("Total de pontos recuperados: {}", pontos.size());
 
 
@@ -84,6 +84,8 @@ public class RelatorioService {
                 .horasDiaria(7)
                 .build();
         log.debug("Construindo modelo de relatório...");
+
+
         var relatorioModel = new RelatorioModel(usuario, pontos);
 
         log.debug("Preparando parâmetros para o relatório...");

@@ -1,12 +1,14 @@
 package br.jus.trf1.sap.vinculo;
 
-import br.jus.trf1.sap.vinculo.dto.NovoVinculoRequest;
-import br.jus.trf1.sap.vinculo.dto.VinculoResponse;
+import br.jus.trf1.sap.vinculo.web.dto.NovoVinculoRequest;
+import br.jus.trf1.sap.vinculo.web.dto.VinculoResponse;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -31,5 +33,17 @@ public class Vinculo {
 
     public static Vinculo of(NovoVinculoRequest novoVinculo) {
         return new Vinculo(null,novoVinculo.nome(),novoVinculo.matricula(), novoVinculo.cracha());
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (!(o instanceof Vinculo vinculo)) return false;
+
+        return Objects.equals(id, vinculo.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

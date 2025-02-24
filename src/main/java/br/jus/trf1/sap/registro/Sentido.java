@@ -1,5 +1,8 @@
 package br.jus.trf1.sap.registro;
 
+import lombok.Getter;
+
+@Getter
 public enum Sentido {
 
     ENTRADA('E', "Entrada"), SAIDA('S', "Saída");
@@ -7,17 +10,9 @@ public enum Sentido {
     private final Character codigo;
     private final String palavra;
 
-    private Sentido(Character codigo, String palavra) {
+    Sentido(Character codigo, String palavra) {
         this.codigo = codigo;
         this.palavra = palavra;
-    }
-
-    public Character getCodigo() {
-        return codigo;
-    }
-
-    public String getPalavra() {
-        return palavra;
     }
 
     public static Sentido toEnum(Character codigo) {
@@ -36,7 +31,7 @@ public enum Sentido {
             return null;
 
         for (Sentido sentido : Sentido.values())
-            if (palavra.equals(sentido.palavra))
+            if (palavra.equalsIgnoreCase(sentido.palavra))
                 return sentido;
 
         throw new IllegalArgumentException("Palavra inválida:" + palavra);

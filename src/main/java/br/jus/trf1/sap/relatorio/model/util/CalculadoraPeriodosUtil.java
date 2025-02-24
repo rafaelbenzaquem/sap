@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -71,8 +73,9 @@ public class CalculadoraPeriodosUtil {
         log.debug("Calculando horas permanencia...");
         Duration totalHoras = Duration.ZERO;
         LocalTime entradaPendente = null;
-
-        for (Registro registro : ponto.getRegistros()) {
+        var registrosClassificados = new ArrayList<>(ponto.getRegistros());
+        Collections.sort(registrosClassificados);
+        for (Registro registro : registrosClassificados) {
             if (registro.getSentido() == Sentido.ENTRADA) {
                 entradaPendente = registro.getHora();
             } else if (registro.getSentido() == Sentido.SAIDA && entradaPendente != null) {

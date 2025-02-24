@@ -1,23 +1,23 @@
-package br.jus.trf1.sap.vinculo;
+package br.jus.trf1.sap.vinculo.web;
 
-import br.jus.trf1.sap.vinculo.dto.NovoVinculoRequest;
-import br.jus.trf1.sap.vinculo.dto.VinculoResponse;
+import br.jus.trf1.sap.vinculo.Vinculo;
+import br.jus.trf1.sap.vinculo.VinculoRepository;
+import br.jus.trf1.sap.vinculo.web.dto.NovoVinculoRequest;
+import br.jus.trf1.sap.vinculo.web.dto.VinculoResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.List;
-
 @Slf4j
 @RestController
-@RequestMapping(value = "/sap/v1/vinculos")
-public class CriarVinculosController {
+@RequestMapping(value = "/v1/sap/vinculos")
+public class CriaVinculosController {
 
     private final VinculoRepository repository;
 
-    public CriarVinculosController(VinculoRepository repository) {
+    public CriaVinculosController(VinculoRepository repository) {
         this.repository = repository;
     }
 
@@ -30,6 +30,5 @@ public class CriarVinculosController {
 
         return ResponseEntity.created(uriResponse).body(vinculoSalvo.toResponse());
     }
-
 
 }

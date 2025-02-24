@@ -15,7 +15,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Registro {
+public class Registro implements Comparable<Registro>{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +33,7 @@ public class Registro {
     @JoinColumn(name = "registro_atualizado_id")
     private Registro registroAtualizado;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumns({
             @JoinColumn(name = "ponto_matricula", referencedColumnName = "matricula",nullable = false),
             @JoinColumn(name = "ponto_dia", referencedColumnName = "dia",nullable = false)
@@ -47,5 +47,10 @@ public class Registro {
 
     public void setSentido(Sentido sentido) {
         this.sentido = sentido.getCodigo();
+    }
+
+    @Override
+    public int compareTo(Registro oRegistro) {
+        return hora.compareTo(oRegistro.getHora());
     }
 }
