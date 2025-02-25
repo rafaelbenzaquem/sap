@@ -20,3 +20,6 @@ spring:
 ponto:
   coletor:
     url: ${COLETOR_URL:localhost:8082}
+servidor:
+    jsarh:
+      url: ${JSARH_URL:localhost:8087}

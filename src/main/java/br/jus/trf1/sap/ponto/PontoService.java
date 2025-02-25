@@ -1,6 +1,6 @@
 package br.jus.trf1.sap.ponto;
 
-import br.jus.trf1.sap.historico.HistoricoService;
+import br.jus.trf1.sap.externo.coletor.historico.HistoricoService;
 import br.jus.trf1.sap.registro.Registro;
 import br.jus.trf1.sap.registro.RegistroRepository;
 import br.jus.trf1.sap.registro.exceptions.RegistroExistenteSalvoEmPontoDifenteException;

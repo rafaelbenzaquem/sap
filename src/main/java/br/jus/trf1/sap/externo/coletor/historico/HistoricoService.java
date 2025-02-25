@@ -1,6 +1,6 @@
-package br.jus.trf1.sap.historico;
+package br.jus.trf1.sap.externo.coletor.historico;
 
-import br.jus.trf1.sap.historico.dto.HistoricoResponse;
+import br.jus.trf1.sap.externo.coletor.historico.dto.HistoricoResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;

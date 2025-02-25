@@ -1,6 +1,7 @@
 package br.jus.trf1.sap.relatorio;
 
 import br.jus.trf1.sap.arquivo.ArquivoRepository;
+import br.jus.trf1.sap.externo.jsarh.servidor.ServidorService;
 import br.jus.trf1.sap.ponto.PontoRepository;
 import br.jus.trf1.sap.relatorio.model.RelatorioModel;
 import br.jus.trf1.sap.relatorio.model.UsuarioModel;
@@ -30,18 +31,22 @@ public class RelatorioService {
     private final VinculoRepository vinculoRepository;
     private final PontoRepository pontoRepository;
     private final ArquivoRepository arquivoRepository;
+    private final ServidorService servidorService;
 
     /**
      * Constrói o serviço de relatório com as dependências necessárias.
      *
-     * @param vinculoRepository  Repositório de vínculos.
-     * @param pontoRepository    Repositório de pontos.
-     * @param arquivoRepository  Repositório de arquivos.
+     * @param vinculoRepository Repositório de vínculos.
+     * @param pontoRepository   Repositório de pontos.
+     * @param arquivoRepository Repositório de arquivos.
+     * @param servidorService   Serviço de acesso a dados do Servidor no Sarh
      */
-    public RelatorioService(VinculoRepository vinculoRepository, PontoRepository pontoRepository, ArquivoRepository arquivoRepository) {
+    public RelatorioService(VinculoRepository vinculoRepository, PontoRepository pontoRepository,
+                            ArquivoRepository arquivoRepository, ServidorService servidorService) {
         this.vinculoRepository = vinculoRepository;
         this.pontoRepository = pontoRepository;
         this.arquivoRepository = arquivoRepository;
+        this.servidorService = servidorService;
     }
 
     /**
@@ -70,16 +75,18 @@ public class RelatorioService {
         log.debug("Total de pontos recuperados: {}", pontos.size());
 
 
-        log.debug("Carregando vinculo por matrícula {}...", matricula);
-        var vinculoByMatricula = vinculoRepository.findVinculoByMatricula(matricula).
-        orElseThrow(() -> new IllegalArgumentException("Vínculo não encontrado para a matrícula: " + matricula));
+//        log.debug("Carregando vinculo por matrícula {}...", matricula);
+//        var vinculoByMatricula = vinculoRepository.findVinculoByMatricula(matricula).
+//        orElseThrow(() -> new IllegalArgumentException("Vínculo não encontrado para a matrícula: " + matricula));
+
+        var servidor = servidorService.buscaDadosServidor("RR" + matricula);
 
         log.debug("Construindo modelo de usuário...");
         var usuario = UsuarioModel.builder()
-                .nome(vinculoByMatricula.getNome())
-                .cargo("TÉCNICO JUDICIÁRIO/ APOIO ESPECIALIZADO (TECNOLOGIA DA INFORMAÇÃO)")
-                .funcao("ASSISTENTE ADJUNTO III")
-                .lotacao("SERVIÇO DE SUPORTE TÉCNICO AOS USUÁRIOS/SERSUT/SEINF/NUCAD/SECAD/SJRR")
+                .nome(servidor.getNome())
+                .cargo(servidor.getCargo() == null ? "Servidor Requisitado" : servidor.getCargo())
+                .funcao(servidor.getFuncao())
+                .lotacao(servidor.getDescricaoLotacao())
                 .matricula(matricula)
                 .horasDiaria(7)
                 .build();
