@@ -1,11 +1,19 @@
 package br.jus.trf1.sap.relatorio;
 
 import br.jus.trf1.sap.arquivo.ArquivoRepository;
+import br.jus.trf1.sap.externo.jsarh.ausencias.Ausencia;
+import br.jus.trf1.sap.externo.jsarh.ausencias.especial.EspecialService;
+import br.jus.trf1.sap.externo.jsarh.ausencias.especial.dto.EspecialResponse;
+import br.jus.trf1.sap.externo.jsarh.ausencias.ferias.FeriasService;
+import br.jus.trf1.sap.externo.jsarh.ausencias.ferias.dto.FeriasResponse;
+import br.jus.trf1.sap.externo.jsarh.ausencias.licenca.LicencasService;
+import br.jus.trf1.sap.externo.jsarh.ausencias.licenca.dto.LicencaResponse;
+import br.jus.trf1.sap.externo.jsarh.feriado.FeriadoService;
+import br.jus.trf1.sap.externo.jsarh.feriado.dto.FeriadoResponse;
 import br.jus.trf1.sap.externo.jsarh.servidor.ServidorService;
 import br.jus.trf1.sap.ponto.PontoRepository;
 import br.jus.trf1.sap.relatorio.model.RelatorioModel;
 import br.jus.trf1.sap.relatorio.model.UsuarioModel;
-import br.jus.trf1.sap.vinculo.VinculoRepository;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -13,9 +21,10 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.util.*;
 
 import static br.jus.trf1.sap.relatorio.model.util.FomatadorTextoUtil.formataTextoPeriodo;
+import static br.jus.trf1.sap.util.DataTempoUtil.dataParaString;
 import static net.sf.jasperreports.engine.JasperExportManager.exportReportToPdf;
 import static net.sf.jasperreports.engine.JasperFillManager.fillReport;
 
@@ -28,25 +37,33 @@ import static net.sf.jasperreports.engine.JasperFillManager.fillReport;
 public class RelatorioService {
 
 
-    private final VinculoRepository vinculoRepository;
+    private final FeriadoService feriadoService;
     private final PontoRepository pontoRepository;
     private final ArquivoRepository arquivoRepository;
     private final ServidorService servidorService;
+    private final FeriasService feriasService;
+    private final EspecialService especialService;
+    private final LicencasService licencasService;
 
     /**
      * Constrói o serviço de relatório com as dependências necessárias.
      *
-     * @param vinculoRepository Repositório de vínculos.
+     * @param feriadoService    Repositório de vínculos.
      * @param pontoRepository   Repositório de pontos.
      * @param arquivoRepository Repositório de arquivos.
      * @param servidorService   Serviço de acesso a dados do Servidor no Sarh
      */
-    public RelatorioService(VinculoRepository vinculoRepository, PontoRepository pontoRepository,
-                            ArquivoRepository arquivoRepository, ServidorService servidorService) {
-        this.vinculoRepository = vinculoRepository;
+    public RelatorioService(FeriadoService feriadoService, PontoRepository pontoRepository,
+                            ArquivoRepository arquivoRepository, ServidorService servidorService,
+                            FeriasService feriasService, EspecialService especialService,
+                            LicencasService licencasService) {
+        this.feriadoService = feriadoService;
         this.pontoRepository = pontoRepository;
         this.arquivoRepository = arquivoRepository;
         this.servidorService = servidorService;
+        this.feriasService = feriasService;
+        this.especialService = especialService;
+        this.licencasService = licencasService;
     }
 
     /**
@@ -79,7 +96,33 @@ public class RelatorioService {
 //        var vinculoByMatricula = vinculoRepository.findVinculoByMatricula(matricula).
 //        orElseThrow(() -> new IllegalArgumentException("Vínculo não encontrado para a matrícula: " + matricula));
 
+
         var servidor = servidorService.buscaDadosServidor("RR" + matricula);
+
+        log.debug("Consultando feriados no SARH...");
+        String padrao_sarh = "dd-MM-yyyy";
+        var feriados = feriadoService.buscaFeriados(dataParaString(inicio, padrao_sarh),
+                        dataParaString(fim, padrao_sarh), null).
+                stream().map(FeriadoResponse::toModel).toList();
+        var licencas = licencasService.buscaLicenca("RR" + matricula, dataParaString(inicio, padrao_sarh),
+                        dataParaString(fim, padrao_sarh)).
+                stream().map(LicencaResponse::toModel).toList();
+
+        var especiais = especialService.buscaAusenciasEspeciais("RR" + matricula, dataParaString(inicio, padrao_sarh),
+                        dataParaString(fim, padrao_sarh)).
+                stream().map(EspecialResponse::toModel).toList();
+
+        var ferias = feriasService.buscaFerias("RR" + matricula, dataParaString(inicio, padrao_sarh),
+                        dataParaString(fim, padrao_sarh)).
+                stream().map(FeriasResponse::toModel).toList();
+
+        var ausencias = new ArrayList<Ausencia>(licencas);
+        ausencias.addAll(especiais);
+        ausencias.addAll(ferias);
+
+        log.info("Ausencias: {}", ausencias.size());
+
+        log.info("Feriados: {}", feriados.size());
 
         log.debug("Construindo modelo de usuário...");
         var usuario = UsuarioModel.builder()
@@ -91,7 +134,7 @@ public class RelatorioService {
                 .horasDiaria(7)
                 .build();
         log.debug("Construindo modelo de relatório...");
-        var relatorioModel = new RelatorioModel(usuario, pontos);
+        var relatorioModel = new RelatorioModel(usuario, pontos, feriados,ausencias);
 
         log.debug("Preparando parâmetros para o relatório...");
         var parametrosRelatorio = new HashMap<String, Object>();

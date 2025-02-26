@@ -1,9 +1,13 @@
 package br.jus.trf1.sap.util;
 
+import br.jus.trf1.sap.externo.jsarh.ausencias.Ausencia;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.Set;
 
 import static br.jus.trf1.sap.util.ConstantesDataTempoUtil.*;
 

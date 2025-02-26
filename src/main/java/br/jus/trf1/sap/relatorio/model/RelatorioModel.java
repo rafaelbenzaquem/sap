@@ -1,13 +1,15 @@
 package br.jus.trf1.sap.relatorio.model;
 
+import br.jus.trf1.sap.externo.jsarh.ausencias.Ausencia;
+import br.jus.trf1.sap.externo.jsarh.feriado.Feriado;
 import br.jus.trf1.sap.ponto.Ponto;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 import java.time.Duration;
-import java.util.List;
-import java.util.Objects;
+import java.time.LocalDate;
+import java.util.*;
 
 import static br.jus.trf1.sap.relatorio.model.util.CalculadoraPeriodosUtil.*;
 import static br.jus.trf1.sap.relatorio.model.util.FomatadorTextoUtil.*;
@@ -35,14 +37,16 @@ public class RelatorioModel {
      * @param usuario Modelo do usuário.
      * @param pontos  Lista de pontos registrados.
      */
-    public RelatorioModel(UsuarioModel usuario, List<Ponto> pontos) {
+    public RelatorioModel(UsuarioModel usuario, List<Ponto> pontos, List<Feriado> feriados, List<Ausencia> ausencias) {
         log.debug("Contruindo RelatorioModel...");
         this.usuario = Objects.requireNonNull(usuario, "Usuário não pode ser nulo");
         this.pontos = Objects.requireNonNull(pontos, "Lista de pontos não pode ser nula");
-        this.diasUteis = calculaDiasUteis(pontos);
+        var datas = gerarDiasAusentes(ausencias);
+         feriados.forEach(feriado -> datas.add(feriado.getData()));
+        this.diasUteis = calculaDiasUteis(pontos, datas);
         this.permanenciaTotal = calculaPermanenciaTotal(pontos);
         this.horasCreditoOuDebito = calculaHorasDebitoOuCredito(permanenciaTotal, diasUteis, usuario.horasDiaria());
-        this.pontoModels = carregarDadosPontos(pontos);
+        this.pontoModels = carregarDadosPontos(pontos, feriados, ausencias);
         this.pontosDataSource = new JRBeanCollectionDataSource(pontoModels, false);
     }
 
@@ -63,7 +67,41 @@ public class RelatorioModel {
         return formataTextoDuracao(horasCreditoOuDebito);
     }
 
-    private List<PontoModel> carregarDadosPontos(List<Ponto> pontos) {
-        return pontos.stream().map(PontoModel::new).toList();
+    private List<PontoModel> carregarDadosPontos(List<Ponto> pontos, List<Feriado> feriados, List<Ausencia> ausencias) {
+        return pontos.stream()
+                .map(ponto -> {
+
+                    // Verifica se a data do ponto está dentro de um período de ausência
+                    Ausencia ausenciaCorrespondente = ausencias.stream()
+                            .filter(ausencia -> !ponto.getId().getDia().isBefore(ausencia.getInicio()) &&
+                                    !ponto.getId().getDia().isAfter(ausencia.getFim()))
+                            .findFirst()
+                            .orElse(null);
+
+                    Feriado feriadoCorrespondente = feriados.stream()
+                            .filter(feriado -> feriado.getData().equals(ponto.getId().getDia()))
+                            .findFirst()
+                            .orElse(null);
+
+                    var descricao = feriadoCorrespondente == null ? null : feriadoCorrespondente.getDescricao();
+                    descricao = ausenciaCorrespondente == null ? descricao : ausenciaCorrespondente.getDescricao();
+
+                    return descricao == null ? new PontoModel(ponto) :
+                            new PontoModel(ponto, descricao);
+                }).toList();
+    }
+
+    public static Set<LocalDate> gerarDiasAusentes(List<Ausencia> ausencias) {
+        Set<LocalDate> diasAusentes = new HashSet<>();
+
+        for (Ausencia ausencia : ausencias) {
+            LocalDate dataAtual = ausencia.getInicio();
+            while (!dataAtual.isAfter(ausencia.getFim())) { // Enquanto a data atual não for depois do fim
+                diasAusentes.add(dataAtual); // Adiciona a data atual ao conjunto
+                dataAtual = dataAtual.plusDays(1); // Avança para o próximo dia
+            }
+        }
+
+        return diasAusentes;
     }
 }
