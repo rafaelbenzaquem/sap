@@ -21,9 +21,11 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import static br.jus.trf1.sap.relatorio.model.util.FomatadorTextoUtil.formataTextoPeriodo;
+import static br.jus.trf1.sap.util.ConstantesDataTempoUtil.PADRAO_ENTRADA_DATA;
 import static br.jus.trf1.sap.util.DataTempoUtil.dataParaString;
 import static net.sf.jasperreports.engine.JasperExportManager.exportReportToPdf;
 import static net.sf.jasperreports.engine.JasperFillManager.fillReport;
@@ -92,28 +94,22 @@ public class RelatorioService {
         log.debug("Total de pontos recuperados: {}", pontos.size());
 
 
-//        log.debug("Carregando vinculo por matrícula {}...", matricula);
-//        var vinculoByMatricula = vinculoRepository.findVinculoByMatricula(matricula).
-//        orElseThrow(() -> new IllegalArgumentException("Vínculo não encontrado para a matrícula: " + matricula));
-
-
         var servidor = servidorService.buscaDadosServidor("RR" + matricula);
 
         log.debug("Consultando feriados no SARH...");
-        String padrao_sarh = "dd-MM-yyyy";
-        var feriados = feriadoService.buscaFeriados(dataParaString(inicio, padrao_sarh),
-                        dataParaString(fim, padrao_sarh), null).
+        var feriados = feriadoService.buscaFeriados(dataParaString(inicio,PADRAO_ENTRADA_DATA),
+                        dataParaString(fim, PADRAO_ENTRADA_DATA), null).
                 stream().map(FeriadoResponse::toModel).toList();
-        var licencas = licencasService.buscaLicenca("RR" + matricula, dataParaString(inicio, padrao_sarh),
-                        dataParaString(fim, padrao_sarh)).
+        var licencas = licencasService.buscaLicenca("RR" + matricula, dataParaString(inicio, PADRAO_ENTRADA_DATA),
+                        dataParaString(fim, PADRAO_ENTRADA_DATA)).
                 stream().map(LicencaResponse::toModel).toList();
 
-        var especiais = especialService.buscaAusenciasEspeciais("RR" + matricula, dataParaString(inicio, padrao_sarh),
-                        dataParaString(fim, padrao_sarh)).
+        var especiais = especialService.buscaAusenciasEspeciais("RR" + matricula, dataParaString(inicio, PADRAO_ENTRADA_DATA),
+                        dataParaString(fim, PADRAO_ENTRADA_DATA)).
                 stream().map(EspecialResponse::toModel).toList();
 
-        var ferias = feriasService.buscaFerias("RR" + matricula, dataParaString(inicio, padrao_sarh),
-                        dataParaString(fim, padrao_sarh)).
+        var ferias = feriasService.buscaFerias("RR" + matricula, dataParaString(inicio, PADRAO_ENTRADA_DATA),
+                        dataParaString(fim, PADRAO_ENTRADA_DATA)).
                 stream().map(FeriasResponse::toModel).toList();
 
         var ausencias = new ArrayList<Ausencia>(licencas);

@@ -1,6 +1,6 @@
 package br.jus.trf1.sap.relatorio.model.util;
 
-import br.jus.trf1.sap.externo.jsarh.feriado.Feriado;
+import br.jus.trf1.sap.externo.jsarh.ausencias.Ausencia;
 import br.jus.trf1.sap.ponto.Ponto;
 import br.jus.trf1.sap.registro.Registro;
 import br.jus.trf1.sap.registro.Sentido;
@@ -10,6 +10,7 @@ import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -85,5 +86,25 @@ public class CalculadoraPeriodosUtil {
             }
         }
         return totalHoras;
+    }
+
+    /**
+     * Retorna um conjunto de data a partir de uma lista de ausências
+     *
+     * @param ausencias Lista de período de ausências
+     * @return conjunto de LocalDate
+     */
+    public static Set<LocalDate> gerarDiasAusentes(List<Ausencia> ausencias) {
+        Set<LocalDate> diasAusentes = new HashSet<>();
+
+        for (Ausencia ausencia : ausencias) {
+            LocalDate dataAtual = ausencia.getInicio();
+            while (!dataAtual.isAfter(ausencia.getFim())) { // Enquanto a data atual não for depois do fim
+                diasAusentes.add(dataAtual); // Adiciona a data atual ao conjunto
+                dataAtual = dataAtual.plusDays(1); // Avança para o próximo dia
+            }
+        }
+
+        return diasAusentes;
     }
 }

@@ -8,8 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 import java.time.Duration;
-import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 import static br.jus.trf1.sap.relatorio.model.util.CalculadoraPeriodosUtil.*;
 import static br.jus.trf1.sap.relatorio.model.util.FomatadorTextoUtil.*;
@@ -89,19 +89,5 @@ public class RelatorioModel {
                     return descricao == null ? new PontoModel(ponto) :
                             new PontoModel(ponto, descricao);
                 }).toList();
-    }
-
-    public static Set<LocalDate> gerarDiasAusentes(List<Ausencia> ausencias) {
-        Set<LocalDate> diasAusentes = new HashSet<>();
-
-        for (Ausencia ausencia : ausencias) {
-            LocalDate dataAtual = ausencia.getInicio();
-            while (!dataAtual.isAfter(ausencia.getFim())) { // Enquanto a data atual não for depois do fim
-                diasAusentes.add(dataAtual); // Adiciona a data atual ao conjunto
-                dataAtual = dataAtual.plusDays(1); // Avança para o próximo dia
-            }
-        }
-
-        return diasAusentes;
     }
 }
