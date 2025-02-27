@@ -13,7 +13,7 @@ public class Especial extends Ausencia {
     private String sei;
 
     public Especial(LocalDate inicio, LocalDate fim, String descricao, String sei) {
-        super(inicio, fim, descricao);
+        super(inicio, fim, "Especial: " + descricao);
         this.sei = sei;
     }
 

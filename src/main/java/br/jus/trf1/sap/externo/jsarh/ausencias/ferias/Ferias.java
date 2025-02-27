@@ -17,7 +17,7 @@ public class Ferias extends Ausencia {
 
     public Ferias(LocalDate inicio, LocalDate fim, Ocorrencias flag,
                   Integer diasGozados, LocalDateTime dataSuspensao) {
-        super(inicio, fim,"Férias");
+        super(inicio, fim,"Férias.");
         this.flag = flag;
         this.diasGozados = diasGozados;
         this.dataSuspensao = dataSuspensao;

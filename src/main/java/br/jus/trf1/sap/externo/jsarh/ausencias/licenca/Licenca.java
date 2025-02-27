@@ -13,7 +13,7 @@ public class Licenca extends Ausencia {
     private String sei;
 
     public Licenca(LocalDate inicio, LocalDate fim, String descricao, String sei) {
-        super(inicio, fim,descricao);
+        super(inicio, fim,"Licença: "+descricao);
         this.sei = sei;
     }
 

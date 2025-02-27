@@ -25,8 +25,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static br.jus.trf1.sap.relatorio.model.util.FomatadorTextoUtil.formataTextoPeriodo;
-import static br.jus.trf1.sap.util.ConstantesDataTempoUtil.PADRAO_ENTRADA_DATA;
-import static br.jus.trf1.sap.util.DataTempoUtil.dataParaString;
 import static net.sf.jasperreports.engine.JasperExportManager.exportReportToPdf;
 import static net.sf.jasperreports.engine.JasperFillManager.fillReport;
 
@@ -97,19 +95,15 @@ public class RelatorioService {
         var servidor = servidorService.buscaDadosServidor("RR" + matricula);
 
         log.debug("Consultando feriados no SARH...");
-        var feriados = feriadoService.buscaFeriados(dataParaString(inicio,PADRAO_ENTRADA_DATA),
-                        dataParaString(fim, PADRAO_ENTRADA_DATA), null).
+        var feriados = feriadoService.buscaFeriados(inicio, fim, null).
                 stream().map(FeriadoResponse::toModel).toList();
-        var licencas = licencasService.buscaLicenca("RR" + matricula, dataParaString(inicio, PADRAO_ENTRADA_DATA),
-                        dataParaString(fim, PADRAO_ENTRADA_DATA)).
+        var licencas = licencasService.buscaLicenca("RR" + matricula, inicio, fim).
                 stream().map(LicencaResponse::toModel).toList();
 
-        var especiais = especialService.buscaAusenciasEspeciais("RR" + matricula, dataParaString(inicio, PADRAO_ENTRADA_DATA),
-                        dataParaString(fim, PADRAO_ENTRADA_DATA)).
+        var especiais = especialService.buscaAusenciasEspeciais("RR" + matricula, inicio, fim).
                 stream().map(EspecialResponse::toModel).toList();
 
-        var ferias = feriasService.buscaFerias("RR" + matricula, dataParaString(inicio, PADRAO_ENTRADA_DATA),
-                        dataParaString(fim, PADRAO_ENTRADA_DATA)).
+        var ferias = feriasService.buscaFerias("RR" + matricula, inicio, inicio).
                 stream().map(FeriasResponse::toModel).toList();
 
         var ausencias = new ArrayList<Ausencia>(licencas);
@@ -130,7 +124,7 @@ public class RelatorioService {
                 .horasDiaria(7)
                 .build();
         log.debug("Construindo modelo de relatório...");
-        var relatorioModel = new RelatorioModel(usuario, pontos, feriados,ausencias);
+        var relatorioModel = new RelatorioModel(usuario, pontos, feriados, ausencias);
 
         log.debug("Preparando parâmetros para o relatório...");
         var parametrosRelatorio = new HashMap<String, Object>();

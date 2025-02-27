@@ -58,7 +58,7 @@ public class PontoService {
             var vinculo = vinculoRepository.findVinculoByMatricula(matricula).orElseThrow(RegistroInexistenteException::new);
             log.info("vinculo {}", vinculo);
             var historicos = historicoService.buscarHistoricoDeAcesso(
-                    DataTempoUtil.dataParaString(dia), vinculo.getCracha(), null, null);
+                    dia, dia, vinculo.getCracha(), null, null);
             var registros = historicos.stream().
                     filter(hr ->
                             {
@@ -112,8 +112,7 @@ public class PontoService {
     @Transactional
     public Ponto salvarPontoDeUmVinculoPorData(Vinculo vinculo, LocalDate data) {
         var historicos = historicoService.buscarHistoricoDeAcesso(
-                DataTempoUtil.dataParaString(data)
-                , vinculo.getCracha(), null, null);
+                data, data, vinculo.getCracha(), null, null);
         var ponto = pontoRepository.save(
                 Ponto.builder()
                         .id(PontoId.builder()
@@ -197,8 +196,8 @@ public class PontoService {
     public Ponto salvarPontoPorMatriculaMaisData(Integer matricula, LocalDate data) {
         var optVinculo = vinculoRepository.findVinculoByMatricula(matricula);
         if (optVinculo.isPresent()) {
-            return  salvarPontoDeUmVinculoPorData(optVinculo.get(),data);
+            return salvarPontoDeUmVinculoPorData(optVinculo.get(), data);
         }
-        throw new VinculoInexistenteException("Não foi possível encontrar vinculo de matrícula:"+matricula);
+        throw new VinculoInexistenteException("Não foi possível encontrar vinculo de matrícula:" + matricula);
     }
 }
