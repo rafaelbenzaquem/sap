@@ -37,8 +37,7 @@ public class RelatorioController {
                                                       LocalDate fim) throws JRException {
         log.info("Relatorio gerado com sucesso");
         log.info("Matricula: {}", matricula);
-        log.info("Inicio: {}", inicio);
-        log.info("Fim: {}", fim);
+        log.info("Periodo: {} a {}", inicio, fim);
 
         byte[] bytes = relatorioService.gerarRelatorio(matricula, inicio, fim);
 

@@ -1,4 +1,4 @@
-package br.jus.trf1.sap.historico.dto;
+package br.jus.trf1.sap.externo.coletor.historico.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

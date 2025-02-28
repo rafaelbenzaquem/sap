@@ -13,7 +13,7 @@ import static br.jus.trf1.sap.util.DataTempoUtil.tempoParaString;
 @Getter
 public class RegistroModel implements Comparable<RegistroModel> {
 
-    public static final RegistroModel VAZIO = new RegistroModel("-----", null);
+    public static final RegistroModel VAZIO = new RegistroModel(" ", null);
 
     private final String sentido;
     private final LocalTime hora;
@@ -27,11 +27,11 @@ public class RegistroModel implements Comparable<RegistroModel> {
     /**
      * Retorna a hora formatada como texto.
      *
-     * @return Hora formatada ou "--:--" se a hora for nula.
+     * @return Hora formatada ou " " se a hora for nula.
      */
     public String getTextoHora() {
         if (hora == null) {
-            return "--:--";
+            return " ";
         }
         return tempoParaString(hora, PADRAO_SAIDA_TEMPO);
     }

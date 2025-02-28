@@ -16,7 +16,7 @@ spring:
           auto: update
   #        physical_naming_strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   datasource:
-    url: ${BANCO_URL:jdbc:mysql://localhost:3306/sispontodb?allowPublicKeyRetrieval=true&sslMode=DISABLED}
+    url: ${MYSQL_URL:jdbc:mysql://localhost:3306/sispontodb?allowPublicKeyRetrieval=true&sslMode=DISABLED}
     username: ${MYSQL_USER:root}
     password: ${MYSQL_USER_PASSWORD:123456789}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -24,3 +24,6 @@ spring:
 ponto:
   coletor:
     url: ${COLETOR_URL:localhost:8082}
+servidor:
+    jsarh:
+      url: ${JSARH_URL:localhost:8087}

@@ -39,6 +39,15 @@ public class PontoModel {
         this.registrosDataSource = new JRBeanCollectionDataSource(registrosModel, false);
     }
 
+    public PontoModel(Ponto ponto,String descricao) {
+        this.dia = ponto.getId().getDia();
+        this.descricao = descricao;
+        this.permanencia = calculaHorasPermanencia(ponto);
+        this.registrosModel = populaRegistrosModel(ponto);
+        this.registrosDataSource = new JRBeanCollectionDataSource(registrosModel, false);
+    }
+
+
     public String getTextoDia() {
         return formataTextoDia(dia);
     }

@@ -1,17 +1,24 @@
 package br.jus.trf1.sap.ponto;
 
-import br.jus.trf1.sap.historico.HistoricoService;
-import br.jus.trf1.sap.historico.dto.HistoricoResponse;
-import br.jus.trf1.sap.ponto.exceptions.PontoInexistenteException;
+import br.jus.trf1.sap.externo.coletor.historico.HistoricoService;
 import br.jus.trf1.sap.registro.Registro;
+import br.jus.trf1.sap.registro.RegistroRepository;
+import br.jus.trf1.sap.registro.exceptions.RegistroExistenteSalvoEmPontoDifenteException;
+import br.jus.trf1.sap.registro.exceptions.RegistroInexistenteException;
+import br.jus.trf1.sap.util.DataTempoUtil;
 import br.jus.trf1.sap.vinculo.Vinculo;
+import br.jus.trf1.sap.vinculo.VinculoInexistenteException;
+import br.jus.trf1.sap.vinculo.VinculoRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.TextStyle;
-import java.util.*;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
 
 import static br.jus.trf1.sap.util.DataTempoUtil.dataParaString;
 
@@ -20,9 +27,16 @@ import static br.jus.trf1.sap.util.DataTempoUtil.dataParaString;
 public class PontoService {
 
     private final PontoRepository pontoRepository;
+    private final RegistroRepository registroRepository;
+    private final HistoricoService historicoService;
+    private final VinculoRepository vinculoRepository;
 
-    public PontoService(PontoRepository pontoRepository) {
+    public PontoService(PontoRepository pontoRepository, RegistroRepository registroRepository,
+                        HistoricoService historicoService, VinculoRepository vinculoRepository) {
         this.pontoRepository = pontoRepository;
+        this.registroRepository = registroRepository;
+        this.historicoService = historicoService;
+        this.vinculoRepository = vinculoRepository;
     }
 
     public Optional<Ponto> buscaPonto(Integer matricula, LocalDate dia) {
@@ -42,6 +56,11 @@ public class PontoService {
         log.info("ponto {}", optPonto.isPresent() ? "foi encontrato!" : "não foi encontrato!");
         if (optPonto.isPresent()) {
             Ponto ponto = optPonto.get();
+            log.info("ponto {}", ponto);
+            var vinculo = vinculoRepository.findVinculoByMatricula(matricula).orElseThrow(RegistroInexistenteException::new);
+            log.info("vinculo {}", vinculo);
+            var historicos = historicoService.buscarHistoricoDeAcesso(
+                    dia, dia, vinculo.getCracha(), null, null);
             var registros = historicos.stream().
                     filter(hr ->
                             {

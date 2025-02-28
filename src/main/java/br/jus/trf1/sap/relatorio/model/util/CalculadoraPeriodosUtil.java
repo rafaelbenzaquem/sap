@@ -1,5 +1,6 @@
 package br.jus.trf1.sap.relatorio.model.util;
 
+import br.jus.trf1.sap.externo.jsarh.ausencias.Ausencia;
 import br.jus.trf1.sap.ponto.Ponto;
 import br.jus.trf1.sap.registro.Registro;
 import br.jus.trf1.sap.registro.Sentido;
@@ -7,10 +8,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.DayOfWeek;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Utilitário para cálculos relacionados a períodos de trabalho.
@@ -27,11 +31,12 @@ public class CalculadoraPeriodosUtil {
      * @param pontos Lista de pontos.
      * @return Número de dias úteis.
      */
-    public static Long calculaDiasUteis(List<Ponto> pontos) {
+    public static Long calculaDiasUteis(List<Ponto> pontos, Set<LocalDate> feriados) {
         log.debug("Calculando dias úteis...");
         return pontos.stream()
                 .filter(p -> !p.getId().getDia().getDayOfWeek().equals(DayOfWeek.SATURDAY)) // Remove sábados
                 .filter(p -> !p.getId().getDia().getDayOfWeek().equals(DayOfWeek.SUNDAY))  // Remove domingos
+                .filter(p -> !feriados.contains(p.getId().getDia()))
                 .count();
     }
 
@@ -84,5 +89,25 @@ public class CalculadoraPeriodosUtil {
             }
         }
         return totalHoras;
+    }
+
+    /**
+     * Retorna um conjunto de data a partir de uma lista de ausências
+     *
+     * @param ausencias Lista de período de ausências
+     * @return conjunto de LocalDate
+     */
+    public static Set<LocalDate> gerarDiasAusentes(List<Ausencia> ausencias) {
+        Set<LocalDate> diasAusentes = new HashSet<>();
+
+        for (Ausencia ausencia : ausencias) {
+            LocalDate dataAtual = ausencia.getInicio();
+            while (!dataAtual.isAfter(ausencia.getFim())) { // Enquanto a data atual não for depois do fim
+                diasAusentes.add(dataAtual); // Adiciona a data atual ao conjunto
+                dataAtual = dataAtual.plusDays(1); // Avança para o próximo dia
+            }
+        }
+
+        return diasAusentes;
     }
 }
