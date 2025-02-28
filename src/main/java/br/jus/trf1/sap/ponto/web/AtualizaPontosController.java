@@ -1,6 +1,6 @@
 package br.jus.trf1.sap.ponto.web;
 
-import br.jus.trf1.sap.historico.HistoricoService;
+import br.jus.trf1.sap.externo.coletor.historico.HistoricoService;
 import br.jus.trf1.sap.ponto.Ponto;
 import br.jus.trf1.sap.ponto.PontoService;
 import br.jus.trf1.sap.ponto.web.dto.PontoResponse;
@@ -42,7 +42,7 @@ public class AtualizaPontosController {
         log.info("Atualizando Ponto - {} - {}", matricula, dia);
         Vinculo vinculo = vinculoService.buscaPorMatricula(matricula);
         var historicos = historicoService.buscarHistoricoDeAcesso(
-                dataParaString(dia), null, vinculo.getCracha(), null, null);
+                dia, null, vinculo.getCracha(), null, null);
         Optional<Ponto> pontoOpt = pontoService.atualizaRegistrosPonto(matricula, dia, historicos);
         return pontoOpt.map(ponto -> ResponseEntity.ok(PontoResponse.of(ponto))).
                 orElseGet(() -> ResponseEntity.notFound().build());

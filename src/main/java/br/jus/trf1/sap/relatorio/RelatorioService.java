@@ -88,7 +88,7 @@ public class RelatorioService {
                 orElseThrow(() -> new IllegalArgumentException("Arquivo 'relatorioA4.jasper' não encontrado"));
 
         log.debug("Carregando pontos para o período especificado...");
-        var pontos = pontoRepository.buscaPontosPorMatriculaEmPeriodoDetermiando(matricula, inicio, fim);
+        var pontos = pontoRepository.buscaPontosPorPeriodo(matricula, inicio, fim);
         log.debug("Total de pontos recuperados: {}", pontos.size());
 
 
@@ -97,6 +97,8 @@ public class RelatorioService {
         log.debug("Consultando feriados no SARH...");
         var feriados = feriadoService.buscaFeriados(inicio, fim, null).
                 stream().map(FeriadoResponse::toModel).toList();
+
+        log.debug("Consultando licenças, férias e ausências especiais do servidor no SARH...");
         var licencas = licencasService.buscaLicenca("RR" + matricula, inicio, fim).
                 stream().map(LicencaResponse::toModel).toList();
 
@@ -125,8 +127,6 @@ public class RelatorioService {
                 .build();
         log.debug("Construindo modelo de relatório...");
 
-
-        var relatorioModel = new RelatorioModel(usuario, pontos);
         var relatorioModel = new RelatorioModel(usuario, pontos, feriados, ausencias);
 
         log.debug("Preparando parâmetros para o relatório...");
@@ -152,6 +152,5 @@ public class RelatorioService {
         var streamRelatorioPonto = new ByteArrayInputStream(arquivoRelatorioPonto.getConteudo());
         var printRelatorioPonto = fillReport(streamRelatorioPonto, parametrosRelatorio, new JREmptyDataSource());
         return exportReportToPdf(printRelatorioPonto);
-
     }
 }
