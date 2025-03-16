@@ -28,7 +28,7 @@ public class RelatorioController {
     }
 
     @GetMapping("/{matricula}")
-    public ResponseEntity<Resource> downloadRelatorio(@PathVariable("matricula") Integer matricula,
+    public ResponseEntity<Resource> downloadRelatorio(@PathVariable("matricula") String matricula,
                                                       @RequestParam("inicio")
                                                       @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
                                                       LocalDate inicio,

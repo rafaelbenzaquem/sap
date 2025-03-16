@@ -39,15 +39,15 @@ public class DataTempoUtil {
         return criaLocalDate(textoData, PADRAO_ENTRADA_DATA);
     }
 
-    public static String dataParaString(LocalDate data) {
-        return dataParaString(data, PADRAO_ENTRADA_DATA);
+    public static String paraStringData(LocalDate data) {
+        return paraStringData(data, PADRAO_ENTRADA_DATA);
     }
 
     public static String tempoParaString(LocalTime tempo) {
         return tempoParaString(tempo, PADRAO_ENTRADA_TEMPO);
     }
 
-    public static String dataParaString(LocalDate data, String padraoData) {
+    public static String paraStringData(LocalDate data, String padraoData) {
         return data.format(DateTimeFormatter.ofPattern(padraoData));
     }
 

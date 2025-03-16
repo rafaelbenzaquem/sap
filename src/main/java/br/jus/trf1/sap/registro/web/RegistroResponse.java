@@ -6,10 +6,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalTime;
 
-public record RegistroResponse(@JsonFormat(pattern = "HH:mm:ss") LocalTime hora,
+public record RegistroResponse(@JsonFormat(pattern = "HH:mm:ss")
+                               LocalTime hora,
                                String sentido,
-                               @JsonProperty("codigo_acesso") Integer codigoAcesso,
-                               @JsonProperty("id_registro_nova_versao") Long registroProximo
+                               @JsonProperty("codigo_acesso")
+                               Integer codigoAcesso,
+                               @JsonProperty("id_registro_nova_versao")
+                               Long registroProximo
 ) {
     public static RegistroResponse of(Registro registro) {
         return new RegistroResponse(

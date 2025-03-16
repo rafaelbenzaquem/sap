@@ -27,7 +27,7 @@ public class BuscaPontosController {
     }
 
     @GetMapping("/{matricula}/{dia}")
-    public ResponseEntity<PontoResponse> buscaPonto(@PathVariable Integer matricula,
+    public ResponseEntity<PontoResponse> buscaPonto(@PathVariable String matricula,
                                                     @PathVariable
                                                     @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
                                                     LocalDate dia) {
@@ -38,15 +38,13 @@ public class BuscaPontosController {
     }
 
     @GetMapping("/{matricula}")
-    public ResponseEntity<List<PontoResponse>> buscaPontosPorIntervalosDatas(
-            @PathVariable Integer matricula,
-            @RequestParam
-            @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
-            LocalDate inicio,
-            @RequestParam
-            @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
-            LocalDate fim
-    ) {
+    public ResponseEntity<List<PontoResponse>> buscaPontosPorIntervalosDatas(@PathVariable String matricula,
+                                                                             @RequestParam
+                                                                             @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
+                                                                             LocalDate inicio,
+                                                                             @RequestParam
+                                                                             @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
+                                                                             LocalDate fim) {
 
         var pontos = pontoService.buscarPontos(matricula, inicio, fim);
         return ResponseEntity.ok(pontos.stream().map(PontoResponse::of).toList());

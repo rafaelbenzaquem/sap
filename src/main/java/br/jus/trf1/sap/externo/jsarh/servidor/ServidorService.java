@@ -6,10 +6,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.Optional;
+
 @Service
-@FeignClient(url = "${servidor.jsarh.url}", name = "servidor")
+@FeignClient(url = "${servidor.jsarh.url}", name = "servidor", fallback = ServidorServiceFallBackImpl.class)
 public interface ServidorService {
 
     @GetMapping(value = "/v1/sarh/servidores/{matricula}", produces = "application/json")
-    ServidorResponse buscaDadosServidor(@PathVariable("matricula") String matricula);
+    Optional<ServidorResponse> buscaDadosServidor(@PathVariable("matricula") String matricula);
 }

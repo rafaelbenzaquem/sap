@@ -13,14 +13,14 @@ public interface PontoRepository extends JpaRepository<Ponto, PontoId> {
     /**
      * Busca pontos por matrícula e intervalo de datas.
      *
-     * @param matricula Matrícula(codigo funcionário no SARH) do servidor sem o prefixo.
+     * @param matricula Matrícula (sigla seção subseção + codigo funcionário no SARH) do servidor com o prefixo.
      * @param inicio    Data inicial do intervalo.
      * @param fim       Data final do intervalo.
      * @return Lista de pontos encontrados.
      */
     @Query("SELECT p FROM Ponto p WHERE p.id.matricula = :matricula AND p.id.dia BETWEEN :inicio AND :fim")
     List<Ponto> buscaPontosPorPeriodo(
-            @Param("matricula") Integer matricula,
+            @Param("matricula") String matricula,
             @Param("inicio") LocalDate inicio,
             @Param("fim") LocalDate fim
     );
@@ -34,7 +34,7 @@ public interface PontoRepository extends JpaRepository<Ponto, PontoId> {
      */
     @Query("SELECT p FROM Ponto p WHERE p.id.matricula = :matricula AND p.id.dia = :dia")
     Optional<Ponto> buscaPonto(
-            @Param("matricula") Integer matricula,
+            @Param("matricula") String matricula,
             @Param("dia") LocalDate dia
     );
 }

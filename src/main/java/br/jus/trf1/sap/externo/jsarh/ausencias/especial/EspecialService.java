@@ -10,19 +10,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static br.jus.trf1.sap.util.ConstantesDataTempoUtil.PADRAO_ENTRADA_DATA;
 
 @Service
-@FeignClient(url = "${servidor.jsarh.url}", name = "especiais")
+@FeignClient(url = "${servidor.jsarh.url}", fallback = EspecialServiceFallBackImpl.class, name = "especiais")
 public interface EspecialService {
 
     @GetMapping(value = "/v1/sarh/servidores/{matricula}/ausencias/especiais", produces = "application/json")
-    List<EspecialResponse> buscaAusenciasEspeciais(
+    List<EspecialResponse> buscaAusenciasEspeciaisServidorPorPeriodo(
             @PathVariable("matricula") String matricula,
             @RequestParam(name = "inicio", required = false) @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
             LocalDate inicio,
             @RequestParam(name = "fim", required = false) @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
             LocalDate fim);
+
+    @GetMapping(value = "/v1/sarh/servidores/{matricula}/ausencias/especiais/{dia}", produces = "application/json")
+    Optional<EspecialResponse> buscaAusenciaEspecialServidorNoDia(
+            @PathVariable("matricula") String matricula,
+            @PathVariable("dia")
+            @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
+            LocalDate dia);
 
 }

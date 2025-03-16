@@ -15,7 +15,7 @@ import java.util.Objects;
  * @param horasDiaria Quantidade de horas diárias trabalhadas.
  */
 @Builder
-public record UsuarioModel(String nome, String cargo, String funcao, Integer matricula, String lotacao, Integer horasDiaria) {
+public record UsuarioModel(String nome, String cargo, String funcao, String matricula, String lotacao, Integer horasDiaria) {
     public UsuarioModel {
         Objects.requireNonNull(nome, "Nome não pode ser nulo");
         Objects.requireNonNull(cargo, "Cargo não pode ser nulo");

@@ -1,6 +1,7 @@
 package br.jus.trf1.sap.ponto;
 
 import br.jus.trf1.sap.externo.coletor.historico.HistoricoService;
+import br.jus.trf1.sap.externo.coletor.historico.dto.HistoricoResponse;
 import br.jus.trf1.sap.vinculo.VinculoRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -23,10 +24,10 @@ public class CriaPontosDiariosTask {
 
     @Scheduled(cron = "00 00 00 * * ? ")
     public void criaPontosDoDia() {
-        vinculoRepository.findAll().forEach(vinculo -> {
+        vinculoRepository.findAll().forEach(v -> {
             var historicos = historicoService.buscarHistoricoDeAcesso(
-                    LocalDate.now(), null, vinculo.getCracha(), null, null);
-            pontoService.salvaPontoDeHoje(vinculo.getMatricula(), historicos);
+                    LocalDate.now(), null, v.getCracha(), null, null);
+            pontoService.salvaPontoDeHoje(v.getMatricula(), historicos.stream().map(HistoricoResponse::toModel).toList());
         });
     }
 
