@@ -1,6 +1,6 @@
 package br.jus.trf1.sap.vinculo.web;
 
-import br.jus.trf1.sap.vinculo.VinculoInexistenteException;
+import br.jus.trf1.sap.vinculo.exceptions.VinculoInexistenteException;
 import br.jus.trf1.sap.vinculo.VinculoRepository;
 import br.jus.trf1.sap.vinculo.web.dto.VinculoAtualizadoRequest;
 import br.jus.trf1.sap.vinculo.web.dto.VinculoResponse;
@@ -33,7 +33,7 @@ public class AtualizaVinculosController {
 
             return ResponseEntity.ok().body(vinculoSalvo.toResponse());
         }
-        throw new VinculoInexistenteException("Vinculo id = %d não encontrado!".formatted(request.id()));
+        throw new VinculoInexistenteException(request.id());
     }
 
 

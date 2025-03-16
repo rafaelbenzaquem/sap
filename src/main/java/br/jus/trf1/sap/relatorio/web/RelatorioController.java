@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
 
-import static br.jus.trf1.sap.util.ConstantesDataTempoUtil.PADRAO_ENTRADA_DATA;
+import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.PADRAO_ENTRADA_DATA;
 
 @Slf4j
 @RestController
@@ -28,7 +28,7 @@ public class RelatorioController {
     }
 
     @GetMapping("/{matricula}")
-    public ResponseEntity<Resource> downloadRelatorio(@PathVariable("matricula") Integer matricula,
+    public ResponseEntity<Resource> downloadRelatorio(@PathVariable("matricula") String matricula,
                                                       @RequestParam("inicio")
                                                       @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
                                                       LocalDate inicio,

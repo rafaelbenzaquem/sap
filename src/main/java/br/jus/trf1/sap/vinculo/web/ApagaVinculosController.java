@@ -1,6 +1,6 @@
 package br.jus.trf1.sap.vinculo.web;
 
-import br.jus.trf1.sap.vinculo.VinculoInexistenteException;
+import br.jus.trf1.sap.vinculo.exceptions.VinculoInexistenteException;
 import br.jus.trf1.sap.vinculo.VinculoRepository;
 import br.jus.trf1.sap.vinculo.web.dto.VinculoResponse;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +26,6 @@ public class ApagaVinculosController {
             repository.deleteById(id);
             return ResponseEntity.ok().body(vinculoOpt.get().toResponse());
         }
-        throw new VinculoInexistenteException("Vinculo id = %d não encontrado!".formatted(id));
+        throw new VinculoInexistenteException(id);
     }
 }

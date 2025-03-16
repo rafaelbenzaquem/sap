@@ -1,5 +1,6 @@
 package br.jus.trf1.sap.ponto.web;
 
+import br.jus.trf1.sap.comum.util.DataTempoUtil;
 import br.jus.trf1.sap.externo.coletor.historico.HistoricoService;
 import br.jus.trf1.sap.ponto.Ponto;
 import br.jus.trf1.sap.ponto.PontoService;
@@ -16,8 +17,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import static br.jus.trf1.sap.util.ConstantesDataTempoUtil.PADRAO_ENTRADA_DATA;
-import static br.jus.trf1.sap.util.DataTempoUtil.dataParaString;
+import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.PADRAO_ENTRADA_DATA;
 
 @Slf4j
 @RestController
@@ -35,9 +35,11 @@ public class AtualizaPontosController {
     }
 
     @PatchMapping("/{matricula}/{dia}")
-    public ResponseEntity<PontoResponse> atualizaPonto(
-            @PathVariable Integer matricula,
-            @PathVariable @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA) LocalDate dia) {
+    public ResponseEntity<PontoResponse> atualizaPonto(@PathVariable
+                                                       String matricula,
+                                                       @PathVariable
+                                                       @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
+                                                       LocalDate dia) {
 
         log.info("Atualizando Ponto - {} - {}", matricula, dia);
         Vinculo vinculo = vinculoService.buscaPorMatricula(matricula);
@@ -49,13 +51,16 @@ public class AtualizaPontosController {
     }
 
     @PatchMapping("/{matricula}/{dia}/registros")
-    public ResponseEntity<PontoResponse> adicionaNovosRegistrosPonto(
-            @PathVariable Integer matricula,
-            @PathVariable @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA) LocalDate dia,
-            @RequestBody List<RegistroNovoRequest> registros) {
+    public ResponseEntity<PontoResponse> adicionaNovosRegistrosPonto(@PathVariable
+                                                                     String matricula,
+                                                                     @PathVariable
+                                                                     @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
+                                                                     LocalDate dia,
+                                                                     @RequestBody List<RegistroNovoRequest> registros) {
 
-        log.info("Atualizando Ponto - {} - {} - registros size: {}", matricula, dataParaString(dia), registros.size());
-        var ponto = pontoService.adicionaRegistros(matricula, dia, registros.stream().map(RegistroNovoRequest::toModel).toList());
+        log.info("Atualizando Ponto - {} - {} - registros size: {}", matricula, DataTempoUtil.paraString(dia), registros.size());
+        var ponto = pontoService.adicionaRegistros(matricula, dia, registros.stream().
+                map(r->r.toModel(null)).toList());
         return ResponseEntity.ok(PontoResponse.of(ponto));
     }
 

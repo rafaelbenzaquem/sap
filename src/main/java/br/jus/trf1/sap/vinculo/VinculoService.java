@@ -1,5 +1,6 @@
 package br.jus.trf1.sap.vinculo;
 
+import br.jus.trf1.sap.vinculo.exceptions.VinculoInexistenteException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,9 +18,10 @@ public class VinculoService {
         return vinculoRepository.findAll();
     }
 
-    public Vinculo buscaPorMatricula(Integer matricula) {
+    public Vinculo buscaPorMatricula(String matricula) {
         return vinculoRepository.findVinculoByMatricula(matricula).
-                orElseThrow(() -> new VinculoInexistenteException("Vinculo matrícula = %d não encontrado!".formatted(matricula)));
+                orElseThrow(() -> new VinculoInexistenteException("Não existe vínculo para matrícula: %s!"
+                        .formatted(matricula)));
     }
 
 

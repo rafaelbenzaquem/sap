@@ -1,8 +1,9 @@
 package br.jus.trf1.sap.vinculo;
 
-import br.jus.trf1.sap.vinculo.web.dto.NovoVinculoRequest;
 import br.jus.trf1.sap.vinculo.web.dto.VinculoResponse;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,16 +24,16 @@ public class Vinculo {
     @Column(nullable = false)
     private String nome;
     @Column(unique = true, nullable = false)
-    private Integer matricula;
+    private String matricula;
     @Column(unique = true, nullable = false)
     private String cracha;
+    @Min(value = 4)
+    @Max(value = 12)
+    @Column(name = "hora_diaria", nullable = false)
+    private Integer horaDiaria;
 
     public VinculoResponse toResponse() {
-        return new VinculoResponse(id,nome,matricula,cracha);
-    }
-
-    public static Vinculo of(NovoVinculoRequest novoVinculo) {
-        return new Vinculo(null,novoVinculo.nome(),novoVinculo.matricula(), novoVinculo.cracha());
+        return new VinculoResponse(id, nome, matricula, cracha, horaDiaria);
     }
 
     @Override

@@ -4,8 +4,8 @@ import lombok.Getter;
 
 import java.time.LocalTime;
 
-import static br.jus.trf1.sap.util.ConstantesDataTempoUtil.PADRAO_SAIDA_TEMPO;
-import static br.jus.trf1.sap.util.DataTempoUtil.tempoParaString;
+import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.PADRAO_SAIDA_TEMPO;
+import static br.jus.trf1.sap.comum.util.DataTempoUtil.paraString;
 
 /**
  * Representa um registro de ponto no relatório.
@@ -13,7 +13,7 @@ import static br.jus.trf1.sap.util.DataTempoUtil.tempoParaString;
 @Getter
 public class RegistroModel implements Comparable<RegistroModel> {
 
-    public static final RegistroModel VAZIO = new RegistroModel(" ", null);
+    public static final RegistroModel VAZIO = new RegistroModel("-----", null);
 
     private final String sentido;
     private final LocalTime hora;
@@ -31,9 +31,9 @@ public class RegistroModel implements Comparable<RegistroModel> {
      */
     public String getTextoHora() {
         if (hora == null) {
-            return " ";
+            return "--:--";
         }
-        return tempoParaString(hora, PADRAO_SAIDA_TEMPO);
+        return paraString(hora, PADRAO_SAIDA_TEMPO);
     }
 
     /**

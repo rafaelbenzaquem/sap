@@ -1,23 +1,24 @@
 package br.jus.trf1.sap.ponto.exceptions;
 
+import br.jus.trf1.sap.ponto.Ponto;
+import br.jus.trf1.sap.ponto.PontoId;
+
+import java.time.LocalDate;
+
+import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.MSG_ENTIDADE_EXISTENTE;
+
 public class PontoInexistenteException extends RuntimeException {
 
-    public PontoInexistenteException() {
+
+    public PontoInexistenteException(String matricula, LocalDate dia) {
+        this(MSG_ENTIDADE_EXISTENTE.formatted(Ponto.class.getSimpleName(), PontoId.builder().
+                matricula(matricula).
+                dia(dia).
+                build().
+                toString()));
     }
 
     public PontoInexistenteException(String message) {
         super(message);
-    }
-
-    public PontoInexistenteException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public PontoInexistenteException(Throwable cause) {
-        super(cause);
-    }
-
-    public PontoInexistenteException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

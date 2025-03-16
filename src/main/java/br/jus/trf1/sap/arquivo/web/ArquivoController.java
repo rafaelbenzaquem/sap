@@ -1,8 +1,9 @@
 package br.jus.trf1.sap.arquivo.web;
 
 import br.jus.trf1.sap.arquivo.Arquivo;
-import br.jus.trf1.sap.arquivo.ArquivoInexistenteException;
 import br.jus.trf1.sap.arquivo.ArquivoRepository;
+import br.jus.trf1.sap.arquivo.exceptions.NomeArquivoExistenteException;
+import br.jus.trf1.sap.arquivo.exceptions.NomeArquivoInexistenteException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,9 +30,13 @@ public class ArquivoController {
                                            @RequestParam("nome") String nome,
                                            @RequestParam(value = "descricao", required = false) String descricao)
             throws IOException {
-
         log.info("Salvando um arquivo no banco de dados");
         log.info("{} - {}KBytes", nome, conteudo.getSize() / 1000);
+
+        Optional<Arquivo> arquivoOpt = arquivoRepository.findByNome(nome);
+        if (arquivoOpt.isPresent())
+            throw new NomeArquivoExistenteException("Existe arquivo com nome '" + nome + "' salvo no banco de dados!");
+
         Arquivo arquivo = arquivoRepository.save(Arquivo.builder()
                 .nome(nome)
                 .descricao(descricao)
@@ -46,12 +51,10 @@ public class ArquivoController {
                                               @RequestParam("nome") String nome,
                                               @RequestParam(value = "descricao", required = false) String descricao)
             throws IOException {
-
         log.info("Atualizando um arquivo no banco de dados");
         log.info("{} - {}KBytes", nome, conteudo.getSize() / 1000);
 
         Optional<Arquivo> arquivoOpt = arquivoRepository.findByNome(nome);
-
         if (arquivoOpt.isPresent()) {
             Arquivo arquivo = arquivoRepository.save(Arquivo.builder()
                     .id(arquivoOpt.get().getId())
@@ -62,8 +65,7 @@ public class ArquivoController {
             var uriResponse = ServletUriComponentsBuilder.fromCurrentContextPath().path("/arquivos/{id}").buildAndExpand(arquivo.getId()).toUri();
             return ResponseEntity.created(uriResponse).build();
         }
-
-        throw new ArquivoInexistenteException("Não existe arquivo com nome '" + nome + "' salvo no banco de dados!");
+        throw new NomeArquivoInexistenteException("Não existe arquivo com nome '" + nome + "' salvo no banco de dados!");
     }
 
 }

@@ -1,8 +1,7 @@
 package br.jus.trf1.sap.vinculo.web;
 
-import br.jus.trf1.sap.vinculo.Vinculo;
 import br.jus.trf1.sap.vinculo.VinculoRepository;
-import br.jus.trf1.sap.vinculo.web.dto.NovoVinculoRequest;
+import br.jus.trf1.sap.vinculo.web.dto.VinculoNovoRequest;
 import br.jus.trf1.sap.vinculo.web.dto.VinculoResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -22,9 +21,9 @@ public class CriaVinculosController {
     }
 
     @PostMapping()
-    public ResponseEntity<VinculoResponse> criarVinculo(@RequestBody @Valid NovoVinculoRequest request) {
+    public ResponseEntity<VinculoResponse> criarVinculo(@RequestBody @Valid VinculoNovoRequest request) {
         log.info("Criando vinculo: {}", request);
-        var vinculoSalvo = repository.save(Vinculo.of(request));
+        var vinculoSalvo = repository.save(request.paraEntidade());
 
         var uriResponse = ServletUriComponentsBuilder.fromCurrentContextPath().path("/vinculos/{id}").buildAndExpand(vinculoSalvo.getId()).toUri();
 

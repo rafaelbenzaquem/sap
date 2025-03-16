@@ -5,9 +5,10 @@ import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.Locale;
 
-import static br.jus.trf1.sap.relatorio.model.util.ConstatesRelatorioUtil.*;
-import static br.jus.trf1.sap.util.ConstantesDataTempoUtil.PADRAO_SAIDA_DATA;
-import static br.jus.trf1.sap.util.DataTempoUtil.dataParaString;
+import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.PADRAO_SAIDA_DATA;
+import static br.jus.trf1.sap.comum.util.DataTempoUtil.paraString;
+import static br.jus.trf1.sap.relatorio.model.util.ConstatesRelatorioUtil.PADRAO_TEXTO_TEMPO_DIARIO;
+import static br.jus.trf1.sap.relatorio.model.util.ConstatesRelatorioUtil.PADRAO_TEXTO_TEMPO_TOTAL;
 
 /**
  * Utilitário para formatação de textos no relatório.
@@ -41,7 +42,7 @@ public class FomatadorTextoUtil {
      * @return Texto formatado.
      */
     public static String formataTextoDia(LocalDate dia) {
-        return dataParaString(dia, PADRAO_SAIDA_DATA) + " - " + dia.getDayOfWeek().
+        return paraString(dia, PADRAO_SAIDA_DATA) + " - " + dia.getDayOfWeek().
                 getDisplayName(TextStyle.SHORT, Locale.of("pt", "BR"));
     }
 
@@ -101,6 +102,6 @@ public class FomatadorTextoUtil {
      * @return Texto formatado.
      */
     public static String formataTextoPeriodo(LocalDate inicio, LocalDate fim){
-        return dataParaString(inicio, PADRAO_SAIDA_DATA) + " a " + dataParaString(fim, PADRAO_SAIDA_DATA);
+        return paraString(inicio, PADRAO_SAIDA_DATA) + " a " + paraString(fim, PADRAO_SAIDA_DATA);
     }
 }

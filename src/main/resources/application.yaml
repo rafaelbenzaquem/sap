@@ -5,13 +5,19 @@ logging:
   level:
     root: info
 spring:
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+        alphanumeric-ids:
+          enabled: true
   application:
     name: sap
   jpa:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-        show_sql: false
+        show_sql: true
         hbm2ddl:
           auto: update
   #        physical_naming_strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
@@ -21,6 +27,15 @@ spring:
     password: ${MYSQL_USER_PASSWORD:123456789}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+resilience4j:
+  circuitbreaker:
+    instances:
+      DemoClientgetDemo:
+        minimumNumberOfCalls: 69
+  timelimiter:
+    instances:
+      DemoClientgetDemo:
+        timeoutDuration: 10s
 ponto:
   coletor:
     url: ${COLETOR_URL:localhost:8082}

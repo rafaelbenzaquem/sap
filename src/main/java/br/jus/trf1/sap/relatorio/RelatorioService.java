@@ -11,6 +11,7 @@ import br.jus.trf1.sap.externo.jsarh.ausencias.licenca.dto.LicencaResponse;
 import br.jus.trf1.sap.externo.jsarh.feriado.FeriadoService;
 import br.jus.trf1.sap.externo.jsarh.feriado.dto.FeriadoResponse;
 import br.jus.trf1.sap.externo.jsarh.servidor.ServidorService;
+import br.jus.trf1.sap.externo.jsarh.servidor.exceptions.ServidorInexistenteException;
 import br.jus.trf1.sap.ponto.PontoRepository;
 import br.jus.trf1.sap.relatorio.model.RelatorioModel;
 import br.jus.trf1.sap.relatorio.model.UsuarioModel;
@@ -75,8 +76,7 @@ public class RelatorioService {
      * @return Relatório em formato de array de bytes (PDF).
      * @throws JRException Se ocorrer um erro ao gerar o relatório.
      */
-    public byte[] gerarRelatorio(Integer matricula, LocalDate inicio, LocalDate fim) throws JRException {
-
+    public byte[] gerarRelatorio(String matricula, LocalDate inicio, LocalDate fim) throws JRException {
         log.debug("Iniciando geração de relatório para matrícula: {}, período: {} a {}", matricula, inicio, fim);
 
         log.debug("Carregando imagens e arquivo de relatório...");
@@ -92,20 +92,21 @@ public class RelatorioService {
         log.debug("Total de pontos recuperados: {}", pontos.size());
 
 
-        var servidor = servidorService.buscaDadosServidor("RR" + matricula);
+        var servidor = servidorService.buscaDadosServidor(matricula).
+                orElseThrow(() -> new ServidorInexistenteException("Servidor com matrícula '%s' não encontrado!"));
 
         log.debug("Consultando feriados no SARH...");
         var feriados = feriadoService.buscaFeriados(inicio, fim, null).
                 stream().map(FeriadoResponse::toModel).toList();
 
         log.debug("Consultando licenças, férias e ausências especiais do servidor no SARH...");
-        var licencas = licencasService.buscaLicenca("RR" + matricula, inicio, fim).
+        var licencas = licencasService.buscaLicencaServidorPorPeriodo(matricula, inicio, fim).
                 stream().map(LicencaResponse::toModel).toList();
 
-        var especiais = especialService.buscaAusenciasEspeciais("RR" + matricula, inicio, fim).
+        var especiais = especialService.buscaAusenciasEspeciaisServidorPorPeriodo(matricula, inicio, fim).
                 stream().map(EspecialResponse::toModel).toList();
 
-        var ferias = feriasService.buscaFerias("RR" + matricula, inicio, inicio).
+        var ferias = feriasService.buscaFeriasServidorPorPeriodo(matricula, inicio, inicio).
                 stream().map(FeriasResponse::toModel).toList();
 
         var ausencias = new ArrayList<Ausencia>(licencas);
@@ -145,7 +146,7 @@ public class RelatorioService {
         parametrosRelatorio.put("nome", usuario.nome());
         parametrosRelatorio.put("cargo", usuario.cargo());
         parametrosRelatorio.put("funcao", usuario.funcao());
-        parametrosRelatorio.put("matricula", "RR" + usuario.matricula());
+        parametrosRelatorio.put("matricula", usuario.matricula());
         parametrosRelatorio.put("lotacao", usuario.lotacao());
         parametrosRelatorio.put("periodo", formataTextoPeriodo(inicio, fim));
 
