@@ -45,24 +45,28 @@ public class PontoService {
         );
     }
 
-    public Optional<Ponto> atualizaRegistrosPonto(String matricula,
+    public Ponto atualizaRegistrosPonto(String matricula,
                                                   LocalDate dia,
                                                   List<HistoricoResponse> historicos) {
         log.info("Buscar Atualizacao Ponto - {} - {} ", DataTempoUtil.paraString(dia), matricula);
         var optPonto = pontoRepository.buscaPonto(matricula, dia);
         log.info("ponto {}", optPonto.isPresent() ? "foi encontrato!" : "não foi encontrato!");
         if (optPonto.isPresent()) {
-            Ponto ponto = optPonto.get();
+            var ausencia = ausenciaService.buscaAusenciaServidorNoDia(matricula, dia);
+            var feriadoResponse = feriadoService.buscaFeriadoDoDia(dia);
+            var descricao = defineDescricao(dia, ausencia, feriadoResponse);
+            var indice = defineIndice(dia, ausencia, feriadoResponse);
+            var ponto = optPonto.get();
             log.info("ponto {}", ponto);
             var vinculo = vinculoService.buscaPorMatricula(matricula);
             log.info("vinculo {}", vinculo);
             var registros = historicos.stream().
-                    filter(hr ->
+                    filter(historico ->
                             {
-                                log.debug("historico {}", hr);
+                                log.debug("historico {}", historico);
                                 return ponto.getRegistros().stream().noneMatch(r ->
                                         {
-                                            var filtered = Objects.equals(hr.acesso(), r.getCodigoAcesso());
+                                            var filtered = Objects.equals(historico.acesso(), r.getCodigoAcesso());
                                             log.debug("registro {} - {}",
                                                     !filtered ? "foi filtrado" : "não foi filtrado", r);
                                             return filtered;
@@ -81,13 +85,13 @@ public class PontoService {
                                     .build()
                     )
                     .toList();
-
+            ponto.setIndice(indice);
+            ponto.setDescricao(descricao);
             ponto.getRegistros().addAll(registros);
-            pontoRepository.save(ponto);
-            return Optional.of(ponto);
+           return pontoRepository.save(ponto);
         }
 
-        return Optional.empty();
+        throw new PontoInexistenteException(matricula, dia);
     }
 
 
@@ -102,22 +106,38 @@ public class PontoService {
     }
 
 
-    @Transactional
-    public Ponto salvaPonto(String matricula, LocalDate data, List<Registro> registros) {
+    private String defineDescricao(LocalDate dia, Optional<Ausencia> ausencia, Optional<FeriadoResponse> feriado) {
+        var descricao = dia.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.of("pt", "BR"));
+        descricao += ausencia.map(a -> ", " + a.getDescricao()).orElse("");
+        descricao += feriado.map(f -> ", " + f.getDescricao()).orElse("");
+        return descricao;
+    }
 
-        var descricao = ausenciaService.buscaAusenciaServidorNoDia(matricula, data).
-                map(Ausencia::getDescricao).
-                orElseGet(() -> feriadoService.buscaFeriadoDoDia(data).map(FeriadoResponse::getDescricao).
-                        orElse(data.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.of("pt", "BR")))
+    private IndicePonto defineIndice(LocalDate dia, Optional<Ausencia> ausencia, Optional<FeriadoResponse> feriado) {
+        var indicePonto = ausencia.map(a -> IndicePonto.AUSENCIA).
+                orElseGet(() -> feriado.map(f -> IndicePonto.DOMINGO_E_FERIADOS).
+                        orElse(dia.getDayOfWeek().getValue() == 7 ? IndicePonto.DOMINGO_E_FERIADOS :
+                                dia.getDayOfWeek().getValue() == 6 ? IndicePonto.SABADO :
+                                        IndicePonto.DIA_UTIL)
                 );
+        return indicePonto;
+    }
+
+    @Transactional
+    public Ponto salvaPonto(String matricula, LocalDate dia, List<Registro> registros) {
+        var ausencia = ausenciaService.buscaAusenciaServidorNoDia(matricula, dia);
+        var feriadoResponse = feriadoService.buscaFeriadoDoDia(dia);
+        var descricao = defineDescricao(dia, ausencia, feriadoResponse);
+        var indice = defineIndice(dia, ausencia, feriadoResponse);
 
         var ponto = pontoRepository.save(
                 Ponto.builder().
                         id(PontoId.builder().
-                                dia(data).
+                                dia(dia).
                                 matricula(matricula).
                                 build()).
                         descricao(descricao).
+                        indice(indice.getValor()).
                         build());
 
         if (registros == null || registros.isEmpty()) {
@@ -136,9 +156,10 @@ public class PontoService {
         List<Ponto> pontos = new ArrayList<>();
         LocalDate dataAtual = inicio;
         while (!dataAtual.isAfter(fim)) {
+            var matricula = vinculo.getMatricula();
             var id = PontoId.builder().
                     dia(dataAtual).
-                    matricula(vinculo.getMatricula()).
+                    matricula(matricula).
                     build();
 
             Optional<Ponto> pontoOpt = pontoRepository.findById(id);
@@ -149,11 +170,17 @@ public class PontoService {
             var registros = historicos.stream().map(HistoricoResponse::toModel).toList();
 
             if (pontoOpt.isPresent()) {
+                var ausencia = ausenciaService.buscaAusenciaServidorNoDia(matricula, dataAtual);
+                var feriadoResponse = feriadoService.buscaFeriadoDoDia(dataAtual);
+                var descricao = defineDescricao(dataAtual, ausencia, feriadoResponse);
+                var indice = defineIndice(dataAtual, ausencia, feriadoResponse);
                 var registrosFiltrados = pontoOpt.get().getRegistros().stream().filter(
                         r -> registros.stream().map(Registro::getHora).toList().contains(r.getHora())).toList();
                 var ponto = pontoOpt.get();
-                ponto.getRegistros().addAll(registrosFiltrados);
-                salvaPonto(ponto);
+                ponto.setIndice(indice);
+                ponto.setDescricao(descricao);
+                ponto.getRegistros().addAll(new ArrayList<>(registrosFiltrados));
+                ponto = salvaPonto(ponto);
                 pontos.add(ponto);
                 dataAtual = dataAtual.plusDays(1); // Avança para o próximo dia
                 continue;

@@ -40,7 +40,7 @@ public class ArquivoController {
         Arquivo arquivo = arquivoRepository.save(Arquivo.builder()
                 .nome(nome)
                 .descricao(descricao)
-                .conteudo(conteudo.getBytes())
+                .bytes(conteudo.getBytes())
                 .build());
         var uriResponse = ServletUriComponentsBuilder.fromCurrentContextPath().path("/arquivos/{id}").buildAndExpand(arquivo.getId()).toUri();
         return ResponseEntity.created(uriResponse).build();
@@ -60,7 +60,7 @@ public class ArquivoController {
                     .id(arquivoOpt.get().getId())
                     .nome(nome)
                     .descricao(descricao)
-                    .conteudo(conteudo.getBytes())
+                    .bytes(conteudo.getBytes())
                     .build());
             var uriResponse = ServletUriComponentsBuilder.fromCurrentContextPath().path("/arquivos/{id}").buildAndExpand(arquivo.getId()).toUri();
             return ResponseEntity.created(uriResponse).build();

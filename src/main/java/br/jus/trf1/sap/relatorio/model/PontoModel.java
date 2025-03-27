@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static br.jus.trf1.sap.relatorio.model.util.CalculadoraPeriodosUtil.calculaHorasPermanencia;
 import static br.jus.trf1.sap.relatorio.model.util.FomatadorTextoUtil.formataTextoDia;
 import static br.jus.trf1.sap.relatorio.model.util.FomatadorTextoUtil.formataTextoTempoDiario;
 
@@ -34,7 +33,7 @@ public class PontoModel {
     public PontoModel(Ponto ponto) {
         this.dia = ponto.getId().getDia();
         this.descricao = ponto.getDescricao();
-        this.permanencia = calculaHorasPermanencia(ponto);
+        this.permanencia = ponto.getHorasPermanencia();
         this.registrosModel = populaRegistrosModel(ponto);
         this.registrosDataSource = new JRBeanCollectionDataSource(registrosModel, false);
     }
@@ -42,7 +41,7 @@ public class PontoModel {
     public PontoModel(Ponto ponto,String descricao) {
         this.dia = ponto.getId().getDia();
         this.descricao = descricao;
-        this.permanencia = calculaHorasPermanencia(ponto);
+        this.permanencia = ponto.getHorasPermanencia();
         this.registrosModel = populaRegistrosModel(ponto);
         this.registrosDataSource = new JRBeanCollectionDataSource(registrosModel, false);
     }

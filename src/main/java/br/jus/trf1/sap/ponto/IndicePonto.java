@@ -6,20 +6,20 @@ import lombok.Getter;
 public enum IndicePonto {
     AUSENCIA(0f), DIA_UTIL(1.0f), SABADO(1.5f), DOMINGO_E_FERIADOS(2.0f);
 
-    final float indice;
+    final float valor;
 
-    IndicePonto(float indice) {
-        this.indice = indice;
+    IndicePonto(float valor) {
+        this.valor = valor;
     }
 
-    public static IndicePonto toEnum(Float indice) {
-        if (indice == null)
+    public static IndicePonto toEnum(Float valor) {
+        if (valor == null)
             return null;
 
         for (IndicePonto ip : IndicePonto.values())
-            if (indice.equals(ip.indice))
+            if (valor.equals(ip.valor))
                 return ip;
 
-        throw new IllegalArgumentException("Índice inválido:" + indice);
+        throw new IllegalArgumentException("Índice inválido:" + valor);
     }
 }

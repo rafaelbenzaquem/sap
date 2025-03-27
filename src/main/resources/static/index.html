@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
     <meta charset="UTF-8">
-    <title>Lista de Vínculos (com Filtros)</title>
+    <title>Lista de Vínculos com Filtros e Debounce</title>
     <style>
         table {
             width: 100%;
@@ -41,7 +42,7 @@
 </head>
 <body>
 
-<h1>Lista de Vínculos (com Filtros XML)</h1>
+<h1>Lista de Vínculos (com Filtros, Paginação e Debounce)</h1>
 
 <div id="controles">
     <label for="tamanhoPagina">Registros por página:</label>
@@ -57,9 +58,9 @@
     <button onclick="carregarVinculos()">Carregar Vínculos</button>
 
     <div class="filtros">
-        <input type="text" id="filtroNome" placeholder="Filtrar por Nome" oninput="carregarVinculos()" />
-        <input type="text" id="filtroMatricula" placeholder="Filtrar por Matrícula" oninput="carregarVinculos()" />
-        <input type="text" id="filtroCracha" placeholder="Filtrar por Crachá" oninput="carregarVinculos()" />
+        <input type="text" id="filtroNome" placeholder="Filtrar por Nome" />
+        <input type="text" id="filtroMatricula" placeholder="Filtrar por Matrícula" />
+        <input type="text" id="filtroCracha" placeholder="Filtrar por Crachá" />
     </div>
 </div>
 
@@ -83,6 +84,15 @@
 
 <script>
     let ultimaUrl = '';
+
+    // Função debounce
+    function debounce(func, delay) {
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), delay);
+        };
+    }
 
     function getTamanhoPagina() {
         return document.getElementById('tamanhoPagina').value;
@@ -108,11 +118,54 @@
         return `${baseUrl}?${params.toString()}`;
     }
 
+    function editarLinha(botao) {
+        const linha = botao.closest('tr');
+        linha.querySelectorAll('.display').forEach(span => span.style.display = 'none');
+        linha.querySelectorAll('.edit').forEach(input => input.style.display = 'inline');
+        botao.style.display = 'none';
+        linha.querySelector('button[onclick^="salvarAtualizacao"]').style.display = 'inline';
+    }
+
+    async function salvarAtualizacao(botao, id) {
+        const linha = botao.closest('tr');
+        const inputs = linha.querySelectorAll('.edit');
+        const nome = inputs[0].value;
+        const matricula = inputs[1].value;
+        const cracha = inputs[2].value;
+
+        const payload = {
+            id,
+            nome,
+            matricula,
+            cracha
+        };
+
+        try {
+            const response = await fetch(`http://localhost:8084/v1/sap/vinculos/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                alert('Vínculo atualizado com sucesso!');
+                carregarVinculos(ultimaUrl); // recarrega os dados
+            } else {
+                alert('Erro ao atualizar vínculo.');
+            }
+        } catch (error) {
+            console.error('Erro na atualização:', error);
+            alert('Erro na requisição de atualização.');
+        }
+    }
+
+
     async function carregarVinculos(url = null) {
         if (!url) {
             url = construirUrlBase();
         } else {
-            // Atualiza os filtros mesmo se a URL for da paginação
             const u = new URL(url);
             const filtros = getFiltros();
             u.searchParams.set('size', getTamanhoPagina());
@@ -126,9 +179,7 @@
 
         try {
             const response = await fetch(url, {
-                headers: {
-                    'Accept': 'application/xml'
-                }
+                headers: { 'Accept': 'application/xml' }
             });
 
             const text = await response.text();
@@ -152,12 +203,16 @@
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
-            <td>${id}</td>
-            <td>${nome}</td>
-            <td>${matricula}</td>
-            <td>${cracha}</td>
-            <td>${horaDiaria}</td>
-          `;
+  <td>${id}</td>
+  <td><span class="display">${nome}</span><input class="edit" type="text" value="${nome}" style="display:none;"></td>
+  <td><span class="display">${matricula}</span><input class="edit" type="text" value="${matricula}" style="display:none;"></td>
+  <td><span class="display">${cracha}</span><input class="edit" type="text" value="${cracha}" style="display:none;"></td>
+  <td>${horaDiaria}</td>
+  <td>
+    <button onclick="editarLinha(this)">Atualizar</button>
+    <button onclick="salvarAtualizacao(this, ${id})" style="display:none;">Salvar</button>
+  </td>
+`;
 
                 tbody.appendChild(row);
             }
@@ -178,11 +233,8 @@
                 const tipo = rel.textContent;
                 const urlLimpa = href.textContent.replace('{&nome,cracha,matricula}', '');
 
-                if (tipo === 'next') {
-                    nextPageUrl = urlLimpa;
-                } else if (tipo === 'prev') {
-                    prevPageUrl = urlLimpa;
-                }
+                if (tipo === 'next') nextPageUrl = urlLimpa;
+                else if (tipo === 'prev') prevPageUrl = urlLimpa;
             }
 
             const paginacaoDiv = document.getElementById('paginacao');
@@ -207,6 +259,13 @@
             document.querySelector('#tabela-vinculos').innerHTML = '<p style="color:red">Erro ao carregar os dados XML.</p>';
         }
     }
+
+    // Aplica debounce aos inputs de filtro
+    const filtros = ['filtroNome', 'filtroMatricula', 'filtroCracha'];
+    filtros.forEach(id => {
+        const input = document.getElementById(id);
+        input.addEventListener('input', debounce(() => carregarVinculos(), 1000));
+    });
 </script>
 
 </body>

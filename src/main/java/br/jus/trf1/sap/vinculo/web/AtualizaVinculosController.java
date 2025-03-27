@@ -18,10 +18,11 @@ public class AtualizaVinculosController {
         this.repository = repository;
     }
 
-    @PutMapping
-    public ResponseEntity<VinculoResponse> atualziarVinculo(@RequestBody @Valid VinculoAtualizadoRequest request) {
+    @PutMapping("/{id}")
+    public ResponseEntity<VinculoResponse> atualziarVinculo(@PathVariable Integer id,
+                                                            @RequestBody @Valid VinculoAtualizadoRequest request) {
 
-        var vinculoOpt = repository.findById(request.id());
+        var vinculoOpt = repository.findById(id);
 
         if (vinculoOpt.isPresent()) {
             var vinculo = vinculoOpt.get();
@@ -33,7 +34,7 @@ public class AtualizaVinculosController {
 
             return ResponseEntity.ok().body(vinculoSalvo.toResponse());
         }
-        throw new VinculoInexistenteException(request.id());
+        throw new VinculoInexistenteException(id);
     }
 
 

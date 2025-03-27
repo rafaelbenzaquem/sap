@@ -4,6 +4,7 @@ import br.jus.trf1.sap.registro.Registro;
 import br.jus.trf1.sap.registro.Sentido;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
 import java.time.LocalTime;
@@ -12,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+@Slf4j
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,6 +29,12 @@ public class Ponto {
 
     private String descricao;
 
+    @Transient
+    private Integer numeroRegistrosCalculados = 0;
+
+    @Transient
+    private Duration horasPermanencia = Duration.ZERO;
+
     @OneToMany(mappedBy = "ponto", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Registro> registros;
 
@@ -36,7 +44,21 @@ public class Ponto {
     }
 
     public void setIndice(IndicePonto indicePonto) {
-        this.indice = indicePonto.getIndice();
+        this.indice = indicePonto.getValor();
+    }
+
+
+    public Duration getHorasPermanencia() {
+        log.info("getHorasPermanencia - buscando registros do ponto id:{}", this.id);
+        registros = getRegistros();
+
+        log.info("getHorasPermanencia - registros encontrados:{}", registros.size());
+
+        if (horasPermanencia.isZero() || (registros != null && !Objects.equals(numeroRegistrosCalculados, registros.size()))) {
+            horasPermanencia = calculaHorasPermanencia(this);
+            log.info("horas {}", horasPermanencia.toString());
+        }
+        return horasPermanencia;
     }
 
     /**
@@ -44,7 +66,8 @@ public class Ponto {
      *
      * @return Duração da permanência.
      */
-    public Duration calculaHorasPermanencia() {
+    private Duration calculaHorasPermanencia() {
+        log.info("calculaHorasPermanencia");
         Duration totalHoras = Duration.ZERO;
         if (registros == null || registros.isEmpty() || indice == null || indice == 0) {
             return totalHoras;
@@ -61,6 +84,29 @@ public class Ponto {
             }
         }
         return Duration.ofSeconds((long) (totalHoras.getSeconds() * indice));
+    }
+
+    /**
+     * Calcula a permanência em um ponto específico.
+     *
+     * @param ponto Ponto a ser calculado.
+     * @return Duração da permanência.
+     */
+    public static Duration calculaHorasPermanencia(Ponto ponto) {
+        log.debug("Calculando horas permanencia...");
+        Duration totalHoras = Duration.ZERO;
+        LocalTime entradaPendente = null;
+        var registrosClassificados = new ArrayList<>(ponto.getRegistros());
+        Collections.sort(registrosClassificados);
+        for (Registro registro : registrosClassificados) {
+            if (registro.getSentido() == Sentido.ENTRADA) {
+                entradaPendente = registro.getHora();
+            } else if (registro.getSentido() == Sentido.SAIDA && entradaPendente != null) {
+                totalHoras = totalHoras.plus(Duration.between(entradaPendente, registro.getHora()));
+                entradaPendente = null;
+            }
+        }
+        return totalHoras;
     }
 
     @Override

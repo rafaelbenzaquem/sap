@@ -6,7 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalTime;
 
-public record RegistroResponse(@JsonFormat(pattern = "HH:mm:ss",shape = JsonFormat.Shape.STRING)
+public record RegistroResponse(Long id,
+                               @JsonFormat(pattern = "HH:mm:ss", shape = JsonFormat.Shape.STRING)
                                LocalTime hora,
                                String sentido,
                                @JsonProperty("codigo_acesso")
@@ -16,6 +17,7 @@ public record RegistroResponse(@JsonFormat(pattern = "HH:mm:ss",shape = JsonForm
 ) {
     public static RegistroResponse of(Registro registro) {
         return new RegistroResponse(
+                registro.getId(),
                 registro.getHora(),
                 registro.getSentido().getPalavra(),
                 registro.getCodigoAcesso(),

@@ -20,7 +20,7 @@ public class ApagaVinculosController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<VinculoResponse> apagarVinculo(@PathVariable Integer id) {
+    public ResponseEntity<VinculoResponse> apagaVinculo(@PathVariable Integer id) {
         var vinculoOpt = repository.findById(id);
         if (vinculoOpt.isPresent()) {
             repository.deleteById(id);
