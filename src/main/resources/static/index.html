@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Lista de Vínculos (XML)</title>
+    <title>Lista de Vínculos (XML + Paginação)</title>
     <style>
         table {
             width: 100%;
@@ -17,17 +17,22 @@
         th {
             background-color: #eee;
         }
+
+        #paginacao {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
 
-<h1>Lista de Vínculos (via XML)</h1>
+<h1>Lista de Vínculos (via XML + Paginação)</h1>
 
 <button onclick="carregarVinculos()">Carregar Vínculos</button>
 
 <br><br>
 
 <div id="tabela-vinculos"></div>
+<div id="paginacao"></div>
 
 <template id="template-tabela">
     <table>
@@ -45,9 +50,9 @@
 </template>
 
 <script>
-    async function carregarVinculos() {
+    async function carregarVinculos(url = 'http://localhost:8084/v1/sap/vinculos') {
         try {
-            const response = await fetch('http://localhost:8084/v1/sap/vinculos', {
+            const response = await fetch(url, {
                 headers: {
                     'Accept': 'application/xml'
                 }
@@ -63,10 +68,9 @@
             const clone = template.content.cloneNode(true);
             const tbody = clone.querySelector('tbody');
 
-            for (let i = 0; i < conteudos.length; i++) {
+            for (let i = 1; i < conteudos.length; i++) {
                 const item = conteudos[i];
 
-                // Ignora o primeiro <content> (wrapper) se ele não tiver <id>
                 if (!item.getElementsByTagName('id')[0]) continue;
 
                 const id = item.getElementsByTagName('id')[0]?.textContent || '';
@@ -89,6 +93,32 @@
 
             document.querySelector('#tabela-vinculos').innerHTML = '';
             document.querySelector('#tabela-vinculos').appendChild(clone);
+
+            // Verifica link da próxima página
+            const links = xmlDoc.getElementsByTagName('links');
+            let nextPageUrl = null;
+
+            for (let i = 0; i < links.length; i++) {
+                const rel = links[i].getElementsByTagName('rel')[0];
+                if (rel && rel.textContent === 'next') {
+                    const href = links[i].getElementsByTagName('href')[0];
+                    if (href) {
+                        nextPageUrl = href.textContent.replace('{&nome,cracha,matricula}', '');
+                        break;
+                    }
+                }
+            }
+
+            const paginacaoDiv = document.getElementById('paginacao');
+            paginacaoDiv.innerHTML = ''; // limpa botões anteriores
+
+            if (nextPageUrl) {
+                const btn = document.createElement('button');
+                btn.textContent = 'Próxima Página';
+                btn.onclick = () => carregarVinculos(nextPageUrl);
+                paginacaoDiv.appendChild(btn);
+            }
+
         } catch (error) {
             console.error('Erro ao carregar vínculos (XML):', error);
             document.querySelector('#tabela-vinculos').innerHTML = '<p style="color:red">Erro ao carregar os dados XML.</p>';
