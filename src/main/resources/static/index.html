@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Vínculos (XML)</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 8px;
+            border: 1px solid #ccc;
+        }
+
+        th {
+            background-color: #eee;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Lista de Vínculos (via XML)</h1>
+
+<button onclick="carregarVinculos()">Carregar Vínculos</button>
+
+<br><br>
+
+<div id="tabela-vinculos"></div>
+
+<template id="template-tabela">
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Matrícula</th>
+            <th>Crachá</th>
+            <th>Hora Diária</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</template>
+
+<script>
+    async function carregarVinculos() {
+        try {
+            const response = await fetch('http://localhost:8084/v1/sap/vinculos', {
+                headers: {
+                    'Accept': 'application/xml'
+                }
+            });
+
+            const text = await response.text();
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(text, 'application/xml');
+
+            const conteudos = xmlDoc.getElementsByTagName('content');
+
+            const template = document.querySelector('#template-tabela');
+            const clone = template.content.cloneNode(true);
+            const tbody = clone.querySelector('tbody');
+
+            for (let i = 0; i < conteudos.length; i++) {
+                const item = conteudos[i];
+
+                // Ignora o primeiro <content> (wrapper) se ele não tiver <id>
+                if (!item.getElementsByTagName('id')[0]) continue;
+
+                const id = item.getElementsByTagName('id')[0]?.textContent || '';
+                const nome = item.getElementsByTagName('nome')[0]?.textContent || '';
+                const matricula = item.getElementsByTagName('matricula')[0]?.textContent || '';
+                const cracha = item.getElementsByTagName('cracha')[0]?.textContent || '';
+                const horaDiaria = item.getElementsByTagName('hora_diaria')[0]?.textContent || '';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+            <td>${id}</td>
+            <td>${nome}</td>
+            <td>${matricula}</td>
+            <td>${cracha}</td>
+            <td>${horaDiaria}</td>
+          `;
+
+                tbody.appendChild(row);
+            }
+
+            document.querySelector('#tabela-vinculos').innerHTML = '';
+            document.querySelector('#tabela-vinculos').appendChild(clone);
+        } catch (error) {
+            console.error('Erro ao carregar vínculos (XML):', error);
+            document.querySelector('#tabela-vinculos').innerHTML = '<p style="color:red">Erro ao carregar os dados XML.</p>';
+        }
+    }
+</script>
+
+</body>
+</html>
