@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Lista de Vínculos (XML + Paginação)</title>
+    <title>Lista de Vínculos (com Filtros)</title>
     <style>
         table {
             width: 100%;
@@ -21,15 +21,47 @@
         #paginacao {
             margin-top: 10px;
         }
+
+        #paginacao button {
+            margin-right: 10px;
+        }
+
+        #controles {
+            margin-bottom: 15px;
+        }
+
+        .filtros {
+            margin-top: 10px;
+        }
+
+        .filtros input {
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
 
-<h1>Lista de Vínculos (via XML + Paginação)</h1>
+<h1>Lista de Vínculos (com Filtros XML)</h1>
 
-<button onclick="carregarVinculos()">Carregar Vínculos</button>
+<div id="controles">
+    <label for="tamanhoPagina">Registros por página:</label>
+    <select id="tamanhoPagina" onchange="carregarVinculos()">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="30">30</option>
+        <option value="40">40</option>
+        <option value="50">50</option>
+    </select>
 
-<br><br>
+    <button onclick="carregarVinculos()">Carregar Vínculos</button>
+
+    <div class="filtros">
+        <input type="text" id="filtroNome" placeholder="Filtrar por Nome" oninput="carregarVinculos()" />
+        <input type="text" id="filtroMatricula" placeholder="Filtrar por Matrícula" oninput="carregarVinculos()" />
+        <input type="text" id="filtroCracha" placeholder="Filtrar por Crachá" oninput="carregarVinculos()" />
+    </div>
+</div>
 
 <div id="tabela-vinculos"></div>
 <div id="paginacao"></div>
@@ -50,7 +82,48 @@
 </template>
 
 <script>
-    async function carregarVinculos(url = 'http://localhost:8084/v1/sap/vinculos') {
+    let ultimaUrl = '';
+
+    function getTamanhoPagina() {
+        return document.getElementById('tamanhoPagina').value;
+    }
+
+    function getFiltros() {
+        return {
+            nome: document.getElementById('filtroNome').value.trim(),
+            matricula: document.getElementById('filtroMatricula').value.trim(),
+            cracha: document.getElementById('filtroCracha').value.trim()
+        };
+    }
+
+    function construirUrlBase(baseUrl = 'http://localhost:8084/v1/sap/vinculos') {
+        const size = getTamanhoPagina();
+        const { nome, matricula, cracha } = getFiltros();
+        const params = new URLSearchParams({ size });
+
+        if (nome) params.append('nome', nome);
+        if (matricula) params.append('matricula', matricula);
+        if (cracha) params.append('cracha', cracha);
+
+        return `${baseUrl}?${params.toString()}`;
+    }
+
+    async function carregarVinculos(url = null) {
+        if (!url) {
+            url = construirUrlBase();
+        } else {
+            // Atualiza os filtros mesmo se a URL for da paginação
+            const u = new URL(url);
+            const filtros = getFiltros();
+            u.searchParams.set('size', getTamanhoPagina());
+            if (filtros.nome) u.searchParams.set('nome', filtros.nome); else u.searchParams.delete('nome');
+            if (filtros.matricula) u.searchParams.set('matricula', filtros.matricula); else u.searchParams.delete('matricula');
+            if (filtros.cracha) u.searchParams.set('cracha', filtros.cracha); else u.searchParams.delete('cracha');
+            url = u.toString();
+        }
+
+        ultimaUrl = url;
+
         try {
             const response = await fetch(url, {
                 headers: {
@@ -70,8 +143,6 @@
 
             for (let i = 1; i < conteudos.length; i++) {
                 const item = conteudos[i];
-
-                if (!item.getElementsByTagName('id')[0]) continue;
 
                 const id = item.getElementsByTagName('id')[0]?.textContent || '';
                 const nome = item.getElementsByTagName('nome')[0]?.textContent || '';
@@ -94,29 +165,41 @@
             document.querySelector('#tabela-vinculos').innerHTML = '';
             document.querySelector('#tabela-vinculos').appendChild(clone);
 
-            // Verifica link da próxima página
-            const links = xmlDoc.getElementsByTagName('links');
+            // PAGINAÇÃO
             let nextPageUrl = null;
+            let prevPageUrl = null;
+            const links = xmlDoc.getElementsByTagName('links');
 
             for (let i = 0; i < links.length; i++) {
                 const rel = links[i].getElementsByTagName('rel')[0];
-                if (rel && rel.textContent === 'next') {
-                    const href = links[i].getElementsByTagName('href')[0];
-                    if (href) {
-                        nextPageUrl = href.textContent.replace('{&nome,cracha,matricula}', '');
-                        break;
-                    }
+                const href = links[i].getElementsByTagName('href')[0];
+                if (!rel || !href) continue;
+
+                const tipo = rel.textContent;
+                const urlLimpa = href.textContent.replace('{&nome,cracha,matricula}', '');
+
+                if (tipo === 'next') {
+                    nextPageUrl = urlLimpa;
+                } else if (tipo === 'prev') {
+                    prevPageUrl = urlLimpa;
                 }
             }
 
             const paginacaoDiv = document.getElementById('paginacao');
-            paginacaoDiv.innerHTML = ''; // limpa botões anteriores
+            paginacaoDiv.innerHTML = '';
+
+            if (prevPageUrl) {
+                const btnPrev = document.createElement('button');
+                btnPrev.textContent = 'Página Anterior';
+                btnPrev.onclick = () => carregarVinculos(prevPageUrl);
+                paginacaoDiv.appendChild(btnPrev);
+            }
 
             if (nextPageUrl) {
-                const btn = document.createElement('button');
-                btn.textContent = 'Próxima Página';
-                btn.onclick = () => carregarVinculos(nextPageUrl);
-                paginacaoDiv.appendChild(btn);
+                const btnNext = document.createElement('button');
+                btnNext.textContent = 'Próxima Página';
+                btnNext.onclick = () => carregarVinculos(nextPageUrl);
+                paginacaoDiv.appendChild(btnNext);
             }
 
         } catch (error) {
