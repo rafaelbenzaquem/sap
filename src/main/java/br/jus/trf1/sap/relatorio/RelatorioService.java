@@ -83,7 +83,7 @@ public class RelatorioService {
 
 
         var servidor = servidorService.buscaDadosServidor(matricula).
-                orElseThrow(() -> new ServidorInexistenteException("Servidor com matrícula '%s' não encontrado!"));
+                orElseThrow(() -> new ServidorInexistenteException("Servidor com matrícula '%s' não encontrado!".formatted(matricula)));
 
         log.info("Consultando feriados no SARH...");
         var feriados = feriadoService.buscaFeriados(inicio, fim, null).

@@ -29,8 +29,10 @@ public interface LicencasService {
 
     @GetMapping(value = "/v1/sarh/servidores/{matricula}/ausencias/licencas/{dia}", produces = "application/json")
     Optional<LicencaResponse> buscaLicencaServidorNoDia(
-            @PathVariable("matricula") String matricula,
-            @PathVariable("dia") @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
+            @PathVariable("matricula")
+            String matricula,
+            @PathVariable("dia")
+            @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
             LocalDate dia);
 
 }
