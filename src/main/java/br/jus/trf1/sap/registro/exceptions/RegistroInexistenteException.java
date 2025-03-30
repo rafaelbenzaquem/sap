@@ -2,7 +2,7 @@ package br.jus.trf1.sap.registro.exceptions;
 
 import br.jus.trf1.sap.registro.Registro;
 
-import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.MSG_ENTIDADE_EXISTENTE;
+import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.MSG_ENTIDADE_INEXISTENTE;
 
 public class RegistroInexistenteException extends RuntimeException {
 
@@ -11,7 +11,7 @@ public class RegistroInexistenteException extends RuntimeException {
     }
 
     public RegistroInexistenteException(Long id) {
-        this(MSG_ENTIDADE_EXISTENTE.formatted(Registro.class.getSimpleName(), id.toString()));
+        this(MSG_ENTIDADE_INEXISTENTE.formatted(Registro.class.getSimpleName(), id.toString()));
     }
 
     public RegistroInexistenteException(Registro registro) {

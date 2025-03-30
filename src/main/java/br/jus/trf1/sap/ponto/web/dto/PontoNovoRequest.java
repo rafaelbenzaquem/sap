@@ -2,7 +2,7 @@ package br.jus.trf1.sap.ponto.web.dto;
 
 import br.jus.trf1.sap.ponto.Ponto;
 import br.jus.trf1.sap.ponto.PontoId;
-import br.jus.trf1.sap.registro.web.RegistroNovoRequest;
+import br.jus.trf1.sap.registro.web.dto.RegistroNovoRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

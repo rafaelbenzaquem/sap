@@ -8,16 +8,20 @@ import br.jus.trf1.sap.externo.jsarh.ausencias.AusenciasService;
 import br.jus.trf1.sap.externo.jsarh.feriado.FeriadoService;
 import br.jus.trf1.sap.externo.jsarh.feriado.dto.FeriadoResponse;
 import br.jus.trf1.sap.ponto.exceptions.PontoInexistenteException;
+import br.jus.trf1.sap.ponto.web.dto.PontoResponse;
 import br.jus.trf1.sap.registro.Registro;
 import br.jus.trf1.sap.vinculo.Vinculo;
 import br.jus.trf1.sap.vinculo.VinculoService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.*;
+
+import static br.jus.trf1.sap.comum.util.DataTempoUtil.*;
 
 @Slf4j
 @Service
@@ -36,19 +40,30 @@ public class PontoService {
         this.feriadoService = feriadoService;
     }
 
-    public Optional<Ponto> buscaPonto(String matricula, LocalDate dia) {
-        log.info("Buscando Ponto - {} - {} ", DataTempoUtil.paraString(dia), matricula);
-        return pontoRepository.findById(PontoId.builder().
+    public boolean existe(String matricula, LocalDate dia) {
+        return pontoRepository.existsById(PontoId.builder().
+                matricula(matricula).
+                dia(dia).
+                build());
+    }
+
+    public Ponto buscaPonto(String matricula, LocalDate dia) {
+        log.info("Buscando Ponto - {} - {} ", paraString(dia), matricula);
+        var pontoOpt = pontoRepository.findById(PontoId.builder().
                 matricula(matricula).
                 dia(dia).
                 build()
         );
+        return pontoOpt.orElseThrow(
+                () -> new PontoInexistenteException("Ponto(%s, %s) não encontrado!".formatted(matricula,
+                        paraString(dia)))
+        );
     }
 
     public Ponto atualizaRegistrosPonto(String matricula,
-                                                  LocalDate dia,
-                                                  List<HistoricoResponse> historicos) {
-        log.info("Buscar Atualizacao Ponto - {} - {} ", DataTempoUtil.paraString(dia), matricula);
+                                        LocalDate dia,
+                                        List<HistoricoResponse> historicos) {
+        log.info("Buscar Atualizacao Ponto - {} - {} ", paraString(dia), matricula);
         var optPonto = pontoRepository.buscaPonto(matricula, dia);
         log.info("ponto {}", optPonto.isPresent() ? "foi encontrato!" : "não foi encontrato!");
         if (optPonto.isPresent()) {
@@ -88,7 +103,7 @@ public class PontoService {
             ponto.setIndice(indice);
             ponto.setDescricao(descricao);
             ponto.getRegistros().addAll(registros);
-           return pontoRepository.save(ponto);
+            return pontoRepository.save(ponto);
         }
 
         throw new PontoInexistenteException(matricula, dia);
@@ -96,12 +111,12 @@ public class PontoService {
 
 
     public List<Ponto> buscarPontos(String matricula, LocalDate inicio, LocalDate fim) {
-        log.info("Lista de Pontos - {} - {} - {} ", DataTempoUtil.paraString(inicio), DataTempoUtil.paraString(fim), matricula);
+        log.info("Lista de Pontos - {} - {} - {} ", paraString(inicio), paraString(fim), matricula);
         return pontoRepository.buscaPontosPorPeriodo(matricula, inicio, fim);
     }
 
     public Ponto salvaPonto(Ponto ponto) {
-        log.info("Salvando Ponto - {} - {} ", DataTempoUtil.paraString(ponto.getId().getDia()), ponto.getId().getMatricula());
+        log.info("Salvando Ponto - {} - {} ", paraString(ponto.getId().getDia()), ponto.getId().getMatricula());
         return pontoRepository.save(ponto);
     }
 

@@ -1,11 +1,9 @@
 package br.jus.trf1.sap.ponto.web;
 
-import br.jus.trf1.sap.comum.util.DataTempoUtil;
 import br.jus.trf1.sap.externo.coletor.historico.HistoricoService;
 import br.jus.trf1.sap.ponto.PontoService;
 import br.jus.trf1.sap.ponto.web.dto.PontoResponse;
-import br.jus.trf1.sap.registro.web.RegistroAtualizadoRequest;
-import br.jus.trf1.sap.registro.web.RegistroNovoRequest;
+import br.jus.trf1.sap.registro.web.dto.RegistroNovoRequest;
 import br.jus.trf1.sap.vinculo.VinculoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -61,19 +59,4 @@ public class AtualizaPontosController {
                 map(r -> r.toModel(null)).toList());
         return ResponseEntity.ok(PontoResponse.of(ponto));
     }
-
-//    @PutMapping("/{matricula}/{dia}/registros/{id}")
-//    public ResponseEntity<PontoResponse> atualizaRegistroPonto(@PathVariable
-//                                                               String matricula,
-//                                                               @PathVariable
-//                                                               @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
-//                                                               LocalDate dia,
-//                                                               @RequestBody RegistroAtualizadoRequest request) {
-//
-//        log.info("Atualizando Ponto - {} - {} - registro: {}", matricula, paraString(dia), request);
-//        var ponto = pontoService.adicionaRegistros(matricula, dia, request.stream().
-//                map(r -> r.toModel(null)).toList());
-//        return ResponseEntity.ok(PontoResponse.of(ponto));
-//    }
-
 }
