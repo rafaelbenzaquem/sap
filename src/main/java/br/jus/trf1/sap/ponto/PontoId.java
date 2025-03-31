@@ -1,22 +1,23 @@
 package br.jus.trf1.sap.ponto;
 
+import br.jus.trf1.sap.comum.util.DataTempoUtil;
 import jakarta.persistence.Embeddable;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
+import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.PADRAO_SAIDA_DATA;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Embeddable
 public class PontoId {
 
-    private Integer matricula;
+    private String matricula;
 
     private LocalDate dia;
 
@@ -34,11 +35,16 @@ public class PontoId {
         return result;
     }
 
+    /**
+     * @return String de PontoId no formato Json
+     */
     @Override
     public String toString() {
-        return "PontoId{" +
-                "matricula=" + matricula +
-                ", dia=" + dia +
-                '}';
+        return """
+                {
+                    "matricula": %s,
+                    "dia" %s
+                }
+                """.formatted(matricula, DataTempoUtil.paraString(dia, PADRAO_SAIDA_DATA));
     }
 }

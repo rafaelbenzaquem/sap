@@ -17,7 +17,7 @@ public class Arquivo {
     @Column(unique = true)
     private String nome;
     @Column(columnDefinition="blob")
-    private byte[] conteudo;
+    private byte[] bytes;
     @Column(columnDefinition="text")
     private String descricao;
 

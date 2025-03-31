@@ -1,22 +1,20 @@
 package br.jus.trf1.sap.registro.exceptions;
 
+import br.jus.trf1.sap.registro.Registro;
+
+import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.MSG_ENTIDADE_INEXISTENTE;
+
 public class RegistroInexistenteException extends RuntimeException {
+
     public RegistroInexistenteException(String message) {
         super(message);
     }
 
-    public RegistroInexistenteException(String message, Throwable cause) {
-        super(message, cause);
+    public RegistroInexistenteException(Long id) {
+        this(MSG_ENTIDADE_INEXISTENTE.formatted(Registro.class.getSimpleName(), id.toString()));
     }
 
-    public RegistroInexistenteException(Throwable cause) {
-        super(cause);
-    }
-
-    public RegistroInexistenteException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
-
-    public RegistroInexistenteException() {
+    public RegistroInexistenteException(Registro registro) {
+        this(registro.getId());
     }
 }

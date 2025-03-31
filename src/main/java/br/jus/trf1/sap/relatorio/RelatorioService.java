@@ -1,16 +1,11 @@
 package br.jus.trf1.sap.relatorio;
 
 import br.jus.trf1.sap.arquivo.ArquivoRepository;
-import br.jus.trf1.sap.externo.jsarh.ausencias.Ausencia;
-import br.jus.trf1.sap.externo.jsarh.ausencias.especial.EspecialService;
-import br.jus.trf1.sap.externo.jsarh.ausencias.especial.dto.EspecialResponse;
-import br.jus.trf1.sap.externo.jsarh.ausencias.ferias.FeriasService;
-import br.jus.trf1.sap.externo.jsarh.ausencias.ferias.dto.FeriasResponse;
-import br.jus.trf1.sap.externo.jsarh.ausencias.licenca.LicencasService;
-import br.jus.trf1.sap.externo.jsarh.ausencias.licenca.dto.LicencaResponse;
+import br.jus.trf1.sap.externo.jsarh.ausencias.AusenciasService;
 import br.jus.trf1.sap.externo.jsarh.feriado.FeriadoService;
 import br.jus.trf1.sap.externo.jsarh.feriado.dto.FeriadoResponse;
 import br.jus.trf1.sap.externo.jsarh.servidor.ServidorService;
+import br.jus.trf1.sap.externo.jsarh.servidor.exceptions.ServidorInexistenteException;
 import br.jus.trf1.sap.ponto.PontoRepository;
 import br.jus.trf1.sap.relatorio.model.RelatorioModel;
 import br.jus.trf1.sap.relatorio.model.UsuarioModel;
@@ -21,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import static br.jus.trf1.sap.relatorio.model.util.FomatadorTextoUtil.formataTextoPeriodo;
@@ -41,9 +35,8 @@ public class RelatorioService {
     private final PontoRepository pontoRepository;
     private final ArquivoRepository arquivoRepository;
     private final ServidorService servidorService;
-    private final FeriasService feriasService;
-    private final EspecialService especialService;
-    private final LicencasService licencasService;
+    private final AusenciasService ausenciasService;
+
 
     /**
      * Constrói o serviço de relatório com as dependências necessárias.
@@ -52,18 +45,16 @@ public class RelatorioService {
      * @param pontoRepository   Repositório de pontos.
      * @param arquivoRepository Repositório de arquivos.
      * @param servidorService   Serviço de acesso a dados do Servidor no Sarh
+     * @param ausenciasService Serviço de busca de ausências
      */
     public RelatorioService(FeriadoService feriadoService, PontoRepository pontoRepository,
                             ArquivoRepository arquivoRepository, ServidorService servidorService,
-                            FeriasService feriasService, EspecialService especialService,
-                            LicencasService licencasService) {
+                            AusenciasService ausenciasService) {
         this.feriadoService = feriadoService;
         this.pontoRepository = pontoRepository;
         this.arquivoRepository = arquivoRepository;
         this.servidorService = servidorService;
-        this.feriasService = feriasService;
-        this.especialService = especialService;
-        this.licencasService = licencasService;
+        this.ausenciasService = ausenciasService;
     }
 
     /**
@@ -75,11 +66,10 @@ public class RelatorioService {
      * @return Relatório em formato de array de bytes (PDF).
      * @throws JRException Se ocorrer um erro ao gerar o relatório.
      */
-    public byte[] gerarRelatorio(Integer matricula, LocalDate inicio, LocalDate fim) throws JRException {
+    public byte[] gerarRelatorio(String matricula, LocalDate inicio, LocalDate fim) throws JRException {
+        log.info("Iniciando geração de relatório para matrícula: {}, período: {} a {}", matricula, inicio, fim);
 
-        log.debug("Iniciando geração de relatório para matrícula: {}, período: {} a {}", matricula, inicio, fim);
-
-        log.debug("Carregando imagens e arquivo de relatório...");
+        log.info("Carregando imagens e arquivo de relatório...");
         var logoImagem = arquivoRepository.findByNome("logoImagem.png").
                 orElseThrow(() -> new IllegalArgumentException("Arquivo 'logoImagem.png' não encontrado"));
         var logoImagem2 = arquivoRepository.findByNome("logoImagem2.png").
@@ -87,34 +77,26 @@ public class RelatorioService {
         var arquivoRelatorioPonto = arquivoRepository.findByNome("relatorioA4.jasper").
                 orElseThrow(() -> new IllegalArgumentException("Arquivo 'relatorioA4.jasper' não encontrado"));
 
-        log.debug("Carregando pontos para o período especificado...");
-        var pontos = pontoRepository.buscarPontosPorMatriculaMaisRangeDeData(matricula, inicio, fim);
-        log.debug("Total de pontos recuperados: {}", pontos.size());
+        log.info("Carregando pontos para o período especificado...");
+        var pontos = pontoRepository.buscaPontosPorPeriodo(matricula, inicio, fim);
+        log.info("Total de pontos recuperados: {}", pontos.size());
 
 
-        var servidor = servidorService.buscaDadosServidor("RR" + matricula);
+        var servidor = servidorService.buscaDadosServidor(matricula).
+                orElseThrow(() -> new ServidorInexistenteException("Servidor com matrícula '%s' não encontrado!"));
 
-        log.debug("Consultando feriados no SARH...");
+        log.info("Consultando feriados no SARH...");
         var feriados = feriadoService.buscaFeriados(inicio, fim, null).
                 stream().map(FeriadoResponse::toModel).toList();
-        var licencas = licencasService.buscaLicenca("RR" + matricula, inicio, fim).
-                stream().map(LicencaResponse::toModel).toList();
 
-        var especiais = especialService.buscaAusenciasEspeciais("RR" + matricula, inicio, fim).
-                stream().map(EspecialResponse::toModel).toList();
-
-        var ferias = feriasService.buscaFerias("RR" + matricula, inicio, inicio).
-                stream().map(FeriasResponse::toModel).toList();
-
-        var ausencias = new ArrayList<Ausencia>(licencas);
-        ausencias.addAll(especiais);
-        ausencias.addAll(ferias);
+        log.info("Consultando licenças, férias e ausências especiais do servidor no SARH...");
+        var ausencias = ausenciasService.buscaAusenciasServidorPorPeriodo(matricula, inicio, fim);
 
         log.info("Ausencias: {}", ausencias.size());
 
         log.info("Feriados: {}", feriados.size());
 
-        log.debug("Construindo modelo de usuário...");
+        log.info("Construindo modelo de usuário...");
         var usuario = UsuarioModel.builder()
                 .nome(servidor.getNome())
                 .cargo(servidor.getCargo() == null ? "Servidor Requisitado" : servidor.getCargo())
@@ -123,14 +105,15 @@ public class RelatorioService {
                 .matricula(matricula)
                 .horasDiaria(7)
                 .build();
-        log.debug("Construindo modelo de relatório...");
+        log.info("Construindo modelo de relatório...");
+
         var relatorioModel = new RelatorioModel(usuario, pontos, feriados, ausencias);
 
-        log.debug("Preparando parâmetros para o relatório...");
+        log.info("Preparando parâmetros para o relatório...");
         var parametrosRelatorio = new HashMap<String, Object>();
 
-        parametrosRelatorio.put("logoImagem", logoImagem.getConteudo());
-        parametrosRelatorio.put("logoImagem2", logoImagem2.getConteudo());
+        parametrosRelatorio.put("logoImagem", logoImagem.getBytes());
+        parametrosRelatorio.put("logoImagem2", logoImagem2.getBytes());
         parametrosRelatorio.put("obs", "Sem observações...");
         parametrosRelatorio.put("totalHorasUteis", relatorioModel.getTextoHorasUteis());
         parametrosRelatorio.put("totalHorasPermanencia", relatorioModel.getTextoPermanenciaTotal());
@@ -142,13 +125,12 @@ public class RelatorioService {
         parametrosRelatorio.put("nome", usuario.nome());
         parametrosRelatorio.put("cargo", usuario.cargo());
         parametrosRelatorio.put("funcao", usuario.funcao());
-        parametrosRelatorio.put("matricula", "RR" + usuario.matricula());
+        parametrosRelatorio.put("matricula", usuario.matricula());
         parametrosRelatorio.put("lotacao", usuario.lotacao());
         parametrosRelatorio.put("periodo", formataTextoPeriodo(inicio, fim));
 
-        var streamRelatorioPonto = new ByteArrayInputStream(arquivoRelatorioPonto.getConteudo());
+        var streamRelatorioPonto = new ByteArrayInputStream(arquivoRelatorioPonto.getBytes());
         var printRelatorioPonto = fillReport(streamRelatorioPonto, parametrosRelatorio, new JREmptyDataSource());
         return exportReportToPdf(printRelatorioPonto);
-
     }
 }

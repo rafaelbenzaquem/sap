@@ -10,6 +10,8 @@ import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,7 +48,7 @@ public class CalculadoraPeriodosUtil {
      */
     public static Duration calculaPermanenciaTotal(List<Ponto> pontos) {
         log.debug("Calculando permanencia total...");
-        return pontos.stream().map(CalculadoraPeriodosUtil::calculaHorasPermanencia)
+        return pontos.stream().map(Ponto::getHorasPermanencia)
                 .reduce(Duration.ZERO, Duration::plus);
     }
 
@@ -64,28 +66,6 @@ public class CalculadoraPeriodosUtil {
             return permanenciaTotal.minus(Duration.ofHours(diasUteis * horasDiarias));
         }
         return Duration.ofHours(diasUteis * horasDiarias).minus(permanenciaTotal).negated();
-    }
-
-    /**
-     * Calcula a permanência em um ponto específico.
-     *
-     * @param ponto Ponto a ser calculado.
-     * @return Duração da permanência.
-     */
-    public static Duration calculaHorasPermanencia(Ponto ponto) {
-        log.debug("Calculando horas permanencia...");
-        Duration totalHoras = Duration.ZERO;
-        LocalTime entradaPendente = null;
-
-        for (Registro registro : ponto.getRegistros()) {
-            if (registro.getSentido() == Sentido.ENTRADA) {
-                entradaPendente = registro.getHora();
-            } else if (registro.getSentido() == Sentido.SAIDA && entradaPendente != null) {
-                totalHoras = totalHoras.plus(Duration.between(entradaPendente, registro.getHora()));
-                entradaPendente = null;
-            }
-        }
-        return totalHoras;
     }
 
     /**

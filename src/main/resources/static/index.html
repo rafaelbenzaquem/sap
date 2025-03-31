@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+    <meta charset="UTF-8">
+    <title>Gestão de Vículos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container py-4">
+
+<h1 class="mb-4">Gestão de Vínculos</h1>
+
+<div id="controles" class="mb-4">
+    <div class="row g-2 align-items-center">
+        <div class="col-md-2">
+            <label for="tamanhoPagina" class="form-label">Vínculos por página:</label>
+            <select id="tamanhoPagina" class="form-select" onchange="carregarVinculos()">
+                <option value="0">0</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="40">40</option>
+                <option value="50">50</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row g-2 mt-3">
+        <div class="col-md-3">
+            <input type="text" id="filtroNome" class="form-control" placeholder="Filtrar por Nome" />
+        </div>
+        <div class="col-md-3">
+            <input type="text" id="filtroMatricula" class="form-control" placeholder="Filtrar por Matrícula" />
+        </div>
+        <div class="col-md-3">
+            <input type="text" id="filtroCracha" class="form-control" placeholder="Filtrar por Crachá" />
+        </div>
+    </div>
+</div>
+
+<div id="tabela-vinculos" class="table-responsive"></div>
+<div id="paginacao" class="mt-3"></div>
+
+<template id="template-tabela">
+    <table class="table table-bordered table-hover align-middle">
+        <thead class="table-light">
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Matrícula</th>
+            <th>Crachá</th>
+            <th>Hora Diária</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</template>
+<script>
+    let ultimaUrl = '';
+
+    // Função debounce
+    function debounce(func, delay) {
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), delay);
+        };
+    }
+
+    function getTamanhoPagina() {
+        return document.getElementById('tamanhoPagina').value;
+    }
+
+    function getFiltros() {
+        return {
+            nome: document.getElementById('filtroNome').value.trim(),
+            matricula: document.getElementById('filtroMatricula').value.trim(),
+            cracha: document.getElementById('filtroCracha').value.trim()
+        };
+    }
+
+    function construirUrlBase(baseUrl = 'http://localhost:8084/v1/sap/vinculos') {
+        const size = getTamanhoPagina();
+        const { nome, matricula, cracha } = getFiltros();
+        const params = new URLSearchParams({ size });
+
+        if (nome) params.append('nome', nome);
+        if (matricula) params.append('matricula', matricula);
+        if (cracha) params.append('cracha', cracha);
+
+        return `${baseUrl}?${params.toString()}`;
+    }
+
+    function editarLinha(botao) {
+        const linha = botao.closest('tr');
+        linha.querySelectorAll('.display').forEach(span => span.style.display = 'none');
+        linha.querySelectorAll('.edit').forEach(input => input.style.display = 'inline');
+        botao.style.display = 'none';
+        linha.querySelector('button[onclick^="salvarAtualizacao"]').style.display = 'inline';
+    }
+
+    async function salvarAtualizacao(botao, id) {
+        const linha = botao.closest('tr');
+        const inputs = linha.querySelectorAll('.edit');
+        const nome = inputs[0].value;
+        const matricula = inputs[1].value;
+        const cracha = inputs[2].value;
+
+        const payload = {
+            id,
+            nome,
+            matricula,
+            cracha
+        };
+
+        try {
+            const response = await fetch(`http://localhost:8084/v1/sap/vinculos/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                alert('Vínculo atualizado com sucesso!');
+                carregarVinculos(ultimaUrl); // recarrega os dados
+            } else {
+                alert('Erro ao atualizar vínculo.');
+            }
+        } catch (error) {
+            console.error('Erro na atualização:', error);
+            alert('Erro na requisição de atualização.');
+        }
+    }
+
+
+    async function carregarVinculos(url = null) {
+        if (!url) {
+            url = construirUrlBase();
+        } else {
+            const u = new URL(url);
+            const filtros = getFiltros();
+            u.searchParams.set('size', getTamanhoPagina());
+            if (filtros.nome) u.searchParams.set('nome', filtros.nome); else u.searchParams.delete('nome');
+            if (filtros.matricula) u.searchParams.set('matricula', filtros.matricula); else u.searchParams.delete('matricula');
+            if (filtros.cracha) u.searchParams.set('cracha', filtros.cracha); else u.searchParams.delete('cracha');
+            url = u.toString();
+        }
+
+        ultimaUrl = url;
+
+        try {
+            const response = await fetch(url, {
+                headers: { 'Accept': 'application/json' }
+            });
+
+            const data = await response.json();
+            const vinculos = data._embedded?.vinculos || [];
+
+            const template = document.querySelector('#template-tabela');
+            const clone = template.content.cloneNode(true);
+            const tbody = clone.querySelector('tbody');
+
+            vinculos.forEach(v => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+  <td>${v.id}</td>
+  <td><span class="display">${v.nome}</span><input class="edit" type="text" value="${v.nome}" style="display:none;"></td>
+  <td><span class="display">${v.matricula}</span><input class="edit" type="text" value="${v.matricula}" style="display:none;"></td>
+  <td><span class="display">${v.cracha}</span><input class="edit" type="text" value="${v.cracha}" style="display:none;"></td>
+  <td>${v.hora_diaria}</td>
+  <td>
+  <button class="btn btn-primary" onclick="editarLinha(this)">Atualizar</button>
+  <button class="btn btn-primary" onclick="salvarAtualizacao(this, ${v.id})" style="display:none;">Salvar</button>
+  </td>
+`;
+                tbody.appendChild(row);
+            });
+
+            document.querySelector('#tabela-vinculos').innerHTML = '';
+            document.querySelector('#tabela-vinculos').appendChild(clone);
+
+            // Paginação
+            const paginacaoDiv = document.getElementById('paginacao');
+            paginacaoDiv.innerHTML = '';
+
+            const nextPageUrl = data._links?.next?.href?.replace('{&nome,cracha,matricula}', '');
+            const prevPageUrl = data._links?.prev?.href?.replace('{&nome,cracha,matricula}', '');
+
+            if (prevPageUrl) {
+                const btnPrev = document.createElement('button');
+                btnPrev.textContent = 'Página Anterior';
+                btnPrev.className = 'btn btn-outline-primary me-2';
+                btnPrev.onclick = () => carregarVinculos(prevPageUrl);
+                paginacaoDiv.appendChild(btnPrev);
+            }
+
+            if (nextPageUrl) {
+                const btnNext = document.createElement('button');
+                btnNext.textContent = 'Próxima Página';
+                btnNext.className = 'btn btn-outline-primary';
+                btnNext.onclick = () => carregarVinculos(nextPageUrl);
+                paginacaoDiv.appendChild(btnNext);
+            }
+
+        } catch (error) {
+            console.error('Erro ao carregar vínculos (JSON):', error);
+            document.querySelector('#tabela-vinculos').innerHTML = '<p style="color:red">Erro ao carregar os dados JSON.</p>';
+        }
+    }
+
+
+    // Aplica debounce aos inputs de filtro
+    const filtros = ['filtroNome', 'filtroMatricula', 'filtroCracha'];
+    filtros.forEach(id => {
+        const input = document.getElementById(id);
+        input.addEventListener('input', debounce(() => carregarVinculos(), 1000));
+    });
+</script>
+
+</body>
+</html>

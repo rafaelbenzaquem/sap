@@ -77,7 +77,7 @@ public class RelatorioModel {
                                     !ponto.getId().getDia().isAfter(ausencia.getFim()))
                             .findFirst()
                             .orElse(null);
-
+                    // Verifica se a data do ponto é um feriado
                     Feriado feriadoCorrespondente = feriados.stream()
                             .filter(feriado -> feriado.getData().equals(ponto.getId().getDia()))
                             .findFirst()

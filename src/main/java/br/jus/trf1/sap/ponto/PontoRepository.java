@@ -10,17 +10,30 @@ import java.util.Optional;
 
 public interface PontoRepository extends JpaRepository<Ponto, PontoId> {
 
-    @Query(nativeQuery = true, value = """
-            SELECT * FROM PONTO WHERE PONTO.MATRICULA = :matricula AND
-            PONTO.DIA BETWEEN :inicio AND :fim                                            
-            """)
-    List<Ponto> buscarPontosPorMatriculaMaisRangeDeData(@Param("matricula") Integer matricula,
-                                                        @Param("inicio") LocalDate inicio, @Param("fim") LocalDate fim);
+    /**
+     * Busca pontos por matrícula e intervalo de datas.
+     *
+     * @param matricula Matrícula (sigla seção subseção + codigo funcionário no SARH) do servidor com o prefixo.
+     * @param inicio    Data inicial do intervalo.
+     * @param fim       Data final do intervalo.
+     * @return Lista de pontos encontrados.
+     */
+    @Query("SELECT p FROM Ponto p WHERE LOWER(p.id.matricula) = LOWER(:matricula) AND p.id.dia BETWEEN :inicio AND :fim")
+    List<Ponto> buscaPontosPorPeriodo(@Param("matricula") String matricula,
+                                      @Param("inicio") LocalDate inicio,
+                                      @Param("fim") LocalDate fim
+    );
 
-    @Query(nativeQuery = true, value = """
-                        SELECT * FROM PONTO WHERE PONTO.MATRICULA = :matricula AND
-                        PONTO.DIA = :dia
-            """)
-    Optional<Ponto> buscarPontoPorMatriculaMaisDia(@Param("matricula") Integer matricula,
-                                                   @Param("dia") LocalDate dia);
+    /**
+     * Busca um ponto por matrícula e data.
+     *
+     * @param matricula Matrícula do ponto.
+     * @param dia       Data do ponto.
+     * @return Ponto encontrado, se existir.
+     */
+    @Query("SELECT p FROM Ponto p WHERE p.id.matricula = :matricula AND p.id.dia = :dia")
+    Optional<Ponto> buscaPonto(
+            @Param("matricula") String matricula,
+            @Param("dia") LocalDate dia
+    );
 }

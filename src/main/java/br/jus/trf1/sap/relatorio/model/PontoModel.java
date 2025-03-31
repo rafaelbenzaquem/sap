@@ -6,10 +6,10 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static br.jus.trf1.sap.relatorio.model.util.CalculadoraPeriodosUtil.calculaHorasPermanencia;
 import static br.jus.trf1.sap.relatorio.model.util.FomatadorTextoUtil.formataTextoDia;
 import static br.jus.trf1.sap.relatorio.model.util.FomatadorTextoUtil.formataTextoTempoDiario;
 
@@ -33,7 +33,7 @@ public class PontoModel {
     public PontoModel(Ponto ponto) {
         this.dia = ponto.getId().getDia();
         this.descricao = ponto.getDescricao();
-        this.permanencia = calculaHorasPermanencia(ponto);
+        this.permanencia = ponto.getHorasPermanencia();
         this.registrosModel = populaRegistrosModel(ponto);
         this.registrosDataSource = new JRBeanCollectionDataSource(registrosModel, false);
     }
@@ -41,7 +41,7 @@ public class PontoModel {
     public PontoModel(Ponto ponto,String descricao) {
         this.dia = ponto.getId().getDia();
         this.descricao = descricao;
-        this.permanencia = calculaHorasPermanencia(ponto);
+        this.permanencia = ponto.getHorasPermanencia();
         this.registrosModel = populaRegistrosModel(ponto);
         this.registrosDataSource = new JRBeanCollectionDataSource(registrosModel, false);
     }
@@ -56,14 +56,16 @@ public class PontoModel {
     }
 
     private List<RegistroModel> populaRegistrosModel(Ponto ponto) {
-       return IntStream.range(0, 12)
+       var registros = new java.util.ArrayList<>(IntStream.range(0, 12)
                .mapToObj(index -> {
                    if (index < ponto.getRegistros().size()) {
                        var registro = ponto.getRegistros().get(index);
                        return RegistroModel.of(registro.getSentido().getPalavra(), registro.getHora());
                    }
                    return RegistroModel.VAZIO;
-               }).toList();
+               }).toList());
+        Collections.sort(registros);
+       return registros;
     }
 
 }
