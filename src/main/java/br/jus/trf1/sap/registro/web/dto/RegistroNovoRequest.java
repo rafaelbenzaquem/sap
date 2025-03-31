@@ -1,4 +1,4 @@
-package br.jus.trf1.sap.registro.web;
+package br.jus.trf1.sap.registro.web.dto;
 
 import br.jus.trf1.sap.ponto.Ponto;
 import br.jus.trf1.sap.registro.Registro;

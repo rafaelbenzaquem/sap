@@ -55,9 +55,13 @@ public class CriaPontoController {
         log.info("criaPonto - {}", pontoRequest);
         var dia = pontoRequest.dia();
         var matricula = pontoRequest.matricula();
-        var optPonto = pontoService.buscaPonto(matricula, dia);
-        if (optPonto.isPresent()) {
-            throw new PontoExistenteException(optPonto.get());
+        if (pontoService.existe(matricula, dia)) {
+            throw new PontoExistenteException(Ponto.builder().
+                    id(PontoId.builder().
+                            matricula(matricula).
+                            dia(dia).
+                            build()).
+                    build());
         }
         var id = PontoId.builder().
                 dia(dia).
@@ -88,9 +92,13 @@ public class CriaPontoController {
         var vinculo = vinculoService.buscaPorMatricula(matricula);
         var historicos = historicoService.buscarHistoricoDeAcesso(dia, null,
                 vinculo.getCracha(), null, null);
-        var optPonto = pontoService.buscaPonto(matricula, dia);
-        if (optPonto.isPresent()) {
-            throw new PontoExistenteException(optPonto.get());
+        if (pontoService.existe(matricula, dia)) {
+            throw new PontoExistenteException(Ponto.builder().
+                    id(PontoId.builder().
+                            matricula(matricula).
+                            dia(dia).
+                            build()).
+                    build());
         }
         var ponto = pontoService.salvaPonto(matricula, dia, historicos.stream().map(HistoricoResponse::toModel).toList());
         var uriResponse = ServletUriComponentsBuilder.fromCurrentContextPath().path("/{matricula}/{dia}")

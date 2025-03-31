@@ -4,7 +4,11 @@ import br.jus.trf1.sap.comum.util.DataTempoUtil;
 import br.jus.trf1.sap.registro.exceptions.RegistroExistenteSalvoEmPontoDifenteException;
 import br.jus.trf1.sap.registro.exceptions.RegistroInexistenteException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.hateoas.Links;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.List;
 
 import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.PADRAO_SAIDA_TEMPO;
 import static br.jus.trf1.sap.comum.util.DataTempoUtil.paraString;
@@ -13,10 +17,18 @@ import static br.jus.trf1.sap.comum.util.DataTempoUtil.paraString;
 @Service
 public class RegistroService {
 
-    private  final RegistroRepository registroRepository;
+    private final RegistroRepository registroRepository;
 
     public RegistroService(RegistroRepository registroRepository) {
         this.registroRepository = registroRepository;
+    }
+
+    public Registro buscaRegistroPorId(Long id) {
+        return registroRepository.findById(id).orElseThrow(() -> new RegistroInexistenteException(id));
+    }
+
+    public Boolean existe(Long id){
+        return registroRepository.existsById(id);
     }
 
     public Registro criarNovoRegistro(Registro registro) {
@@ -61,5 +73,9 @@ public class RegistroService {
 
         }
         throw new IllegalArgumentException("Registro com id nulo");
+    }
+
+    public List<Registro> listarRegistrosPonto(String matricula, LocalDate dia) {
+        return registroRepository.listarRegistrosPonto(matricula, dia);
     }
 }

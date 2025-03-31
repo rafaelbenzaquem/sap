@@ -26,7 +26,7 @@ public class ArquivoController {
     }
 
     @PostMapping
-    public ResponseEntity<?> salvarArquivo(@RequestParam("conteudo") MultipartFile conteudo,
+    public ResponseEntity<?> salvarArquivo(@RequestParam("bytes") MultipartFile conteudo,
                                            @RequestParam("nome") String nome,
                                            @RequestParam(value = "descricao", required = false) String descricao)
             throws IOException {
@@ -47,7 +47,7 @@ public class ArquivoController {
     }
 
     @PatchMapping
-    public ResponseEntity<?> atualizarArquivo(@RequestParam("conteudo") MultipartFile conteudo,
+    public ResponseEntity<?> atualizarArquivo(@RequestParam("bytes") MultipartFile conteudo,
                                               @RequestParam("nome") String nome,
                                               @RequestParam(value = "descricao", required = false) String descricao)
             throws IOException {
