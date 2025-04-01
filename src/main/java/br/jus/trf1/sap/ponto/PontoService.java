@@ -1,20 +1,17 @@
 package br.jus.trf1.sap.ponto;
 
-import br.jus.trf1.sap.comum.util.DataTempoUtil;
 import br.jus.trf1.sap.externo.coletor.historico.HistoricoService;
 import br.jus.trf1.sap.externo.coletor.historico.dto.HistoricoResponse;
 import br.jus.trf1.sap.externo.jsarh.ausencias.Ausencia;
 import br.jus.trf1.sap.externo.jsarh.ausencias.AusenciasService;
 import br.jus.trf1.sap.externo.jsarh.feriado.FeriadoService;
 import br.jus.trf1.sap.externo.jsarh.feriado.dto.FeriadoResponse;
-import br.jus.trf1.sap.ponto.exceptions.PontoInexistenteException;
-import br.jus.trf1.sap.ponto.web.dto.PontoResponse;
+import br.jus.trf1.sap.ponto.exceptions.PontoNaoEncontradoException;
 import br.jus.trf1.sap.registro.Registro;
 import br.jus.trf1.sap.vinculo.Vinculo;
 import br.jus.trf1.sap.vinculo.VinculoService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -55,8 +52,7 @@ public class PontoService {
                 build()
         );
         return pontoOpt.orElseThrow(
-                () -> new PontoInexistenteException("Ponto(%s, %s) não encontrado!".formatted(matricula,
-                        paraString(dia)))
+                () -> new PontoNaoEncontradoException(matricula,dia)
         );
     }
 
@@ -106,7 +102,7 @@ public class PontoService {
             return pontoRepository.save(ponto);
         }
 
-        throw new PontoInexistenteException(matricula, dia);
+        throw new PontoNaoEncontradoException(matricula, dia);
     }
 
 
@@ -129,13 +125,12 @@ public class PontoService {
     }
 
     private IndicePonto defineIndice(LocalDate dia, Optional<Ausencia> ausencia, Optional<FeriadoResponse> feriado) {
-        var indicePonto = ausencia.map(a -> IndicePonto.AUSENCIA).
+        return ausencia.map(a -> IndicePonto.AUSENCIA).
                 orElseGet(() -> feriado.map(f -> IndicePonto.DOMINGO_E_FERIADOS).
                         orElse(dia.getDayOfWeek().getValue() == 7 ? IndicePonto.DOMINGO_E_FERIADOS :
                                 dia.getDayOfWeek().getValue() == 6 ? IndicePonto.SABADO :
                                         IndicePonto.DIA_UTIL)
                 );
-        return indicePonto;
     }
 
     @Transactional
@@ -216,7 +211,7 @@ public class PontoService {
 
     public Ponto adicionaRegistros(String matricula, LocalDate dia, List<Registro> registros) {
         Ponto ponto = pontoRepository.buscaPonto(matricula, dia).
-                orElseThrow(() -> new PontoInexistenteException(matricula, dia));
+                orElseThrow(() -> new PontoNaoEncontradoException(matricula, dia));
         ponto.getRegistros().addAll(registros);
         return pontoRepository.save(ponto);
     }

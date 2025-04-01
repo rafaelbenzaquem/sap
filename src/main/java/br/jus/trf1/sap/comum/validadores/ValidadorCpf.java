@@ -1,4 +1,4 @@
-package br.jus.trf1.sap.comum;
+package br.jus.trf1.sap.comum.validadores;
 
 import java.util.InputMismatchException;
 

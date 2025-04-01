@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 
-import static br.jus.trf1.sap.comum.ValidadorCpf.*;
+import static br.jus.trf1.sap.comum.validadores.ValidadorCpf.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ValidadorCpfTest {

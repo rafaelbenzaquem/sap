@@ -12,8 +12,8 @@ import java.time.LocalTime;
 
 import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.PADRAO_ENTRADA_TEMPO;
 
-public record RegistroNovoRequest(@JsonFormat(pattern = PADRAO_ENTRADA_TEMPO, shape = JsonFormat.Shape.STRING)
-                                  @NotNull(message = "O campo 'hora' não pode ser nulo!")
+public record RegistroNovoRequest(@NotNull(message = "O campo 'hora' não pode ser nulo!")
+                                  @JsonFormat(pattern = PADRAO_ENTRADA_TEMPO, shape = JsonFormat.Shape.STRING)
                                   LocalTime hora,
                                   @NotBlank(message = "O campo 'sentido' não pode ser branco ou nulo!")
                                   String sentido,

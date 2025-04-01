@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>br.jus.trf1</groupId>
 	<artifactId>sap</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.2.3-SNAPSHOT</version>
 	<name>sap</name>
 	<description>Projeto para Sistema de acesso e ponto</description>
 	<properties>

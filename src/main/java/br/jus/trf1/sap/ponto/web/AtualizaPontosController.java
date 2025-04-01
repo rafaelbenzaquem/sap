@@ -5,6 +5,7 @@ import br.jus.trf1.sap.ponto.PontoService;
 import br.jus.trf1.sap.ponto.web.dto.PontoResponse;
 import br.jus.trf1.sap.registro.web.dto.RegistroNovoRequest;
 import br.jus.trf1.sap.vinculo.VinculoService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -52,7 +53,9 @@ public class AtualizaPontosController {
                                                                      @PathVariable
                                                                      @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
                                                                      LocalDate dia,
-                                                                     @RequestBody List<RegistroNovoRequest> registros) {
+                                                                     @RequestBody
+                                                                     @Valid
+                                                                     List<RegistroNovoRequest> registros) {
 
         log.info("Atualizando Ponto - {} - {} - registros size: {}", matricula, paraString(dia), registros.size());
         var ponto = pontoService.adicionaRegistros(matricula, dia, registros.stream().

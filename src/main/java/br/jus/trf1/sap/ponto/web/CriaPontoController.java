@@ -51,17 +51,14 @@ public class CriaPontoController {
 
 
     @PostMapping
-    public ResponseEntity<PontoResponse> criaPonto(@RequestBody @Valid PontoNovoRequest pontoRequest) {
+    public ResponseEntity<PontoResponse> criaPonto(@RequestBody
+                                                   @Valid
+                                                   PontoNovoRequest pontoRequest) {
         log.info("criaPonto - {}", pontoRequest);
         var dia = pontoRequest.dia();
         var matricula = pontoRequest.matricula();
         if (pontoService.existe(matricula, dia)) {
-            throw new PontoExistenteException(Ponto.builder().
-                    id(PontoId.builder().
-                            matricula(matricula).
-                            dia(dia).
-                            build()).
-                    build());
+            throw new PontoExistenteException(matricula, dia);
         }
         var id = PontoId.builder().
                 dia(dia).
@@ -89,17 +86,14 @@ public class CriaPontoController {
                                                     LocalDate dia) {
         var stringDia = paraString(dia, PADRAO_SAIDA_DATA);
         log.info("Criando Ponto - matricula: {}, dia - {}", matricula, stringDia);
+        if (pontoService.existe(matricula, dia)) {
+            throw new PontoExistenteException(matricula, dia);
+        }
+
         var vinculo = vinculoService.buscaPorMatricula(matricula);
         var historicos = historicoService.buscarHistoricoDeAcesso(dia, null,
                 vinculo.getCracha(), null, null);
-        if (pontoService.existe(matricula, dia)) {
-            throw new PontoExistenteException(Ponto.builder().
-                    id(PontoId.builder().
-                            matricula(matricula).
-                            dia(dia).
-                            build()).
-                    build());
-        }
+
         var ponto = pontoService.salvaPonto(matricula, dia, historicos.stream().map(HistoricoResponse::toModel).toList());
         var uriResponse = ServletUriComponentsBuilder.fromCurrentContextPath().path("/{matricula}/{dia}")
                 .buildAndExpand(matricula, dia).

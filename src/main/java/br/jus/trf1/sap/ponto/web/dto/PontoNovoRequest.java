@@ -4,6 +4,7 @@ import br.jus.trf1.sap.ponto.Ponto;
 import br.jus.trf1.sap.ponto.PontoId;
 import br.jus.trf1.sap.registro.web.dto.RegistroNovoRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -17,6 +18,7 @@ public record PontoNovoRequest(@NotBlank(message = "O campo 'matricula' não pod
                                @NotNull(message = "O campo 'dia' não pode ser nulo!")
                                @JsonFormat(pattern = PADRAO_ENTRADA_DATA, shape = JsonFormat.Shape.STRING)
                                LocalDate dia,
+                               @Valid
                                List<RegistroNovoRequest> registros) {
     public Ponto toModel() {
         var id = PontoId.builder()
