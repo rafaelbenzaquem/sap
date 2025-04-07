@@ -26,8 +26,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.PADRAO_ENTRADA_DATA;
-import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.PADRAO_SAIDA_DATA;
+import static br.jus.trf1.sap.comum.util.ConstantesParaDataTempo.PADRAO_ENTRADA_DATA;
+import static br.jus.trf1.sap.comum.util.ConstantesParaDataTempo.PADRAO_SAIDA_DATA;
 import static br.jus.trf1.sap.comum.util.DataTempoUtil.paraString;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;

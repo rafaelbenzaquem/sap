@@ -7,7 +7,7 @@ import org.springframework.hateoas.server.core.Relation;
 
 import java.time.LocalDate;
 
-import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.PADRAO_SAIDA_DATA;
+import static br.jus.trf1.sap.comum.util.ConstantesParaDataTempo.PADRAO_SAIDA_DATA;
 
 @Relation(collectionRelation = "pontos")
 public record PontoAtualizadoResponse(String matricula,

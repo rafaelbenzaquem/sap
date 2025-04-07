@@ -1,8 +1,8 @@
 package br.jus.trf1.sap.comum.util;
 
-public class ConstantesDataTempoUtil {
+public class ConstantesParaDataTempo {
 
-    private ConstantesDataTempoUtil() {
+    private ConstantesParaDataTempo() {
     }
 
     public static final String PADRAO_SAIDA_DATA = "dd/MM/yyyy";

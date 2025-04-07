@@ -6,7 +6,7 @@ import lombok.*;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.PADRAO_SAIDA_DATA;
+import static br.jus.trf1.sap.comum.util.ConstantesParaDataTempo.PADRAO_SAIDA_DATA;
 import static br.jus.trf1.sap.comum.util.DataTempoUtil.paraString;
 
 @Builder

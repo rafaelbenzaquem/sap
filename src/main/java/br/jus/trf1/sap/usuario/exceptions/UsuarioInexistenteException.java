@@ -2,7 +2,7 @@ package br.jus.trf1.sap.usuario.exceptions;
 
 import br.jus.trf1.sap.usuario.Usuario;
 
-import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.MSG_ENTIDADE_INEXISTENTE;
+import static br.jus.trf1.sap.comum.util.ConstantesParaDataTempo.MSG_ENTIDADE_INEXISTENTE;
 
 public class UsuarioInexistenteException extends RuntimeException {
 

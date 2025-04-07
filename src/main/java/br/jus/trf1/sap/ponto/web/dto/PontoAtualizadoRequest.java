@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
-import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.PADRAO_ENTRADA_DATA;
+import static br.jus.trf1.sap.comum.util.ConstantesParaDataTempo.PADRAO_ENTRADA_DATA;
 
 public record PontoAtualizadoRequest(@NotBlank(message = "O campo 'matricula' não pode ser branco ou nulo!")
                                      String matricula,
