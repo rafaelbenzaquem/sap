@@ -1,6 +1,5 @@
 package br.jus.trf1.sap.registro.web.dto;
 
-import br.jus.trf1.sap.ponto.Ponto;
 import br.jus.trf1.sap.registro.Registro;
 import br.jus.trf1.sap.registro.Sentido;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -19,13 +18,12 @@ public record RegistroNovoRequest(@NotNull(message = "O campo 'hora' não pode s
                                   String sentido,
                                   @JsonProperty(value = "codigo_acesso")
                                   Integer codigoAcesso) {
-    public Registro toModel(Ponto ponto) {
+    public Registro toModel() {
         return Registro.builder()
                 .hora(hora)
                 .sentido(Sentido.toEnum(sentido).getCodigo())
                 .codigoAcesso(codigoAcesso)
-                .versao(codigoAcesso == null ? null : 1)
-                .ponto(ponto)
+                .versao(1)
                 .build();
     }
 }

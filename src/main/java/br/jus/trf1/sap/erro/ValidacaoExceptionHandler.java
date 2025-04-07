@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.time.format.DateTimeParseException;
+
 @Slf4j
 @ControllerAdvice
 public class ValidacaoExceptionHandler {
@@ -38,13 +40,12 @@ public class ValidacaoExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<Erro> validacaoException(HttpMessageNotReadableException ex, HttpServletRequest request) {
-
-        log.warn("HttpMessageNotReadableException: mensagem '{}'", ex.getMessage());
+    @ExceptionHandler(DateTimeParseException.class)
+    public ResponseEntity<Erro> validacaoException(DateTimeParseException ex, HttpServletRequest request) {
+        log.warn("DateTimeParseException: mensagem '{}'", ex.getMessage());
 
         Erro error = new Erro(HttpStatus.BAD_REQUEST.value(),
-                ex.getMessage(),
+                ex.getParsedString()+" não está no formato correto de data : ddMMyyyy",
                 System.currentTimeMillis(),
                 request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);

@@ -11,16 +11,17 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 
 import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.PADRAO_ENTRADA_DATA;
+import static br.jus.trf1.sap.comum.util.HATEOASUtil.addLinksHATEOAS;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping(value = "/v1/sap/registros")
-public class BuscaRegistroController {
+public class RegistroReadController {
 
     private final RegistroService registroService;
 
-    public BuscaRegistroController(RegistroService registroService) {
+    public RegistroReadController(RegistroService registroService) {
         this.registroService = registroService;
     }
 
@@ -30,25 +31,15 @@ public class BuscaRegistroController {
                                                                                                  @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
                                                                                                  @RequestParam LocalDate dia) {
         var registros = registroService.listarRegistrosPonto(matricula, dia);
-        var registrosEntityModelList = registros.stream().map(registro ->
-                EntityModel.of(
-                        RegistroResponse.of(registro),
-                        linkTo(methodOn(BuscaRegistroController.class).buscaRegistro(registro.getId())).withSelfRel()
-                )
-        ).toList();
 
-        var registrosCollectionModel = CollectionModel.of(registrosEntityModelList,
-                linkTo(methodOn(BuscaRegistroController.class).listarRegistrosDoPonto(matricula, dia)).withSelfRel()
-        );
-
-        return ResponseEntity.ok(registrosCollectionModel);
+        return ResponseEntity.ok(addLinksHATEOAS(registros));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<EntityModel<RegistroResponse>> buscaRegistro(@PathVariable("id") Long id) {
         var registro = registroService.buscaRegistroPorId(id);
         var registroModel = EntityModel.of(RegistroResponse.of(registro),
-                linkTo(methodOn(BuscaRegistroController.class).buscaRegistro(registro.getId())).withSelfRel());
+                linkTo(methodOn(RegistroReadController.class).buscaRegistro(registro.getId())).withSelfRel());
         return ResponseEntity.ok(registroModel);
     }
 

@@ -1,8 +1,8 @@
-package br.jus.trf1.sap.vinculo.web;
+package br.jus.trf1.sap.usuario.web;
 
-import br.jus.trf1.sap.vinculo.VinculoRepository;
-import br.jus.trf1.sap.vinculo.web.dto.VinculoNovoRequest;
-import br.jus.trf1.sap.vinculo.web.dto.VinculoResponse;
+import br.jus.trf1.sap.usuario.UsuarioRepository;
+import br.jus.trf1.sap.usuario.web.dto.UsuarioNovoRequest;
+import br.jus.trf1.sap.usuario.web.dto.UsuarioResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -11,17 +11,17 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "/v1/sap/vinculos")
-public class CriaVinculosController {
+@RequestMapping(value = "/v1/sap/usuarios")
+public class UsuarioCreateController {
 
-    private final VinculoRepository repository;
+    private final UsuarioRepository repository;
 
-    public CriaVinculosController(VinculoRepository repository) {
+    public UsuarioCreateController(UsuarioRepository repository) {
         this.repository = repository;
     }
 
     @PostMapping()
-    public ResponseEntity<VinculoResponse> criarVinculo(@RequestBody @Valid VinculoNovoRequest request) {
+    public ResponseEntity<UsuarioResponse> criarVinculo(@RequestBody @Valid UsuarioNovoRequest request) {
         log.info("Criando vinculo: {}", request);
         var vinculoSalvo = repository.save(request.paraEntidade());
 

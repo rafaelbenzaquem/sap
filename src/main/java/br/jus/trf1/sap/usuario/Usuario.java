@@ -1,6 +1,6 @@
-package br.jus.trf1.sap.vinculo;
+package br.jus.trf1.sap.usuario;
 
-import br.jus.trf1.sap.vinculo.web.dto.VinculoResponse;
+import br.jus.trf1.sap.usuario.web.dto.UsuarioResponse;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -15,8 +15,9 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "servidor_matricula_cracha")
-public class Vinculo {
+@Entity
+@Table(name = "usuarios",schema = "sispontodb")
+public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,15 +33,15 @@ public class Vinculo {
     @Column(name = "hora_diaria", nullable = false)
     private Integer horaDiaria;
 
-    public VinculoResponse toResponse() {
-        return new VinculoResponse(id, nome, matricula, cracha, horaDiaria);
+    public UsuarioResponse toResponse() {
+        return new UsuarioResponse(id, nome, matricula, cracha, horaDiaria);
     }
 
     @Override
     public final boolean equals(Object o) {
-        if (!(o instanceof Vinculo vinculo)) return false;
+        if (!(o instanceof Usuario usuario)) return false;
 
-        return Objects.equals(id, vinculo.id);
+        return Objects.equals(id, usuario.id);
     }
 
     @Override

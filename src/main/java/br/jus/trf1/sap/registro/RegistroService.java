@@ -1,14 +1,17 @@
 package br.jus.trf1.sap.registro;
 
-import br.jus.trf1.sap.comum.util.DataTempoUtil;
+import br.jus.trf1.sap.externo.coletor.historico.HistoricoService;
+import br.jus.trf1.sap.ponto.Ponto;
+import br.jus.trf1.sap.ponto.PontoService;
 import br.jus.trf1.sap.registro.exceptions.RegistroExistenteSalvoEmPontoDifenteException;
 import br.jus.trf1.sap.registro.exceptions.RegistroInexistenteException;
+import br.jus.trf1.sap.usuario.UsuarioService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.hateoas.Links;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.PADRAO_SAIDA_TEMPO;
 import static br.jus.trf1.sap.comum.util.DataTempoUtil.paraString;
@@ -17,17 +20,27 @@ import static br.jus.trf1.sap.comum.util.DataTempoUtil.paraString;
 @Service
 public class RegistroService {
 
+    private final PontoService pontoService;
+    private final UsuarioService usuarioService;
+    private final HistoricoService historicoService;
     private final RegistroRepository registroRepository;
 
-    public RegistroService(RegistroRepository registroRepository) {
+
+    public RegistroService(UsuarioService usuarioService,
+                           HistoricoService historicoService,
+                           RegistroRepository registroRepository,
+                           PontoService pontoService) {
+        this.usuarioService = usuarioService;
+        this.historicoService = historicoService;
         this.registroRepository = registroRepository;
+        this.pontoService = pontoService;
     }
 
     public Registro buscaRegistroPorId(Long id) {
         return registroRepository.findById(id).orElseThrow(() -> new RegistroInexistenteException(id));
     }
 
-    public Boolean existe(Long id){
+    public Boolean existe(Long id) {
         return registroRepository.existsById(id);
     }
 
@@ -49,7 +62,7 @@ public class RegistroService {
             registro.setCodigoAcesso(null);
             registro.setVersao(registroAntigo.getVersao() + 1);
             var registroAtualizado = registroRepository.save(registro);
-            registroAntigo.setRegistroAtualizado(registroAtualizado);
+            registroAntigo.setRegistroAnterior(registroAtualizado);
             registroRepository.save(registroAntigo);
             return registroAtualizado;
         }
@@ -58,8 +71,9 @@ public class RegistroService {
     }
 
     public Registro atualizaRegistro(Registro registro) {
-        log.debug("Atualizando Registro - {} - {} - {}", registro.getId(), DataTempoUtil.paraString(registro.getHora())
-                , registro.getCodigoAcesso());
+        log.debug("Atualizando Registro - {} - {} - {}", registro.getId(),
+                paraString(registro.getHora(), PADRAO_SAIDA_TEMPO),
+                registro.getCodigoAcesso());
 
         if (registro.getId() != null) {
             var registroAnterior = registroRepository.findById(registro.getId()).orElseThrow(() -> new
@@ -68,7 +82,7 @@ public class RegistroService {
             registro.setCodigoAcesso(null);
             registro.setVersao(registroAnterior.getVersao() + 1);
             var registroAtualizado = registroRepository.save(registro);
-            registroAnterior.setRegistroAtualizado(registroAtualizado);
+            registroAnterior.setRegistroAnterior(registroAtualizado);
             return registroRepository.save(registroAnterior);
 
         }
@@ -77,5 +91,72 @@ public class RegistroService {
 
     public List<Registro> listarRegistrosPonto(String matricula, LocalDate dia) {
         return registroRepository.listarRegistrosPonto(matricula, dia);
+    }
+
+    public List<Registro> atualizaRegistrosNovos(String matricula, LocalDate dia) {
+        var ponto = pontoService.buscaPonto(matricula, dia);
+
+        var registrosAtuais = registroRepository.listarRegistrosPonto(matricula, dia);
+        var vinculo = usuarioService.buscaPorMatricula(matricula);
+        var historicos = historicoService.buscarHistoricoDeAcesso(
+                dia, null, vinculo.getCracha(), null, null);
+        var registros = historicos.stream().
+                filter(historico ->
+                        {
+                            log.debug("historico {}", historico);
+                            return registrosAtuais.stream().noneMatch(r ->
+                                    {
+                                        var filtered = Objects.equals(historico.acesso(), r.getCodigoAcesso());
+                                        log.debug("registro {} - {}",
+                                                !filtered ? "foi filtrado" : "não foi filtrado", r);
+                                        return filtered;
+                                    }
+                            );
+                        }
+
+                )
+                .map(hr ->
+                        Registro.builder()
+                                .codigoAcesso(hr.acesso())
+                                .hora(hr.dataHora().toLocalTime())
+                                .sentido(hr.sentido())
+                                .versao(1)
+                                .ponto(ponto)
+                                .build()
+                )
+                .toList();
+
+        registroRepository.saveAll(registros);
+
+        return registroRepository.listarRegistrosPonto(matricula, dia);
+
+    }
+
+    public List<Registro> adicionaNovosRegistros(String matricula, LocalDate dia, List<Registro> registros) {
+
+        final var ponto = pontoService.buscaPonto(matricula, dia);
+        ponto.getRegistros().addAll(registros.stream().
+                map(registro -> addPonto(registro, ponto)).toList());
+        var pontoSalvo = pontoService.salvaPonto(ponto);
+
+        return pontoSalvo.getRegistros();
+    }
+
+    public Registro addPonto(Registro registro, Ponto ponto) {
+        return Registro.builder()
+                .id(registro.getId())
+                .hora(registro.getHora())
+                .sentido(registro.getSentido().getCodigo())
+                .codigoAcesso(registro.getCodigoAcesso())
+                .versao(registro.getVersao())
+                .registroAnterior(registro.getRegistroAnterior())
+                .ponto(ponto)
+                .build();
+    }
+
+    public Registro atualizaRegistro(String matricula, LocalDate dia, Registro registroAtualizado) {
+        var ponto = pontoService.buscaPonto(matricula, dia);
+        registroAtualizado.setPonto(ponto);
+        return registroRepository.save(registroAtualizado);
     }
 }

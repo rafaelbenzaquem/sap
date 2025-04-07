@@ -36,7 +36,7 @@ public class AusenciasService {
         var especiais = especialService.buscaAusenciasEspeciaisServidorPorPeriodo(matricula, inicio, fim).
                 stream().map(EspecialResponse::toModel).toList();
 
-        var ferias = feriasService.buscaFeriasServidorPorPeriodo(matricula, inicio, inicio).
+        var ferias = feriasService.buscaFeriasServidorPorPeriodo(matricula, inicio, fim).
                 stream().map(FeriasResponse::toModel).toList();
 
         var ausencias = new ArrayList<Ausencia>(licencas);

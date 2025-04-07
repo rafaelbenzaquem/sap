@@ -14,12 +14,12 @@ import java.util.List;
 import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.PADRAO_ENTRADA_DATA;
 
 public record PontoNovoRequest(@NotBlank(message = "O campo 'matricula' não pode ser branco ou nulo!")
-                               String matricula,
+                           String matricula,
                                @NotNull(message = "O campo 'dia' não pode ser nulo!")
-                               @JsonFormat(pattern = PADRAO_ENTRADA_DATA, shape = JsonFormat.Shape.STRING)
-                               LocalDate dia,
+                           @JsonFormat(pattern = PADRAO_ENTRADA_DATA, shape = JsonFormat.Shape.STRING)
+                           LocalDate dia,
                                @Valid
-                               List<RegistroNovoRequest> registros) {
+                           List<RegistroNovoRequest> registros) {
     public Ponto toModel() {
         var id = PontoId.builder()
                 .matricula(this.matricula)
@@ -27,9 +27,7 @@ public record PontoNovoRequest(@NotBlank(message = "O campo 'matricula' não pod
                 .build();
         return Ponto.builder()
                 .id(id)
-                .registros(this.registros.stream().map(r -> r.toModel(Ponto.builder()
-                        .id(id)
-                        .build())).toList())
+                .registros(this.registros.stream().map(RegistroNovoRequest::toModel).toList())
                 .build();
     }
 }

@@ -1,8 +1,8 @@
-package br.jus.trf1.sap.vinculo.web;
+package br.jus.trf1.sap.usuario.web;
 
-import br.jus.trf1.sap.vinculo.exceptions.VinculoInexistenteException;
-import br.jus.trf1.sap.vinculo.VinculoRepository;
-import br.jus.trf1.sap.vinculo.web.dto.VinculoResponse;
+import br.jus.trf1.sap.usuario.exceptions.UsuarioInexistenteException;
+import br.jus.trf1.sap.usuario.UsuarioRepository;
+import br.jus.trf1.sap.usuario.web.dto.UsuarioResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,22 +10,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/v1/sap/vinculos")
-public class ApagaVinculosController {
+@RequestMapping(value = "/v1/sap/usuarios")
+public class UsuarioDeleteController {
 
-    private final VinculoRepository repository;
+    private final UsuarioRepository repository;
 
-    public ApagaVinculosController(VinculoRepository repository) {
+    public UsuarioDeleteController(UsuarioRepository repository) {
         this.repository = repository;
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<VinculoResponse> apagaVinculo(@PathVariable Integer id) {
+    public ResponseEntity<UsuarioResponse> apagaVinculo(@PathVariable Integer id) {
         var vinculoOpt = repository.findById(id);
         if (vinculoOpt.isPresent()) {
             repository.deleteById(id);
             return ResponseEntity.ok().body(vinculoOpt.get().toResponse());
         }
-        throw new VinculoInexistenteException(id);
+        throw new UsuarioInexistenteException(id);
     }
 }

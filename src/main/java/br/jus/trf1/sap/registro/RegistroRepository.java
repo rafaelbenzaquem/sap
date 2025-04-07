@@ -11,8 +11,7 @@ import java.util.Optional;
 public interface RegistroRepository extends JpaRepository<Registro, Long> {
 
     @Query("""
-            select r from Registro r where r.ponto.id.matricula =:matricula and
-            r.ponto.id.dia =:dia
+            SELECT r FROM Registro r WHERE r.ponto.id.matricula =:matricula AND r.ponto.id.dia =:dia
             """)
     List<Registro> listarRegistrosPonto(@Param("matricula")String matricula,
                                         @Param("dia")LocalDate dia);
