@@ -16,6 +16,7 @@ public class UnicoValidador implements ConstraintValidator<Unico, Object> {
     @PersistenceContext
     private EntityManager em;
 
+    @Override
     public void initialize(Unico constraint) {
         this.domainClass = constraint.domainClass();
         this.fieldName = constraint.fieldName();

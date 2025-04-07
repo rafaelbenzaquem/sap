@@ -9,6 +9,7 @@ import lombok.*;
 @Getter
 @Setter
 @Entity
+@Table(name = "arquivos",schema = "sispontodb")
 public class Arquivo {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.3</version>
+		<version>3.4.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>br.jus.trf1</groupId>
 	<artifactId>sap</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.2.3-SNAPSHOT</version>
 	<name>sap</name>
 	<description>Projeto para Sistema de acesso e ponto</description>
 	<properties>
@@ -19,18 +19,18 @@
 	</properties>
 
 	<dependencies>
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.boot</groupId>-->
-<!--			<artifactId>spring-boot-devtools</artifactId>-->
-<!--			<scope>runtime</scope>-->
-<!--			<optional>true</optional>-->
-<!--		</dependency>-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
 
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.boot</groupId>-->
-<!--			<artifactId>spring-boot-configuration-processor</artifactId>-->
-<!--			<optional>true</optional>-->
-<!--		</dependency>-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -54,60 +54,28 @@
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports</artifactId>
-			<version>7.0.1</version>
+			<version>7.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.17.0</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports-pdf</artifactId>
-			<version>7.0.1</version>
+			<version>7.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports-fonts</artifactId>
-			<version>7.0.1</version>
+			<version>7.0.2</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.boot</groupId>-->
-<!--			<artifactId>spring-boot-starter-thymeleaf</artifactId>-->
-<!--		</dependency>-->
-
-<!--		&lt;!&ndash; https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt &ndash;&gt;-->
-<!--		<dependency>-->
-<!--			<groupId>io.jsonwebtoken</groupId>-->
-<!--			<artifactId>jjwt</artifactId>-->
-<!--			<version>0.12.6</version>-->
-<!--		</dependency>-->
-<!--		&lt;!&ndash; https://mvnrepository.com/artifact/jakarta.xml.bind/jakarta.xml.bind-api &ndash;&gt;-->
-<!--		<dependency>-->
-<!--			<groupId>jakarta.xml.bind</groupId>-->
-<!--			<artifactId>jakarta.xml.bind-api</artifactId>-->
-<!--			<version>4.0.2</version>-->
-<!--		</dependency>-->
-<!--		&lt;!&ndash; https://mvnrepository.com/artifact/org.glassfish.jaxb/jaxb-runtime &ndash;&gt;-->
-<!--		<dependency>-->
-<!--			<groupId>org.glassfish.jaxb</groupId>-->
-<!--			<artifactId>jaxb-runtime</artifactId>-->
-<!--			<version>4.0.5</version>-->
-<!--		</dependency>-->
-<!--		&lt;!&ndash; https://mvnrepository.com/artifact/jakarta.activation/jakarta.activation-api &ndash;&gt;-->
-<!--		<dependency>-->
-<!--			<groupId>jakarta.activation</groupId>-->
-<!--			<artifactId>jakarta.activation-api</artifactId>-->
-<!--			<version>2.1.3</version>-->
-<!--		</dependency>-->
-<!--        <dependency>-->
-<!--			<groupId>org.thymeleaf.extras</groupId>-->
-<!--			<artifactId>thymeleaf-extras-springsecurity6</artifactId>-->
-<!--			&lt;!&ndash; Temporary explicit version to fix Thymeleaf bug &ndash;&gt;-->
-<!--			<version>3.1.1.RELEASE</version>-->
-<!--		</dependency>-->
-
         <dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>

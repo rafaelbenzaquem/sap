@@ -4,7 +4,7 @@ import lombok.Getter;
 
 import java.time.LocalTime;
 
-import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.PADRAO_SAIDA_TEMPO;
+import static br.jus.trf1.sap.comum.util.ConstantesParaDataTempo.PADRAO_SAIDA_TEMPO;
 import static br.jus.trf1.sap.comum.util.DataTempoUtil.paraString;
 
 /**
@@ -27,7 +27,7 @@ public class RegistroModel implements Comparable<RegistroModel> {
     /**
      * Retorna a hora formatada como texto.
      *
-     * @return Hora formatada ou " " se a hora for nula.
+     * @return Hora formatada ou "--:--" se a hora for nula.
      */
     public String getTextoHora() {
         if (hora == null) {

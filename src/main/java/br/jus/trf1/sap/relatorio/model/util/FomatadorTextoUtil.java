@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.util.Locale;
 
-import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.PADRAO_SAIDA_DATA;
+import static br.jus.trf1.sap.comum.util.ConstantesParaDataTempo.PADRAO_SAIDA_DATA;
 import static br.jus.trf1.sap.comum.util.DataTempoUtil.paraString;
 import static br.jus.trf1.sap.relatorio.model.util.ConstatesRelatorioUtil.PADRAO_TEXTO_TEMPO_DIARIO;
 import static br.jus.trf1.sap.relatorio.model.util.ConstatesRelatorioUtil.PADRAO_TEXTO_TEMPO_TOTAL;

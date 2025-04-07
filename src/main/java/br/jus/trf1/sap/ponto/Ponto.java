@@ -20,6 +20,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
+@Table(name = "pontos",schema = "sispontodb")
 public class Ponto {
 
     @EmbeddedId

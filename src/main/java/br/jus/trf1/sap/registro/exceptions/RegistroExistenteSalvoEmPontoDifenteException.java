@@ -6,7 +6,7 @@ import br.jus.trf1.sap.comum.util.DataTempoUtil;
 
 import java.time.LocalDate;
 
-import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.PADRAO_SAIDA_DATA;
+import static br.jus.trf1.sap.comum.util.ConstantesParaDataTempo.PADRAO_SAIDA_DATA;
 
 public class RegistroExistenteSalvoEmPontoDifenteException extends RuntimeException {
 

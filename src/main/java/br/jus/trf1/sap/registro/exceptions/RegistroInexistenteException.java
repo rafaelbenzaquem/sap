@@ -2,7 +2,7 @@ package br.jus.trf1.sap.registro.exceptions;
 
 import br.jus.trf1.sap.registro.Registro;
 
-import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.MSG_ENTIDADE_INEXISTENTE;
+import static br.jus.trf1.sap.comum.util.ConstantesParaDataTempo.MSG_ENTIDADE_INEXISTENTE;
 
 public class RegistroInexistenteException extends RuntimeException {
 
