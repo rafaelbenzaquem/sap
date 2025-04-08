@@ -1,11 +1,15 @@
 package br.jus.trf1.sap.comum.util;
 
+import br.jus.trf1.sap.ponto.Ponto;
+import br.jus.trf1.sap.ponto.web.PontoReadController;
+import br.jus.trf1.sap.ponto.web.dto.PontoNovoResponse;
 import br.jus.trf1.sap.registro.Registro;
 import br.jus.trf1.sap.registro.web.RegistroReadController;
 import br.jus.trf1.sap.registro.web.dto.RegistroResponse;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,9 +21,9 @@ public class HATEOASUtil {
     private HATEOASUtil() {
     }
 
-    public static CollectionModel<EntityModel<RegistroResponse>> addLinksHATEOAS(List<Registro> registros){
+    public static CollectionModel<EntityModel<RegistroResponse>> addLinksHATEOAS(List<Registro> registros) {
         Objects.requireNonNull(registros);
-        if(registros.isEmpty()){
+        if (registros.isEmpty()) {
             return CollectionModel.empty();
         }
         var matricula = registros.getFirst().getPonto().getId().getMatricula();
@@ -34,6 +38,26 @@ public class HATEOASUtil {
 
         return CollectionModel.of(registrosEntityModelList,
                 linkTo(methodOn(RegistroReadController.class).listarRegistrosDoPonto(matricula, dia)).withSelfRel()
+        );
+    }
+
+    public static CollectionModel<EntityModel<PontoNovoResponse>> addLinksHATEOAS(LocalDate inicio, LocalDate fim, List<Ponto> pontos) {
+        Objects.requireNonNull(pontos);
+        if (pontos.isEmpty()) {
+            return CollectionModel.empty();
+        }
+        var matricula = pontos.getFirst().getId().getMatricula();
+
+        var registrosEntityModelList = pontos.stream().map(ponto ->
+                EntityModel.of(
+                        PontoNovoResponse.of(ponto),
+                        linkTo(methodOn(PontoReadController.class).buscaPonto(ponto.getId().getMatricula(),
+                                ponto.getId().getDia())).withSelfRel()
+                )
+        ).toList();
+
+        return CollectionModel.of(registrosEntityModelList,
+                linkTo(methodOn(PontoReadController.class).buscaPontosPorIntervalosDatas(matricula, inicio, fim)).withSelfRel()
         );
     }
 

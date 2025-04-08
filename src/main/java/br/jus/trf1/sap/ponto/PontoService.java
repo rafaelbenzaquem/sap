@@ -26,14 +26,12 @@ import static br.jus.trf1.sap.comum.util.DataTempoUtil.*;
 public class PontoService {
 
     private final PontoRepository pontoRepository;
-    private final UsuarioService usuarioService;
     private final AusenciasService ausenciaService;
     private final FeriadoService feriadoService;
 
-    public PontoService(PontoRepository pontoRepository, UsuarioService usuarioService,
+    public PontoService(PontoRepository pontoRepository,
                         AusenciasService ausenciaService, FeriadoService feriadoService) {
         this.pontoRepository = pontoRepository;
-        this.usuarioService = usuarioService;
         this.ausenciaService = ausenciaService;
         this.feriadoService = feriadoService;
     }

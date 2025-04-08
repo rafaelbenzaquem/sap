@@ -8,7 +8,7 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 
-import static br.jus.trf1.sap.comum.util.ConstantesDataTempoUtil.PADRAO_SAIDA_DATA;
+import static br.jus.trf1.sap.comum.util.ConstantesParaDataTempo.PADRAO_SAIDA_DATA;
 
 
 @Builder

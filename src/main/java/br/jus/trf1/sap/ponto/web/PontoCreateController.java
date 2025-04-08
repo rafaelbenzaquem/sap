@@ -8,13 +8,13 @@ import br.jus.trf1.sap.ponto.PontoService;
 import br.jus.trf1.sap.ponto.exceptions.PontoExistenteException;
 import br.jus.trf1.sap.ponto.web.dto.PontoNovoRequest;
 import br.jus.trf1.sap.ponto.web.dto.PontoNovoResponse;
-import br.jus.trf1.sap.ponto.web.dto.UsuariosPontoResponse;
 import br.jus.trf1.sap.registro.web.dto.RegistroNovoRequest;
 import br.jus.trf1.sap.usuario.Usuario;
 import br.jus.trf1.sap.usuario.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
@@ -23,12 +23,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import static br.jus.trf1.sap.comum.util.ConstantesParaDataTempo.PADRAO_ENTRADA_DATA;
 import static br.jus.trf1.sap.comum.util.ConstantesParaDataTempo.PADRAO_SAIDA_DATA;
 import static br.jus.trf1.sap.comum.util.DataTempoUtil.paraString;
+import static br.jus.trf1.sap.comum.util.HATEOASUtil.addLinksHATEOAS;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -40,7 +40,6 @@ public class PontoCreateController {
     private final PontoService pontoService;
     private final UsuarioService usuarioService;
     private final HistoricoService historicoService;
-    private final ServidorService servidorService;
 
     public PontoCreateController(PontoService pontoService,
                                  UsuarioService usuarioService,
@@ -49,10 +48,14 @@ public class PontoCreateController {
         this.pontoService = pontoService;
         this.usuarioService = usuarioService;
         this.historicoService = historicoService;
-        this.servidorService = servidorService;
     }
 
-
+    /**
+     * Endpoint para criar um ponto a partir payload presente no corpo de uma requisição da api restfull
+     *
+     * @param pontoNovoRequest Classe que representa o payload de entrada da requisição
+     * @return Payload de saída formatada para restfull, contendo o ponto criado
+     */
     @PostMapping
     public ResponseEntity<EntityModel<PontoNovoResponse>> criaPontoManual(@RequestBody
                                                                           @Valid
@@ -80,92 +83,69 @@ public class PontoCreateController {
         return ResponseEntity.created(uri).body(pontoModel);
     }
 
-    @PostMapping("/{matricula}/{dia}")
+    /**
+     * Ponto criado automáticamente(buscando o histórico de acessos do usuário no sistema de acesso)
+     * a partir do endpoint '/pontos/usuarios/{matricula}'
+     *
+     * @param matricula Matrícula do usuário que representa parte do identificador de ponto
+     * @param dia       LocalDate que representa a data do ponto, parte do identificador de ponto
+     * @return Payload de saída formatada para restfull, contendo o ponto criado
+     */
+    @PostMapping("/usuarios/{matricula}")
     public ResponseEntity<EntityModel<PontoNovoResponse>> criarPontoAutomatico(@PathVariable
-                                                                  String matricula,
-                                                                  @PathVariable
-                                                                  @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
-                                                                  LocalDate dia) {
+                                                                               String matricula,
+                                                                               @RequestParam
+                                                                               @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
+                                                                               LocalDate dia) {
         var stringDia = paraString(dia, PADRAO_SAIDA_DATA);
         log.info("Criando Ponto - matricula: {}, dia - {}", matricula, stringDia);
         if (pontoService.existe(matricula, dia)) {
             throw new PontoExistenteException(matricula, dia);
         }
 
-        var vinculo = usuarioService.buscaPorMatricula(matricula);
+        var usuario = usuarioService.buscaPorMatricula(matricula);
         var historicos = historicoService.buscarHistoricoDeAcesso(dia, null,
-                vinculo.getCracha(), null, null);
+                usuario.getCracha(), null, null);
 
         var ponto = pontoService.salvaPonto(matricula, dia, historicos.stream().map(HistoricoResponse::toModel).toList());
-        var uriResponse = ServletUriComponentsBuilder.fromCurrentContextPath().path("/{matricula}/{dia}")
+        var uri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/{matricula}/{dia}")
                 .buildAndExpand(matricula, dia).
                 toUri();
         var pontoModel = EntityModel.of(PontoNovoResponse.of(ponto),
                 linkTo(methodOn(PontoReadController.class).buscaPonto(matricula, dia)).withSelfRel(),
-                Link.of(uriResponse.toString()).withRel("registros")
+                Link.of(uri.toString()).withRel("registros")
         );
-        return ResponseEntity.created(uriResponse).body(pontoModel);
+        return ResponseEntity.created(uri).body(pontoModel);
     }
 
-    @PostMapping("/{dia}")
-    public ResponseEntity<List<UsuariosPontoResponse>> criaPontosDoDia(@PathVariable
-                                                                       @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
-                                                                       LocalDate dia) {
-        var usuariosPonto = new ArrayList<UsuariosPontoResponse>();
-        log.info("Criando Pontos do dia {} ", paraString(dia, PADRAO_SAIDA_DATA));
-        usuarioService.listar().forEach(v -> {
-            var historicos = historicoService.buscarHistoricoDeAcesso(dia, null,
-                    v.getCracha(), null, null);
-            var ponto = pontoService.salvaPonto(
-                    v.getMatricula(),
-                    dia,
-                    historicos.stream().map(HistoricoResponse::toModel).toList());
-            usuariosPonto.add(new UsuariosPontoResponse(v.getNome(), ponto.getId().toString()));
-        });
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(usuariosPonto);
-    }
-
-    @PostMapping("/servidores")
-    public ResponseEntity<List<UsuariosPontoResponse>> criarPontosDeTodosOsVinculosNoPeriodo(@RequestParam("inicio")
-                                                                                             @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
-                                                                                             LocalDate inicio,
-                                                                                             @RequestParam("fim")
-                                                                                             @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
-                                                                                             LocalDate fim) {
-        log.info("Criando pontos no período - {} - {}", paraString(inicio), paraString(fim));
-        var usuariosPonto = new ArrayList<UsuariosPontoResponse>();
-        usuarioService.listar().forEach(vinculo -> {
-            var optServidor = servidorService.buscaDadosServidor(vinculo.getMatricula());
-            if (optServidor.isPresent()) {
-                List<Ponto> pontos = pontoService.carregaPontos(vinculo, inicio, fim,
-                        historicoService);
-                usuariosPonto.add(new UsuariosPontoResponse(vinculo.getNome(),
-                        "Quantidas de pontos: " + pontos.size()));
-            }
-        });
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(usuariosPonto);
-    }
-
-
-    @PostMapping("/{matricula}")
-    public ResponseEntity<UsuariosPontoResponse> criarPontosPorPeriodo(@PathVariable
-                                                                       String matricula,
-                                                                       @RequestParam("inicio")
-                                                                       @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
-                                                                       LocalDate inicio,
-                                                                       @RequestParam("fim")
-                                                                       @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
-                                                                       LocalDate fim) {
+    /**
+     * Cria pontos no período (início e fim) para um usuário dado sua matrícula, preenchendo os pontos com os registros
+     * proveniente do histórico do sistema de controle de acesso
+     *
+     * @param matricula Matrícula do usuário que representa parte do identificador de ponto
+     * @param inicio    LocaDate que representa o início do período, não pode ser nulo
+     * @param fim       LocalDate que representa o fim do período, pode ser nulo
+     * @return Coleção com pontos criados formatado para restfull
+     */
+    @PostMapping("/usuarios")
+    public ResponseEntity<CollectionModel<EntityModel<PontoNovoResponse>>> criarPontosPorPeriodo(@RequestParam
+                                                                                                 String matricula,
+                                                                                                 @RequestParam
+                                                                                                 @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
+                                                                                                 LocalDate inicio,
+                                                                                                 @RequestParam
+                                                                                                 @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
+                                                                                                 LocalDate fim) {
         log.info("Criando Pontos de - {} - {}", paraString(inicio), paraString(fim));
+        if (inicio.isAfter(fim)) {
+            throw new IllegalArgumentException("Data de início não pode ser posterior à data de fim.");
+        }
         Usuario usuario = usuarioService.buscaPorMatricula(matricula);
 
-        List<Ponto> pontos = pontoService.carregaPontos(usuario, inicio, fim,
-                historicoService);
-        var usuarioPonto = new UsuariosPontoResponse(usuario.getNome(),
-                "Quantidas de pontos: " + pontos.size());
+        List<Ponto> pontos = pontoService.carregaPontos(usuario, inicio, fim, historicoService);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioPonto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(addLinksHATEOAS(inicio, fim, pontos));
     }
+
+
 }

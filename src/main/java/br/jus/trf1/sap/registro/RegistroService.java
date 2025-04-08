@@ -3,7 +3,7 @@ package br.jus.trf1.sap.registro;
 import br.jus.trf1.sap.externo.coletor.historico.HistoricoService;
 import br.jus.trf1.sap.ponto.Ponto;
 import br.jus.trf1.sap.ponto.PontoService;
-import br.jus.trf1.sap.registro.exceptions.RegistroExistenteSalvoEmPontoDifenteException;
+import br.jus.trf1.sap.registro.exceptions.RegistroExistenteException;
 import br.jus.trf1.sap.registro.exceptions.RegistroInexistenteException;
 import br.jus.trf1.sap.usuario.UsuarioService;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +56,7 @@ public class RegistroService {
         if (registroOptional.isPresent()) {
             var registroAntigo = registroOptional.get();
             if (registroAntigo.getPonto().equals(registro.getPonto())) {
-                throw new RegistroExistenteSalvoEmPontoDifenteException(registro);
+                throw new RegistroExistenteException(registro);
             }
             registro.setId(null);
             registro.setCodigoAcesso(null);

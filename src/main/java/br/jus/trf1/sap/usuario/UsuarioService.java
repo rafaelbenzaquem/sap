@@ -34,17 +34,13 @@ public class UsuarioService {
 
     public Usuario buscaPorMatricula(String matricula) {
         return usuarioRepository.findUsuarioByMatricula(matricula).
-                orElseThrow(() -> new UsuarioInexistenteException("Não existe vínculo para matrícula: %s!"
+                orElseThrow(() -> new UsuarioInexistenteException("Não existe usuário para matrícula: %s!"
                         .formatted(matricula)));
     }
 
     public Usuario buscaPorId(Integer id) {
         return usuarioRepository.findById(id).
-                orElseThrow(() -> new UsuarioInexistenteException("Não existe vínculo id: %s!"
-                        .formatted(id)));
+                orElseThrow(() -> new UsuarioInexistenteException(id));
     }
-
-
-
 
 }

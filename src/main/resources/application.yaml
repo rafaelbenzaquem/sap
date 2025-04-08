@@ -17,7 +17,7 @@ spring:
       hibernate:
         show_sql: true
         hbm2ddl:
-          auto: update
+          auto: validate
   #        physical_naming_strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   datasource:
     url: ${MYSQL_URL:jdbc:mysql://localhost:3306/sispontodb?allowPublicKeyRetrieval=true&sslMode=DISABLED}

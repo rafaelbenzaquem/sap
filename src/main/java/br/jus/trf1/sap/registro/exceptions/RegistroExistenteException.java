@@ -8,23 +8,23 @@ import java.time.LocalDate;
 
 import static br.jus.trf1.sap.comum.util.ConstantesParaDataTempo.PADRAO_SAIDA_DATA;
 
-public class RegistroExistenteSalvoEmPontoDifenteException extends RuntimeException {
+public class RegistroExistenteException extends RuntimeException {
 
-    public RegistroExistenteSalvoEmPontoDifenteException(Registro registro) {
+    public RegistroExistenteException(Registro registro) {
         this(registro.getPonto());
     }
 
-    public RegistroExistenteSalvoEmPontoDifenteException(Ponto ponto) {
+    public RegistroExistenteException(Ponto ponto) {
         this(ponto.getId().getMatricula(), ponto.getId().getDia());
     }
 
 
-    public RegistroExistenteSalvoEmPontoDifenteException(String matricula, LocalDate dia) {
+    public RegistroExistenteException(String matricula, LocalDate dia) {
         this("Registro foi salvo anteriormente no Ponto id:{\"matricula\":\"%s\", \"dia\":\"%s\"}".
                 formatted(matricula, DataTempoUtil.paraString(dia, PADRAO_SAIDA_DATA)));
     }
 
-    public RegistroExistenteSalvoEmPontoDifenteException(String message) {
+    public RegistroExistenteException(String message) {
         super(message);
     }
 }

@@ -20,7 +20,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
-@Table(name = "pontos",schema = "sispontodb")
+@Table(name = "pontos", schema = "sispontodb")
 public class Ponto {
 
     @EmbeddedId
@@ -52,10 +52,12 @@ public class Ponto {
     public Duration getHorasPermanencia() {
         log.info("getHorasPermanencia - buscando registros do ponto id:{}", this.id);
         registros = getRegistros();
-
+        if (registros == null || registros.isEmpty()) {
+            log.info("getHorasPermanencia - registros encontrados: 0");
+            return Duration.ZERO;
+        }
         log.info("getHorasPermanencia - registros encontrados:{}", registros.size());
-
-        if (horasPermanencia.isZero() || (registros != null && !Objects.equals(numeroRegistrosCalculados, registros.size()))) {
+        if (horasPermanencia.isZero() || !Objects.equals(numeroRegistrosCalculados, registros.size())) {
             horasPermanencia = calculaHorasPermanencia(this);
             log.info("horas {}", horasPermanencia.toString());
         }
