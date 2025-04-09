@@ -2,7 +2,6 @@ package br.jus.trf1.sap.ponto.web;
 
 import br.jus.trf1.sap.externo.coletor.historico.HistoricoService;
 import br.jus.trf1.sap.externo.coletor.historico.dto.HistoricoResponse;
-import br.jus.trf1.sap.externo.jsarh.servidor.ServidorService;
 import br.jus.trf1.sap.ponto.Ponto;
 import br.jus.trf1.sap.ponto.PontoService;
 import br.jus.trf1.sap.ponto.exceptions.PontoExistenteException;
@@ -43,8 +42,7 @@ public class PontoCreateController {
 
     public PontoCreateController(PontoService pontoService,
                                  UsuarioService usuarioService,
-                                 HistoricoService historicoService,
-                                 ServidorService servidorService) {
+                                 HistoricoService historicoService) {
         this.pontoService = pontoService;
         this.usuarioService = usuarioService;
         this.historicoService = historicoService;
