@@ -11,7 +11,7 @@ spring:
         alphanumeric-ids:
           enabled: true
   application:
-    name: sap
+    name: SIPE
   jpa:
     properties:
       hibernate:
