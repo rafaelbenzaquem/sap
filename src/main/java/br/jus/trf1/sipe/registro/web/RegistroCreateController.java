@@ -22,7 +22,7 @@ import static br.jus.trf1.sipe.comum.util.HATEOASUtil.addLinksHATEOAS;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "/v1/sap/registros")
+@RequestMapping(value = "/v1/sipe/registros")
 public class RegistroCreateController {
 
     private final RegistroService registroService;

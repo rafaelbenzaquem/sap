@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 @Slf4j
-@RequestMapping("/v1/sap/arquivos")
+@RequestMapping("/v1/sipe/arquivos")
 @RestController
 public class ArquivoController {
 

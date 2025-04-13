@@ -24,7 +24,7 @@ public class UnicoValidador implements ConstraintValidator<Unico, Object> {
 
     public boolean isValid(Object valor, ConstraintValidatorContext context) {
         Query q = em.createQuery("select d from " + domainClass.getSimpleName() +
-                " d where " + fieldName + "=:valor");
+                " d where " + "d."+fieldName + "=:valor");
         q.setParameter("valor", valor);
         List<?> list = q.getResultList();
         return list.isEmpty();

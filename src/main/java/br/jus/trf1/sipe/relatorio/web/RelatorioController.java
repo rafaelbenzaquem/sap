@@ -18,7 +18,7 @@ import static br.jus.trf1.sipe.comum.util.ConstantesParaDataTempo.PADRAO_ENTRADA
 
 @Slf4j
 @RestController
-@RequestMapping("/v1/sap/relatorios")
+@RequestMapping("/v1/sipe/relatorios")
 public class RelatorioController {
 
     private final RelatorioService relatorioService;

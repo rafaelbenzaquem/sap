@@ -20,7 +20,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Slf4j
 @RestController
-@RequestMapping("/v1/sap/pontos")
+@RequestMapping("/v1/sipe/pontos")
 public class PontoReadController {
 
     private final PontoService pontoService;

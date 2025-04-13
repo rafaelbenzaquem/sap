@@ -15,7 +15,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping(value = "/v1/sap/usuarios")
+@RequestMapping(value = "/v1/sipe/usuarios")
 public class UsuarioReadController {
 
     private final UsuarioService service;

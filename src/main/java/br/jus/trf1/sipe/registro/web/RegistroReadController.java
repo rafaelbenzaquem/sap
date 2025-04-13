@@ -16,7 +16,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping(value = "/v1/sap/registros")
+@RequestMapping(value = "/v1/sipe/registros")
 public class RegistroReadController {
 
     private final RegistroService registroService;

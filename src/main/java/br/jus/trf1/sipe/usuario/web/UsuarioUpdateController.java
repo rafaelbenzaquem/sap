@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(value = "/v1/sap/usuarios")
+@RequestMapping(value = "/v1/sipe/usuarios")
 public class UsuarioUpdateController {
 
     private final UsuarioRepository repository;

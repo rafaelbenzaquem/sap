@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/v1/sap/usuarios")
+@RequestMapping(value = "/v1/sipe/usuarios")
 public class UsuarioDeleteController {
 
     private final UsuarioRepository repository;

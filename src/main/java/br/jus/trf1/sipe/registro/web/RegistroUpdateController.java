@@ -24,7 +24,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "/v1/sap/registros")
+@RequestMapping(value = "/v1/sipe/registros")
 public class RegistroUpdateController {
 
     private final RegistroService registroService;
