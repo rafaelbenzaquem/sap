@@ -11,14 +11,13 @@ spring:
         alphanumeric-ids:
           enabled: true
   application:
-    name: sap
+    name: SIPE
   jpa:
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
-        show_sql: true
+        show_sql: false
         hbm2ddl:
-          auto: update
+          auto: validate
   #        physical_naming_strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   datasource:
     url: ${MYSQL_URL:jdbc:mysql://localhost:3306/sispontodb?allowPublicKeyRetrieval=true&sslMode=DISABLED}
