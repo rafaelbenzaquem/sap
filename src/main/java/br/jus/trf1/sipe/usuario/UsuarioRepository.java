@@ -29,4 +29,29 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
                                                    Pageable pageable);
 
     Optional<Usuario> findUsuarioByMatricula(String matricula);
+
+    /**
+     * Verifica a existência usando uma consulta JPQL explícita.
+     * Retorna diretamente um boolean fazendo a comparação > 0 no JPQL.
+     * Útil para consultas mais complexas ou quando a convenção de nome não se aplica bem.
+     *
+     * @param matricula O matricula a ser verificado.
+     * @param id Identificador o Usuario que faz a requisição
+     * @return true se um usuário com o matricula existir, false caso contrário.
+     */
+    @Query("SELECT COUNT(u.id) > 0 FROM Usuario u WHERE u.matricula = :matriculaParam AND u.id != :idParam")
+    boolean checaSeExisteUsuarioComMatricula(@Param("matriculaParam") String matricula, @Param("idParam") Integer id);
+
+
+    /**
+     * Verifica a existência usando uma consulta JPQL explícita.
+     * Retorna diretamente um boolean fazendo a comparação > 0 no JPQL.
+     * Útil para consultas mais complexas ou quando a convenção de nome não se aplica bem.
+     *
+     * @param cracha O cracha a ser verificado.
+     * @param id Identificador o Usuario que faz a requisição
+     * @return true se um usuário com o cracha existir, false caso contrário.
+     */
+    @Query("SELECT COUNT(u.id) > 0 FROM Usuario u WHERE u.cracha = :crachaParam AND u.id != :idParam")
+    boolean checaSeExisteUsuarioComCracha(@Param("crachaParam") String cracha, @Param("idParam") Integer id);
 }
