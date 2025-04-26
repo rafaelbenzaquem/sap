@@ -7,7 +7,7 @@ import br.jus.trf1.sipe.externo.jsarh.ausencias.AusenciasService;
 import br.jus.trf1.sipe.externo.jsarh.feriado.FeriadoService;
 import br.jus.trf1.sipe.externo.jsarh.feriado.dto.FeriadoResponse;
 import br.jus.trf1.sipe.ponto.exceptions.PontoExistenteException;
-import br.jus.trf1.sipe.ponto.exceptions.PontoNaoEncontradoException;
+import br.jus.trf1.sipe.ponto.exceptions.PontoInexistenteException;
 import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.usuario.Usuario;
 import jakarta.transaction.Transactional;
@@ -50,7 +50,7 @@ public class PontoService {
                 build()
         );
         return pontoOpt.orElseThrow(
-                () -> new PontoNaoEncontradoException(matricula,dia)
+                () -> new PontoInexistenteException(matricula,dia)
         );
     }
 
@@ -162,7 +162,7 @@ public class PontoService {
 
     public Ponto adicionaRegistros(String matricula, LocalDate dia, List<Registro> registros) {
         Ponto ponto = pontoRepository.buscaPonto(matricula, dia).
-                orElseThrow(() -> new PontoNaoEncontradoException(matricula, dia));
+                orElseThrow(() -> new PontoInexistenteException(matricula, dia));
         ponto.getRegistros().addAll(registros);
         return pontoRepository.save(ponto);
     }

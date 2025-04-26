@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.relatorio;
 
-import br.jus.trf1.sipe.arquivo.ArquivoRepository;
+import br.jus.trf1.sipe.arquivo.db.ArquivoRepository;
 import br.jus.trf1.sipe.externo.jsarh.ausencias.AusenciasService;
 import br.jus.trf1.sipe.externo.jsarh.feriado.FeriadoService;
 import br.jus.trf1.sipe.externo.jsarh.feriado.dto.FeriadoResponse;

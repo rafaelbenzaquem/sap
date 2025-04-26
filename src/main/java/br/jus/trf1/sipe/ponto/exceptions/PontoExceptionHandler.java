@@ -1,7 +1,6 @@
-package br.jus.trf1.sipe.erro;
+package br.jus.trf1.sipe.ponto.exceptions;
 
-import br.jus.trf1.sipe.ponto.exceptions.PontoExistenteException;
-import br.jus.trf1.sipe.ponto.exceptions.PontoNaoEncontradoException;
+import br.jus.trf1.sipe.erro.Erro;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -13,8 +12,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class PontoExceptionHandler {
 
-    @ExceptionHandler(PontoNaoEncontradoException.class)
-    public ResponseEntity<Erro> pontoNaoEncontradoExceptionHandler(PontoNaoEncontradoException ex, HttpServletRequest request) {
+    @ExceptionHandler(PontoInexistenteException.class)
+    public ResponseEntity<Erro> pontoNaoEncontradoExceptionHandler(PontoInexistenteException ex, HttpServletRequest request) {
         Erro error = new Erro(HttpStatus.NOT_FOUND.value(),
                 ex.getMessage(),
                 System.currentTimeMillis(),

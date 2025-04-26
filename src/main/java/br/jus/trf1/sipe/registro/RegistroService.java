@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
-import static br.jus.trf1.sipe.comum.util.ConstantesParaDataTempo.PADRAO_SAIDA_TEMPO;
+import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_SAIDA_TEMPO;
 import static br.jus.trf1.sipe.comum.util.DataTempoUtil.paraString;
 
 @Slf4j

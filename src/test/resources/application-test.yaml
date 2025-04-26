@@ -1,8 +1,6 @@
-server:
-  port: 8085
 spring:
   application:
-    name: sap
+    name: SIPE-TEST
   sql:
     init:
       mode: always
@@ -18,6 +16,13 @@ spring:
 
   jpa:
     show-sql: true
-    hibernate:
-      ddl-auto: update
-    defer-datasource-initialization: false
+#    hibernate:
+#      ddl-auto: create-drop
+#    defer-datasource-initialization: false
+
+ponto:
+  coletor:
+    url: localhost-ponto
+servidor:
+  jsarh:
+    url: localhost-jsarh

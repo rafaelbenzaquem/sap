@@ -1,6 +1,6 @@
-package br.jus.trf1.sipe.erro;
+package br.jus.trf1.sipe.externo.jsarh.servidor.exceptions;
 
-import br.jus.trf1.sipe.externo.jsarh.servidor.exceptions.ServidorInexistenteException;
+import br.jus.trf1.sipe.erro.Erro;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

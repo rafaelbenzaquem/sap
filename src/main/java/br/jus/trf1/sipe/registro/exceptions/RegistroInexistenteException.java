@@ -2,7 +2,8 @@ package br.jus.trf1.sipe.registro.exceptions;
 
 import br.jus.trf1.sipe.registro.Registro;
 
-import static br.jus.trf1.sipe.comum.util.ConstantesParaDataTempo.MSG_ENTIDADE_INEXISTENTE;
+import static br.jus.trf1.sipe.comum.util.PadroesDeMensagem.MSG_ENTIDADE_INEXISTENTE;
+
 
 public class RegistroInexistenteException extends RuntimeException {
 

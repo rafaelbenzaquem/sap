@@ -6,13 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
 
-import static br.jus.trf1.sipe.comum.util.ConstantesParaDataTempo.MSG_ENTIDADE_INEXISTENTE;
+import static br.jus.trf1.sipe.comum.util.PadroesDeMensagem.MSG_ENTIDADE_INEXISTENTE;
 
 @Slf4j
-public class PontoNaoEncontradoException extends RuntimeException {
+public class PontoInexistenteException extends RuntimeException {
 
 
-    public PontoNaoEncontradoException(String matricula, LocalDate dia) {
+    public PontoInexistenteException(String matricula, LocalDate dia) {
         this(MSG_ENTIDADE_INEXISTENTE.formatted(Ponto.class.getSimpleName(), PontoId.builder().
                 matricula(matricula).
                 dia(dia).
@@ -20,7 +20,7 @@ public class PontoNaoEncontradoException extends RuntimeException {
                 toString()));
     }
 
-    public PontoNaoEncontradoException(String message) {
+    public PontoInexistenteException(String message) {
         super(message);
         log.warn(message);
     }

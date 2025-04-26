@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalTime;
 
-import static br.jus.trf1.sipe.comum.util.ConstantesParaDataTempo.PADRAO_ENTRADA_TEMPO;
+import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_ENTRADA_TEMPO;
 
 public record RegistroNovoRequest(@NotNull(message = "O campo 'hora' não pode ser nulo!")
                                   @JsonFormat(pattern = PADRAO_ENTRADA_TEMPO, shape = JsonFormat.Shape.STRING)

@@ -6,7 +6,7 @@ import br.jus.trf1.sipe.comum.util.DataTempoUtil;
 
 import java.time.LocalDate;
 
-import static br.jus.trf1.sipe.comum.util.ConstantesParaDataTempo.PADRAO_SAIDA_DATA;
+import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_SAIDA_DATA;
 
 public class RegistroExistenteException extends RuntimeException {
 
