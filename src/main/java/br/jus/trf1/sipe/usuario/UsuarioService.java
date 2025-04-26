@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.usuario;
 
-import br.jus.trf1.sipe.comum.AtualizaEntidadeComCamposUnicosExistentesException;
+import br.jus.trf1.sipe.comum.exceptions.CamposUnicosExistentesException;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioInexistenteException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -42,21 +42,21 @@ public class UsuarioService {
     }
 
     public Usuario atualiza(Usuario usuario) {
-        var mapCamposMensagem = new HashMap<String, String>();
+        var mapCampoMensagem = new HashMap<String, String>();
 
         var existeCracha = usuarioRepository.checaSeExisteUsuarioComCracha(usuario.getCracha(), usuario.getId());
         var existeMatricula = usuarioRepository.checaSeExisteUsuarioComMatricula(usuario.getMatricula(), usuario.getId());
 
         if (existeCracha) {
-            mapCamposMensagem.put("cracha", "Existe usuário com crachá = " + usuario.getCracha());
+            mapCampoMensagem.put("cracha", "Existe usuário com crachá = " + usuario.getCracha());
         }
         if (existeMatricula) {
-            mapCamposMensagem.put("matricula", "Existe usuário com matrícula = " + usuario.getMatricula());
+            mapCampoMensagem.put("matricula", "Existe usuário com matrícula = " + usuario.getMatricula());
         }
 
-        if (mapCamposMensagem.isEmpty()) {
+        if (mapCampoMensagem.isEmpty()) {
             return usuarioRepository.save(usuario);
         }
-        throw new AtualizaEntidadeComCamposUnicosExistentesException(mapCamposMensagem);
+        throw new CamposUnicosExistentesException(mapCampoMensagem);
     }
 }

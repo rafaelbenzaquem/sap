@@ -1,22 +1,22 @@
-package br.jus.trf1.sipe.comum;
+package br.jus.trf1.sipe.comum.exceptions;
 
 import lombok.Getter;
 
 import java.util.Map;
 
 @Getter
-public class AtualizaEntidadeComCamposUnicosExistentesException extends RuntimeException {
+public class CamposUnicosExistentesException extends RuntimeException {
 
-    private final Map<String, String> mapCamposMensagens;
+    private final Map<String, String> mapCampoUnicoMensagem;
 
-    public AtualizaEntidadeComCamposUnicosExistentesException(Map<String, String> mapCamposMensagens) {
-        this(formataMensagem(mapCamposMensagens), mapCamposMensagens);
+    public CamposUnicosExistentesException(Map<String, String> mapCampoUnicoMensagem) {
+        this(formataMensagem(mapCampoUnicoMensagem), mapCampoUnicoMensagem);
     }
 
 
-    public AtualizaEntidadeComCamposUnicosExistentesException(String message, Map<String, String> mapCamposMensagens) {
+    public CamposUnicosExistentesException(String message, Map<String, String> mapCampoUnicoMensagem) {
         super(message);
-        this.mapCamposMensagens = mapCamposMensagens;
+        this.mapCampoUnicoMensagem = mapCampoUnicoMensagem;
     }
 
 

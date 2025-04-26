@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.erro;
 
-import br.jus.trf1.sipe.comum.AtualizaEntidadeComCamposUnicosExistentesException;
+import br.jus.trf1.sipe.comum.exceptions.CamposUnicosExistentesException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -27,13 +27,13 @@ public class ValidacaoExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    @ExceptionHandler(AtualizaEntidadeComCamposUnicosExistentesException.class)
-    public ResponseEntity<Erro> validacaoException(AtualizaEntidadeComCamposUnicosExistentesException ex, HttpServletRequest request) {
+    @ExceptionHandler(CamposUnicosExistentesException.class)
+    public ResponseEntity<Erro> validacaoException(CamposUnicosExistentesException ex, HttpServletRequest request) {
         var error = new ErroValidacao(HttpStatus.BAD_REQUEST.value(),
                 "Erro de validação.",
                 System.currentTimeMillis(),
                 request.getRequestURI());
-        ex.getMapCamposMensagens().forEach(error::addError);
+        ex.getMapCampoUnicoMensagem().forEach(error::addError);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
