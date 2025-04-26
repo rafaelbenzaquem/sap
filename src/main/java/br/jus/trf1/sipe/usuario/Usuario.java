@@ -16,7 +16,10 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "usuarios", schema = "sispontodb")
+@Table(name = "usuarios", schema = "sispontodb",uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"matricula"}, name = "uk_usuario_matricula"),
+        @UniqueConstraint(columnNames = {"cracha"}, name = "uk_usuario_cracha")
+})
 public class Usuario {
 
     @Id
