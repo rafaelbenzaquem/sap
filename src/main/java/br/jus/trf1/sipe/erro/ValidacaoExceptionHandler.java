@@ -1,5 +1,6 @@
 package br.jus.trf1.sipe.erro;
 
+import br.jus.trf1.sipe.comum.AtualizaEntidadeComCamposUnicosExistentesException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,16 @@ public class ValidacaoExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
+    @ExceptionHandler(AtualizaEntidadeComCamposUnicosExistentesException.class)
+    public ResponseEntity<Erro> validacaoException(AtualizaEntidadeComCamposUnicosExistentesException ex, HttpServletRequest request) {
+        var error = new ErroValidacao(HttpStatus.BAD_REQUEST.value(),
+                "Erro de validação.",
+                System.currentTimeMillis(),
+                request.getRequestURI());
+        ex.getMapCamposMensagens().forEach(error::addError);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Erro> validacaoException(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
         log.warn("MethodArgumentTypeMismatchException: parâmetro '{}'", ex.getName());
@@ -44,7 +55,7 @@ public class ValidacaoExceptionHandler {
         log.warn("DateTimeParseException: mensagem '{}'", ex.getMessage());
 
         Erro error = new Erro(HttpStatus.BAD_REQUEST.value(),
-                ex.getParsedString()+" não está no formato correto de data : ddMMyyyy",
+                ex.getParsedString() + " não está no formato correto de data : ddMMyyyy",
                 System.currentTimeMillis(),
                 request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);

@@ -1,14 +1,12 @@
 package br.jus.trf1.sipe.usuario.web;
 
-import br.jus.trf1.sipe.usuario.exceptions.UsuarioInexistenteException;
-import br.jus.trf1.sipe.usuario.UsuarioRepository;
+import br.jus.trf1.sipe.usuario.UsuarioService;
 import br.jus.trf1.sipe.usuario.web.dto.UsuarioAtualizadoRequest;
 import br.jus.trf1.sipe.usuario.web.dto.UsuarioResponse;
 import jakarta.validation.Valid;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -17,10 +15,10 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping(value = "/v1/sipe/usuarios")
 public class UsuarioUpdateController {
 
-    private final UsuarioRepository repository;
+    private final UsuarioService service;
 
-    public UsuarioUpdateController(UsuarioRepository repository) {
-        this.repository = repository;
+    public UsuarioUpdateController(UsuarioService service) {
+        this.service = service;
     }
 
     @PutMapping("/{id}")
@@ -28,25 +26,20 @@ public class UsuarioUpdateController {
                                                                          @RequestBody
                                                                          @Valid UsuarioAtualizadoRequest request) {
 
-        var usuarioOpt = repository.findById(id);
+        var usuario = service.buscaPorId(id);
+        usuario.setNome(request.nome());
+        usuario.setCracha(request.cracha());
+        usuario.setMatricula(request.matricula());
+        usuario.setHoraDiaria(request.horaDiaria());
 
-        if (usuarioOpt.isPresent()) {
-            var usuario = usuarioOpt.get();
-            usuario.setNome(request.nome());
-            usuario.setCracha(request.cracha());
-            usuario.setMatricula(request.matricula());
-            usuario.setHoraDiaria(request.horaDiaria());
+        var usuarioAtualizado = service.atualiza(usuario);
 
-            var usuarioAtualizado = repository.save(usuario);
+        var entityModel = EntityModel.of(
+                usuarioAtualizado.toResponse(),
+                linkTo(methodOn(UsuarioReadController.class).buscaVinculo(usuarioAtualizado.getId())).withSelfRel(),
+                linkTo(methodOn(UsuarioDeleteController.class).apagaVinculo(usuarioAtualizado.getId())).withRel("delete"));
 
-            var entityModel = EntityModel.of(
-                    usuarioAtualizado.toResponse(),
-                    linkTo(methodOn(UsuarioReadController.class).buscaVinculo(usuarioAtualizado.getId())).withSelfRel(),
-                    linkTo(methodOn(UsuarioDeleteController.class).apagaVinculo(usuarioAtualizado.getId())).withRel("delete"));
-
-            return ResponseEntity.ok().body(entityModel);
-        }
-        throw new UsuarioInexistenteException(id);
+        return ResponseEntity.ok().body(entityModel);
     }
 
 

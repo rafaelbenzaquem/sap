@@ -1,11 +1,12 @@
 package br.jus.trf1.sipe.usuario;
 
+import br.jus.trf1.sipe.comum.AtualizaEntidadeComCamposUnicosExistentesException;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioInexistenteException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.HashMap;
 
 @Service
 public class UsuarioService {
@@ -28,9 +29,6 @@ public class UsuarioService {
         return usuarioRepository.findAll(pageable);
     }
 
-    public List<Usuario> listar() {
-        return usuarioRepository.findAll();
-    }
 
     public Usuario buscaPorMatricula(String matricula) {
         return usuarioRepository.findUsuarioByMatricula(matricula).
@@ -43,4 +41,22 @@ public class UsuarioService {
                 orElseThrow(() -> new UsuarioInexistenteException(id));
     }
 
+    public Usuario atualiza(Usuario usuario) {
+        var mapCamposMensagem = new HashMap<String, String>();
+
+        var existeCracha = usuarioRepository.checaSeExisteUsuarioComCracha(usuario.getCracha(), usuario.getId());
+        var existeMatricula = usuarioRepository.checaSeExisteUsuarioComMatricula(usuario.getMatricula(), usuario.getId());
+
+        if (existeCracha) {
+            mapCamposMensagem.put("cracha", "Existe usuário com crachá = " + usuario.getCracha());
+        }
+        if (existeMatricula) {
+            mapCamposMensagem.put("matricula", "Existe usuário com matrícula = " + usuario.getMatricula());
+        }
+
+        if (mapCamposMensagem.isEmpty()) {
+            return usuarioRepository.save(usuario);
+        }
+        throw new AtualizaEntidadeComCamposUnicosExistentesException(mapCamposMensagem);
+    }
 }
