@@ -3,8 +3,6 @@ package br.jus.trf1.sipe.arquivo;
 import br.jus.trf1.sipe.arquivo.web.dto.*;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
-
 public interface ArquivoHandler {
 
     ArquivoMetadataResponse armazena(ArquivoNovoRequest arquivo);

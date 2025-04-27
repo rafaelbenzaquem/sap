@@ -3,6 +3,7 @@ package br.jus.trf1.sipe.relatorio.model;
 import lombok.Getter;
 
 import java.time.LocalTime;
+import java.util.Objects;
 
 import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_SAIDA_TEMPO;
 import static br.jus.trf1.sipe.comum.util.DataTempoUtil.paraString;
@@ -17,7 +18,6 @@ public class RegistroModel implements Comparable<RegistroModel> {
 
     private final String sentido;
     private final LocalTime hora;
-    private RegistroModel oRegistroModel;
 
     private RegistroModel(String sentido, LocalTime hora) {
         this.sentido = sentido;
@@ -48,10 +48,11 @@ public class RegistroModel implements Comparable<RegistroModel> {
     }
 
     @Override
-    public int compareTo(RegistroModel oRegistroModel) {
+    public int compareTo(RegistroModel o) {
+        Objects.requireNonNull(o);
         if (hora == null) {
             return 1;
         }
-        return hora.compareTo(oRegistroModel.getHora());
+        return hora.compareTo(o.getHora());
     }
 }
