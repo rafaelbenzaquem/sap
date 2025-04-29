@@ -1,5 +1,7 @@
 package br.jus.trf1.sipe.registro.web;
 
+import br.jus.trf1.sipe.ponto.Ponto;
+import br.jus.trf1.sipe.ponto.PontoService;
 import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.registro.RegistroService;
 import br.jus.trf1.sipe.registro.web.dto.RegistroAtualizadoRequest;
@@ -28,9 +30,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class RegistroUpdateController {
 
     private final RegistroService registroService;
+    private final PontoService pontoService;
 
-    public RegistroUpdateController(RegistroService registroService) {
+    public RegistroUpdateController(RegistroService registroService, PontoService pontoService) {
         this.registroService = registroService;
+        this.pontoService = pontoService;
     }
 
     @PatchMapping("/pontos")
@@ -42,7 +46,9 @@ public class RegistroUpdateController {
 
         log.info("Atualizando Registros do ponto - {} - {}", matricula, dia);
 
-        List<Registro> registros = registroService.atualizaRegistrosNovos(matricula, dia);
+
+        Ponto ponto = pontoService.buscaPonto(matricula, dia);
+        List<Registro> registros = registroService.atualizaRegistrosNovos(ponto);
 
         return ResponseEntity.ok(addLinksHATEOAS(registros));
     }
@@ -60,9 +66,8 @@ public class RegistroUpdateController {
         log.info("Adiciona novo registro no Ponto - {} - {}",
                 matricula, paraString(dia, PADRAO_SAIDA_DATA));
 
-
-
-        Registro registro = registroService.atualizaRegistro(matricula, dia,registroAtualizadoRequest.toModel());
+        var ponto = pontoService.buscaPonto(matricula, dia);
+        var registro = registroService.atualizaRegistro(ponto, registroAtualizadoRequest.toModel());
         var registroModel = EntityModel.of(RegistroResponse.of(registro),
                 linkTo(methodOn(RegistroReadController.class).buscaRegistro(registro.getId())).withSelfRel());
 

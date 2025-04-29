@@ -38,6 +38,10 @@ public final class Registro implements Comparable<Registro> {
     @JoinColumn(name = "registro_anterior_id",foreignKey = @ForeignKey(name = "fk_registro_anterior"))
     private Registro registroAnterior;
 
+    @OneToOne
+    @JoinColumn(name = "registro_posterior_id",foreignKey = @ForeignKey(name = "fk_registro_posterior"))
+    private Registro registroPosterior;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumns(value = {
             @JoinColumn(name = "ponto_matricula", referencedColumnName = "matricula", nullable = false),

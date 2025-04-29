@@ -20,7 +20,6 @@ import static br.jus.trf1.sipe.comum.util.DataTempoUtil.paraString;
 @Service
 public class RegistroService {
 
-    private final PontoService pontoService;
     private final UsuarioService usuarioService;
     private final HistoricoService historicoService;
     private final RegistroRepository registroRepository;
@@ -28,12 +27,10 @@ public class RegistroService {
 
     public RegistroService(UsuarioService usuarioService,
                            HistoricoService historicoService,
-                           RegistroRepository registroRepository,
-                           PontoService pontoService) {
+                           RegistroRepository registroRepository) {
         this.usuarioService = usuarioService;
         this.historicoService = historicoService;
         this.registroRepository = registroRepository;
-        this.pontoService = pontoService;
     }
 
     public Registro buscaRegistroPorId(Long id) {
@@ -93,8 +90,10 @@ public class RegistroService {
         return registroRepository.listarRegistrosPonto(matricula, dia);
     }
 
-    public List<Registro> atualizaRegistrosNovos(String matricula, LocalDate dia) {
-        var ponto = pontoService.buscaPonto(matricula, dia);
+    public List<Registro> atualizaRegistrosNovos(Ponto ponto) {
+
+        var matricula = ponto.getId().getMatricula();
+        var dia = ponto.getId().getDia();
 
         var registrosAtuais = registroRepository.listarRegistrosPonto(matricula, dia);
         var vinculo = usuarioService.buscaPorMatricula(matricula);
@@ -132,14 +131,12 @@ public class RegistroService {
 
     }
 
-    public List<Registro> adicionaNovosRegistros(String matricula, LocalDate dia, List<Registro> registros) {
+    public List<Registro> adicionaNovosRegistros(Ponto ponto, List<Registro> registros) {
 
-        final var ponto = pontoService.buscaPonto(matricula, dia);
-        ponto.getRegistros().addAll(registros.stream().
-                map(registro -> addPonto(registro, ponto)).toList());
-        var pontoSalvo = pontoService.salvaPonto(ponto);
+       var registrosNovos = registros.stream().
+                map(registro -> addPonto(registro, ponto)).toList();
 
-        return pontoSalvo.getRegistros();
+        return registroRepository.saveAll(registrosNovos);
     }
 
     public Registro addPonto(Registro registro, Ponto ponto) {
@@ -154,8 +151,7 @@ public class RegistroService {
                 .build();
     }
 
-    public Registro atualizaRegistro(String matricula, LocalDate dia, Registro registroAtualizado) {
-        var ponto = pontoService.buscaPonto(matricula, dia);
+    public Registro atualizaRegistro(Ponto ponto, Registro registroAtualizado) {
         registroAtualizado.setPonto(ponto);
         return registroRepository.save(registroAtualizado);
     }

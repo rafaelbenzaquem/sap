@@ -31,7 +31,6 @@ public class RegistroReadController {
                                                                                                  @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
                                                                                                  @RequestParam LocalDate dia) {
         var registros = registroService.listarRegistrosPonto(matricula, dia);
-
         return ResponseEntity.ok(addLinksHATEOAS(registros));
     }
 

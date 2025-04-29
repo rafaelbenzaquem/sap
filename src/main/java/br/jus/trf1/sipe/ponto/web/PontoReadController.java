@@ -40,7 +40,7 @@ public class PontoReadController {
         log.info("Buscando Ponto - {} - {}", matricula, diaFormatado);
         var ponto = pontoService.buscaPonto(matricula, dia);
         var uri = ServletUriComponentsBuilder.fromCurrentContextPath().
-                path("/v1/sap/registros/pontos?matricula={matricula}&dia={dia}").
+                path("/v1/sipe/registros/pontos?matricula={matricula}&dia={dia}").
                 buildAndExpand(matricula, diaFormatado).toUriString();
         var pontoModel = EntityModel.of(PontoNovoResponse.of(ponto),
                 linkTo(methodOn(PontoReadController.class).buscaPonto(matricula, dia)).withSelfRel(),
@@ -69,7 +69,7 @@ public class PontoReadController {
             var dia = ponto.getId().getDia();
             var diaFormatado = paraString(dia);
             var uri = ServletUriComponentsBuilder.fromCurrentContextPath().
-                    path("/v1/sap/registros/pontos?matricula={matricula}&dia={dia}").
+                    path("/v1/sipe/registros/pontos?matricula={matricula}&dia={dia}").
                     buildAndExpand(matricula, diaFormatado).toUriString();
             return EntityModel.of(PontoNovoResponse.of(ponto),
                     linkTo(methodOn(PontoReadController.class).buscaPonto(matricula, dia)).withSelfRel(),
