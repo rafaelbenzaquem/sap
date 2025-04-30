@@ -1,6 +1,7 @@
 package br.jus.trf1.sipe.externo.coletor.historico.dto;
 
 import br.jus.trf1.sipe.registro.Registro;
+import br.jus.trf1.sipe.registro.Sentido;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
@@ -13,9 +14,8 @@ public record HistoricoResponse(@JsonProperty("acesso") Integer acesso,
     public Registro toModel() {
         return Registro.builder().
                 hora(dataHora.toLocalTime()).
-                sentido(sentido).
+                sentido(Sentido.toEnum(sentido).getCodigo()).
                 codigoAcesso(acesso).
-                versao(1).
                 build();
     }
 }

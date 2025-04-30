@@ -28,21 +28,15 @@ public final class Registro implements Comparable<Registro> {
     private Integer codigoAcesso;
     private Character sentido;
 
-    private Integer versao;
-
     @CreationTimestamp
     private Timestamp dataCadastro;
 
-
     @OneToOne
-    @JoinColumn(name = "registro_anterior_id",foreignKey = @ForeignKey(name = "fk_registro_anterior"))
-    private Registro registroAnterior;
+    @JoinColumn(name = "registro_novo_id",foreignKey = @ForeignKey(name = "fk_registro_novo"))
+    private Registro registroNovo;
 
-    @OneToOne
-    @JoinColumn(name = "registro_posterior_id",foreignKey = @ForeignKey(name = "fk_registro_posterior"))
-    private Registro registroPosterior;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumns(value = {
             @JoinColumn(name = "ponto_matricula", referencedColumnName = "matricula", nullable = false),
             @JoinColumn(name = "ponto_dia", referencedColumnName = "dia", nullable = false)
@@ -62,7 +56,6 @@ public final class Registro implements Comparable<Registro> {
     public int compareTo(Registro oRegistro) {
         return hora.compareTo(oRegistro.getHora());
     }
-
 
     @Override
     public boolean equals(Object o) {

@@ -23,7 +23,6 @@ public record RegistroNovoRequest(@NotNull(message = "O campo 'hora' não pode s
                 .hora(hora)
                 .sentido(Sentido.toEnum(sentido).getCodigo())
                 .codigoAcesso(codigoAcesso)
-                .versao(1)
                 .build();
     }
 }

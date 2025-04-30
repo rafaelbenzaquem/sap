@@ -50,7 +50,7 @@ public class RegistroCreateController {
                 matricula, paraString(dia, PADRAO_SAIDA_DATA), registrosNovos.size());
 
         Ponto ponto = pontoService.buscaPonto(matricula, dia);
-        List<Registro> registros = registroService.adicionaNovosRegistros(ponto,
+        List<Registro> registros = registroService.addRegistros(ponto,
                 registrosNovos.stream().map(RegistroNovoRequest::toModel).toList());
 
         return ResponseEntity.ok(addLinksHATEOAS(registros));
