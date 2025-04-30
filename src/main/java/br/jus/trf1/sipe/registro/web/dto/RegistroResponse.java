@@ -14,6 +14,7 @@ public record RegistroResponse(Long id,
                                @JsonFormat(pattern = "HH:mm:ss", shape = JsonFormat.Shape.STRING)
                                LocalTime hora,
                                String sentido,
+                               Boolean ativo,
                                @JsonProperty("codigo_acesso")
                                Integer codigoAcesso
 ) {
@@ -22,6 +23,7 @@ public record RegistroResponse(Long id,
                 .id(registro.getId())
                 .hora(registro.getHora())
                 .sentido(registro.getSentido().getPalavra())
+                .ativo(registro.getAtivo())
                 .codigoAcesso(registro.getCodigoAcesso())
                 .build();
     }

@@ -17,7 +17,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "registros",schema = "sispontodb")
+@Table(name = "registros", schema = "sispontodb")
 public final class Registro implements Comparable<Registro> {
 
     @Id
@@ -28,11 +28,14 @@ public final class Registro implements Comparable<Registro> {
     private Integer codigoAcesso;
     private Character sentido;
 
+    @Column
+    private Boolean ativo;
+
     @CreationTimestamp
     private Timestamp dataCadastro;
 
     @OneToOne
-    @JoinColumn(name = "registro_novo_id",foreignKey = @ForeignKey(name = "fk_registro_novo"))
+    @JoinColumn(name = "registro_novo_id", foreignKey = @ForeignKey(name = "fk_registro_novo"))
     private Registro registroNovo;
 
 
@@ -40,7 +43,7 @@ public final class Registro implements Comparable<Registro> {
     @JoinColumns(value = {
             @JoinColumn(name = "ponto_matricula", referencedColumnName = "matricula", nullable = false),
             @JoinColumn(name = "ponto_dia", referencedColumnName = "dia", nullable = false)
-    },foreignKey = @ForeignKey(name = "fk_registro_ponto"))
+    }, foreignKey = @ForeignKey(name = "fk_registro_ponto"))
     private Ponto ponto;
 
 

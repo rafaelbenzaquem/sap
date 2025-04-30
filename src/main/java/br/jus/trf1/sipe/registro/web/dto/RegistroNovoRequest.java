@@ -16,12 +16,15 @@ public record RegistroNovoRequest(@NotNull(message = "O campo 'hora' não pode s
                                   LocalTime hora,
                                   @NotBlank(message = "O campo 'sentido' não pode ser branco ou nulo!")
                                   String sentido,
+                                  @NotNull(message = "O campo 'ativo' não pode ser nulo!")
+                                  Boolean ativo,
                                   @JsonProperty(value = "codigo_acesso")
                                   Integer codigoAcesso) {
     public Registro toModel() {
         return Registro.builder()
                 .hora(hora)
                 .sentido(Sentido.toEnum(sentido).getCodigo())
+                .ativo(ativo)
                 .codigoAcesso(codigoAcesso)
                 .build();
     }
