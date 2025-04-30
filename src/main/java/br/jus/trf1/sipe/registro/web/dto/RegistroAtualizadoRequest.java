@@ -16,12 +16,15 @@ public record RegistroAtualizadoRequest(@NotNull(message = "O campo 'id' não po
                                         @JsonFormat(pattern = PADRAO_ENTRADA_TEMPO, shape = JsonFormat.Shape.STRING)
                                         LocalTime hora,
                                         @NotBlank(message = "O campo 'sentido' não pode ser branco ou nulo!")
-                                        String sentido) {
+                                        String sentido,
+                                        @NotNull(message = "O campo 'ativo' não pode ser nulo!")
+                                        Boolean ativo) {
     public Registro toModel() {
         return Registro.builder()
                 .id(id)
                 .hora(hora)
                 .sentido(Sentido.toEnum(sentido).getCodigo())
+                .ativo(ativo)
                 .build();
     }
 }

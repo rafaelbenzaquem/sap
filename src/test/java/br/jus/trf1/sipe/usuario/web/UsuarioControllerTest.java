@@ -7,6 +7,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.isA;
 
 class UsuarioControllerTest extends AbstractWebTest {
 
@@ -28,7 +29,7 @@ class UsuarioControllerTest extends AbstractWebTest {
                 when().
                 get(path);
     }
-    
+
     @Test
     @Sql("/data/usuario/usuario_test_nao_existe.sql")
     void buscaUsuarioInexistente404() {
@@ -38,7 +39,7 @@ class UsuarioControllerTest extends AbstractWebTest {
                 when().
                 get("/v1/sipe/usuarios/999");
     }
-    
+
     @Test
     @Sql("/data/usuario/usuario_test_lista.sql")
     void listaUsuariosComSucesso200() {
@@ -49,7 +50,7 @@ class UsuarioControllerTest extends AbstractWebTest {
                 when().
                 get("/v1/sipe/usuarios?page=0&size=3");
     }
-    
+
     @Test
     @Sql("/data/usuario/usuario_test_existe.sql")
     void apagaUsuarioComSucesso200() {
@@ -63,6 +64,21 @@ class UsuarioControllerTest extends AbstractWebTest {
                 body("hora_diaria", equalTo(7)).
                 when().
                 delete("/v1/sipe/usuarios/1");
+    }
+
+
+    @Test
+    @Sql("/data/usuario/usuario_test_existe.sql")
+    void apagaUsuarioException404() {
+        given().
+                expect().
+                statusCode(404).
+                body("status_code", equalTo(404)).
+                body("mensagem", equalTo("Não existe Usuario com id: 2")).
+                body("timestamp", isA(Long.class)).
+                body("path", equalTo("/v1/sipe/usuarios/2")).
+                when().
+                delete("/v1/sipe/usuarios/2");
     }
 
 }

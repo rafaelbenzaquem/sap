@@ -16,8 +16,8 @@ spring:
 
   jpa:
     show-sql: true
-#    hibernate:
-#      ddl-auto: create-drop
+    hibernate:
+      ddl-auto: create-drop
 #    defer-datasource-initialization: false
 
 ponto:

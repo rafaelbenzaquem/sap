@@ -29,7 +29,7 @@ public class UsuarioCreateController {
         log.info("Criando usuario: {}", request);
         var usuario = repository.save(request.paraEntidade());
 
-        var uriResponse = ServletUriComponentsBuilder.fromCurrentContextPath().path("/vinculos/{id}").buildAndExpand(usuario.getId()).toUri();
+        var uriResponse = ServletUriComponentsBuilder.fromCurrentContextPath().path("/usuarios/{id}").buildAndExpand(usuario.getId()).toUri();
 
         var entityModel = EntityModel.of(usuario.toResponse(), linkTo(methodOn(UsuarioReadController.class).buscaVinculo(usuario.getId())).withSelfRel(),
                 linkTo(methodOn(UsuarioDeleteController.class).apagaVinculo(usuario.getId())).withRel("delete"));

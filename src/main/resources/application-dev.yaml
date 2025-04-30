@@ -16,8 +16,8 @@ spring:
     properties:
       hibernate:
         show_sql: false
-#        hbm2ddl:
-#          auto: create
+        hbm2ddl:
+          auto: create
 #        physical_naming_strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
   datasource:
     url: ${MYSQL_URL}

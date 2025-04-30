@@ -1,3 +1,6 @@
 -- SQL script para teste de busca de usuário existente
-INSERT INTO sispontodb.usuarios (id, nome, matricula, cracha, hora_diaria)
+-- Cria schema e insere um usuário
+CREATE SCHEMA IF NOT EXISTS SISPONTODB;
+SET SCHEMA SISPONTODB;
+INSERT INTO USUARIOS (ID, NOME, MATRICULA, CRACHA, HORA_DIARIA)
   VALUES (1, 'RAFAEL BENZAQUEM NETO', 'RR20178', '0000000000020178', 7);

@@ -40,7 +40,7 @@ public class RegistroService {
 
 
     public List<Registro> listarRegistrosPonto(String matricula, LocalDate dia) {
-        return registroRepository.listarRegistrosPonto(matricula, dia);
+        return registroRepository.listarRegistrosAtuaisAtivosDoPonto(matricula, dia);
     }
 
     public List<Registro> atualizaRegistrosNovos(Ponto ponto) {
@@ -48,11 +48,25 @@ public class RegistroService {
         var matricula = ponto.getId().getMatricula();
         var dia = ponto.getId().getDia();
 
-        var registrosAtuais = registroRepository.listarRegistrosPonto(matricula, dia);
+        var registrosAtuais = registroRepository.listarRegistrosHistoricosDoPonto(matricula, dia);
+
+        var registros = filtraNovosRegistros(ponto, registrosAtuais);
+
+        registroRepository.saveAll(registros);
+
+        return registroRepository.listarRegistrosAtuaisAtivosDoPonto(matricula, dia);
+
+    }
+
+    private List<Registro> filtraNovosRegistros(Ponto ponto, List<Registro> registrosAtuais) {
+        var matricula = ponto.getId().getMatricula();
+        var dia = ponto.getId().getDia();
+
         var vinculo = usuarioService.buscaPorMatricula(matricula);
         var historicos = historicoService.buscarHistoricoDeAcesso(
                 dia, null, vinculo.getCracha(), null, null);
-        var registros = historicos.stream().
+
+        return historicos.stream().
                 filter(historico ->
                         {
                             log.debug("historico {}", historico);
@@ -72,15 +86,11 @@ public class RegistroService {
                                 .codigoAcesso(hr.acesso())
                                 .hora(hr.dataHora().toLocalTime())
                                 .sentido(hr.sentido())
+                                .ativo(true)
                                 .ponto(ponto)
                                 .build()
                 )
                 .toList();
-
-        registroRepository.saveAll(registros);
-
-        return registroRepository.listarRegistrosPonto(matricula, dia);
-
     }
 
     public List<Registro> addRegistros(Ponto ponto, List<Registro> registros) {
@@ -96,6 +106,7 @@ public class RegistroService {
                 .id(registro.getId())
                 .hora(registro.getHora())
                 .sentido(registro.getSentido().getCodigo())
+                .ativo(true)
                 .codigoAcesso(registro.getCodigoAcesso())
                 .ponto(ponto)
                 .build();
