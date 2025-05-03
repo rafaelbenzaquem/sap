@@ -36,7 +36,7 @@ class UsuarioServiceIntegrationTest {
         Pageable page = PageRequest.of(0, 10);
         Page<Usuario> p = usuarioService.buscarVinculosPorNomeOuCrachaOuMatricula("Alice", null, null, page);
         assertEquals(1, p.getTotalElements());
-        assertEquals("Alice Wonderland", p.getContent().get(0).getNome());
+        assertEquals("Alice Wonderland", p.getContent().getFirst().getNome());
     }
 
     @Test

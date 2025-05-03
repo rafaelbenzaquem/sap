@@ -23,12 +23,12 @@ public class ArquivoDBHandler implements ArquivoHandler {
 
     @Override
     public ArquivoMetadataResponse armazena(ArquivoNovoRequest arquivo) {
-        Arquivo arquivoSalvo = arquivoRepository.save(arquivo.toModel());
         if (arquivoRepository.checaSeExisteArquivoComNome(arquivo.nome(), arquivo.id())) {
             var map = new HashMap<String, String>();
             map.put("nome", "já existe arquivo com nome " + arquivo.nome());
             throw new CamposUnicosExistentesException(map);
         }
+        Arquivo arquivoSalvo = arquivoRepository.save(arquivo.toModel());
         return ArquivoMetadataResponse.of(arquivoSalvo);
     }
 
