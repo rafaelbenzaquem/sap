@@ -6,6 +6,7 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -38,7 +39,7 @@ public class PontoModel {
         this.registrosDataSource = new JRBeanCollectionDataSource(registrosModel, false);
     }
 
-    public PontoModel(Ponto ponto,String descricao) {
+    public PontoModel(Ponto ponto, String descricao) {
         this.dia = ponto.getId().getDia();
         this.descricao = descricao;
         this.permanencia = ponto.getHorasPermanencia();
@@ -56,16 +57,17 @@ public class PontoModel {
     }
 
     private List<RegistroModel> populaRegistrosModel(Ponto ponto) {
-       var registros = new java.util.ArrayList<>(IntStream.range(0, 12)
-               .mapToObj(index -> {
-                   if (index < ponto.getRegistros().size()) {
-                       var registro = ponto.getRegistros().get(index);
-                       return RegistroModel.of(registro.getSentido().getPalavra(), registro.getHora());
-                   }
-                   return RegistroModel.VAZIO;
-               }).toList());
-        Collections.sort(registros);
-       return registros;
+        var registrosModel = new ArrayList<>(IntStream.range(0, 12)
+                .mapToObj(index -> {
+                    var registros = ponto.getRegistros().stream().filter(r -> r.getRegistroNovo() == null && r.getAtivo()).toList();
+                    if (index < registros.size()) {
+                        var registro = registros.get(index);
+                        return RegistroModel.of(registro.getSentido().getPalavra(), registro.getHora());
+                    }
+                    return RegistroModel.VAZIO;
+                }).toList());
+        Collections.sort(registrosModel);
+        return registrosModel;
     }
 
 }

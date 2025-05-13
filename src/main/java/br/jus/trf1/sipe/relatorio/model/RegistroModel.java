@@ -53,6 +53,9 @@ public class RegistroModel implements Comparable<RegistroModel> {
         if (hora == null) {
             return 1;
         }
+        if(o.getHora() == null) {
+            return -1;
+        }
         return hora.compareTo(o.getHora());
     }
 }

@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>br.jus.trf1</groupId>
 	<artifactId>sipe</artifactId>
-	<version>0.3.5-SNAPSHOT</version>
+	<version>0.3.6</version>
 	<name>sipe</name>
 	<description>Api restfull para Sistemas Integrados de Ponto Eletrônico - SIPE</description>
 	<properties>

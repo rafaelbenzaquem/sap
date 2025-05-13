@@ -51,8 +51,8 @@ public class Ponto {
 
     public Duration getHorasPermanencia() {
         log.info("getHorasPermanencia - buscando registros do ponto id:{}", this.id);
-        registros = getRegistros();
-        if (registros == null || registros.isEmpty()) {
+        var registros = getRegistros().stream().filter(r -> r.getRegistroNovo() == null && r.getAtivo()).toList();
+        if (registros.isEmpty()) {
             log.info("getHorasPermanencia - registros encontrados: 0");
             return Duration.ZERO;
         }
@@ -109,7 +109,7 @@ public class Ponto {
                 entradaPendente = null;
             }
         }
-        return totalHoras;
+        return Duration.ofSeconds((long) (totalHoras.getSeconds() * ponto.getIndice().getValor()));
     }
 
     @Override
