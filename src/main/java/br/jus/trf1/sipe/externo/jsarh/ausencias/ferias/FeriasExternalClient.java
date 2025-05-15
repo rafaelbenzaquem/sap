@@ -1,6 +1,6 @@
-package br.jus.trf1.sipe.externo.jsarh.ausencias.especial;
+package br.jus.trf1.sipe.externo.jsarh.ausencias.ferias;
 
-import br.jus.trf1.sipe.externo.jsarh.ausencias.especial.dto.EspecialResponse;
+import br.jus.trf1.sipe.externo.jsarh.ausencias.ferias.dto.FeriasExternalResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
@@ -15,22 +15,24 @@ import java.util.Optional;
 import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_ENTRADA_DATA;
 
 @Service
-@FeignClient(url = "${servidor.jsarh.url}", fallback = EspecialServiceFallBackImpl.class, name = "especiais")
-public interface EspecialService {
+@FeignClient(url = "${servidor.jsarh.url}", fallback = FeriasExternalServiceFallBackImpl.class, name = "ferias")
+public interface FeriasExternalClient {
 
-    @GetMapping(value = "/v1/sarh/servidores/{matricula}/ausencias/especiais", produces = "application/json")
-    List<EspecialResponse> buscaAusenciasEspeciaisServidorPorPeriodo(
+    @GetMapping(value = "/v1/sarh/servidores/{matricula}/ausencias/ferias", produces = "application/json")
+    List<FeriasExternalResponse> buscaFeriasServidorPorPeriodo(
             @PathVariable("matricula") String matricula,
             @RequestParam(name = "inicio", required = false) @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
             LocalDate inicio,
             @RequestParam(name = "fim", required = false) @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
             LocalDate fim);
 
-    @GetMapping(value = "/v1/sarh/servidores/{matricula}/ausencias/especiais/{dia}", produces = "application/json")
-    Optional<EspecialResponse> buscaAusenciaEspecialServidorNoDia(
+    @GetMapping(value = "/v1/sarh/servidores/{matricula}/ausencias/ferias/{dia}", produces = "application/json")
+    Optional<FeriasExternalResponse> buscaFeriasServidorNoDia(
             @PathVariable("matricula") String matricula,
             @PathVariable("dia")
             @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
             LocalDate dia);
 
+
 }
+

@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.registro;
 
-import br.jus.trf1.sipe.externo.coletor.historico.HistoricoService;
+import br.jus.trf1.sipe.externo.coletor.historico.HistoricoExternalClient;
 import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.registro.exceptions.RegistroInexistenteException;
 import br.jus.trf1.sipe.usuario.UsuarioService;
@@ -18,12 +18,12 @@ import static br.jus.trf1.sipe.comum.util.DataTempoUtil.paraString;
 public class RegistroService {
 
     private final UsuarioService usuarioService;
-    private final HistoricoService historicoService;
+    private final HistoricoExternalClient historicoService;
     private final RegistroRepository registroRepository;
 
 
     public RegistroService(UsuarioService usuarioService,
-                           HistoricoService historicoService,
+                           HistoricoExternalClient historicoService,
                            RegistroRepository registroRepository) {
         this.usuarioService = usuarioService;
         this.historicoService = historicoService;

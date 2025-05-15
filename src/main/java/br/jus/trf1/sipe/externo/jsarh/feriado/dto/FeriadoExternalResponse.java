@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.externo.jsarh.feriado.dto;
 
-import br.jus.trf1.sipe.externo.jsarh.feriado.Feriado;
+import br.jus.trf1.sipe.externo.jsarh.feriado.FeriadoExternal;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +14,7 @@ import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_SAIDA_DATA
 @Builder
 @AllArgsConstructor
 @Getter
-public class FeriadoResponse {
+public class FeriadoExternalResponse {
 
     @JsonFormat(pattern = PADRAO_SAIDA_DATA, shape = JsonFormat.Shape.STRING)
     private final LocalDate data;
@@ -25,8 +25,8 @@ public class FeriadoResponse {
 
     private final Integer tipo;
 
-    public Feriado toModel() {
-        return Feriado.builder()
+    public FeriadoExternal toModel() {
+        return FeriadoExternal.builder()
                 .data(data)
                 .descricao(descricao)
                 .abrangencia(abrangencia)

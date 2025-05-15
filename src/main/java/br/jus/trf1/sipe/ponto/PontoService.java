@@ -1,9 +1,9 @@
 package br.jus.trf1.sipe.ponto;
 
-import br.jus.trf1.sipe.externo.jsarh.ausencias.Ausencia;
-import br.jus.trf1.sipe.externo.jsarh.ausencias.AusenciasService;
-import br.jus.trf1.sipe.externo.jsarh.feriado.FeriadoService;
-import br.jus.trf1.sipe.externo.jsarh.feriado.dto.FeriadoResponse;
+import br.jus.trf1.sipe.externo.jsarh.ausencias.AusenciaExternal;
+import br.jus.trf1.sipe.externo.jsarh.ausencias.AusenciasExternalService;
+import br.jus.trf1.sipe.externo.jsarh.feriado.FeriadoExternalClient;
+import br.jus.trf1.sipe.externo.jsarh.feriado.dto.FeriadoExternalResponse;
 import br.jus.trf1.sipe.ponto.exceptions.PontoExistenteException;
 import br.jus.trf1.sipe.ponto.exceptions.PontoInexistenteException;
 import br.jus.trf1.sipe.registro.RegistroService;
@@ -23,14 +23,14 @@ public class PontoService {
 
     private final PontoRepository pontoRepository;
     private final RegistroService registroService;
-    private final AusenciasService ausenciaService;
-    private final FeriadoService feriadoService;
+    private final AusenciasExternalService ausenciaService;
+    private final FeriadoExternalClient feriadoService;
 
     public PontoService(PontoRepository pontoRepository,
                         RegistroService registroService,
-                        AusenciasService ausenciaService,
+                        AusenciasExternalService ausenciaService,
 
-                        FeriadoService feriadoService) {
+                        FeriadoExternalClient feriadoService) {
         this.pontoRepository = pontoRepository;
         this.registroService = registroService;
         this.ausenciaService = ausenciaService;
@@ -62,14 +62,14 @@ public class PontoService {
         return pontoRepository.buscaPontosPorPeriodo(matricula, inicio, fim);
     }
 
-    private String defineDescricao(String descricao, LocalDate dia, Optional<Ausencia> ausencia, Optional<FeriadoResponse> feriado) {
+    private String defineDescricao(String descricao, LocalDate dia, Optional<AusenciaExternal> ausencia, Optional<FeriadoExternalResponse> feriado) {
         return descricao + "\n" +
                 dia.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.of("pt", "BR")) + "\n" +
                 ausencia.map(a -> ", " + a.getDescricao()).orElse("") + "\n" +
                 feriado.map(f -> ", " + f.getDescricao()).orElse("");
     }
 
-    private IndicePonto defineIndice(LocalDate dia, Optional<Ausencia> ausencia, Optional<FeriadoResponse> feriado) {
+    private IndicePonto defineIndice(LocalDate dia, Optional<AusenciaExternal> ausencia, Optional<FeriadoExternalResponse> feriado) {
         return ausencia.map(a -> IndicePonto.AUSENCIA).
                 orElseGet(() -> feriado.map(f -> IndicePonto.DOMINGO_E_FERIADOS).
                         orElse(dia.getDayOfWeek().getValue() == 7 ? IndicePonto.DOMINGO_E_FERIADOS :

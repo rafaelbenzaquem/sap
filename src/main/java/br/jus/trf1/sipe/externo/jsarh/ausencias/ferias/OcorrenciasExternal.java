@@ -3,17 +3,17 @@ package br.jus.trf1.sipe.externo.jsarh.ausencias.ferias;
 import lombok.Getter;
 
 @Getter
-public enum Ocorrencias {
+public enum OcorrenciasExternal {
 
     SUSPENSAS(7), MARCADAS(1), GOZADAS(2), INTERROMPDIAS(5);
 
     private final int valor;
 
-    Ocorrencias(int valor) {
+    OcorrenciasExternal(int valor) {
         this.valor = valor;
     }
 
-    public static Ocorrencias valueOf(int value) {
+    public static OcorrenciasExternal valueOf(int value) {
         return switch (value) {
             case 7 -> SUSPENSAS;
             case 1 -> MARCADAS;
@@ -23,7 +23,7 @@ public enum Ocorrencias {
         };
     }
 
-    public static Ocorrencias parse(String name) {
+    public static OcorrenciasExternal parse(String name) {
         String upperName = name.toUpperCase();
         return switch (upperName) {
             case "SUSPENSAS" -> SUSPENSAS;

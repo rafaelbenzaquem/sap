@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Ausencia {
+public class AusenciaExternal {
     private LocalDate inicio;
     private LocalDate fim;
     private String descricao;

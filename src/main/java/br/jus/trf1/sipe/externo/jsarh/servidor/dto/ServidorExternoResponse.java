@@ -11,7 +11,7 @@ import java.util.Objects;
 @Builder
 @AllArgsConstructor
 @Getter
-public class ServidorResponse extends RepresentationModel<ServidorResponse> {
+public class ServidorExternoResponse extends RepresentationModel<ServidorExternoResponse> {
 
     private final String matricula;
 
@@ -34,7 +34,7 @@ public class ServidorResponse extends RepresentationModel<ServidorResponse> {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
-        ServidorResponse that = (ServidorResponse) o;
+        ServidorExternoResponse that = (ServidorExternoResponse) o;
         return Objects.equals(matricula, that.matricula) && Objects.equals(nome, that.nome) && Objects.equals(email, that.email) && Objects.equals(funcao, that.funcao) && Objects.equals(cargo, that.cargo) && Objects.equals(siglaLotacao, that.siglaLotacao) && Objects.equals(descricaoLotacao, that.descricaoLotacao);
     }
 

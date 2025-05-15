@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @Slf4j
 @ControllerAdvice
-public class ServidorExceptionHandler {
+public class ServidorExternoExceptionHandler {
 
-    @ExceptionHandler(ServidorInexistenteException.class)
-    public ResponseEntity<Erro> servidorNaoEncontradoExceptionHandler(ServidorInexistenteException ex, HttpServletRequest request) {
+    @ExceptionHandler(ServidorExternoInexistenteException.class)
+    public ResponseEntity<Erro> servidorNaoEncontradoExceptionHandler(ServidorExternoInexistenteException ex, HttpServletRequest request) {
         Erro error = new Erro(HttpStatus.NOT_FOUND.value(),
                 ex.getMessage(),
                 System.currentTimeMillis(),

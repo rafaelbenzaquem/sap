@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.relatorio.model.util;
 
-import br.jus.trf1.sipe.externo.jsarh.ausencias.Ausencia;
+import br.jus.trf1.sipe.externo.jsarh.ausencias.AusenciaExternal;
 import br.jus.trf1.sipe.ponto.Ponto;
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,6 +57,7 @@ public class CalculadoraPeriodosUtil {
      */
     public static Duration calculaHorasDebitoOuCredito(Duration permanenciaTotal, Long diasUteis, Integer horasDiarias) {
         log.debug("Calculando horas de crédito ou débito...");
+        log.info("horas diarias: " + horasDiarias);
         if (permanenciaTotal.toSeconds() > diasUteis * horasDiarias * 60 * 60) {
             return permanenciaTotal.minus(Duration.ofHours(diasUteis * horasDiarias));
         }
@@ -66,15 +67,15 @@ public class CalculadoraPeriodosUtil {
     /**
      * Retorna um conjunto de data a partir de uma lista de ausências
      *
-     * @param ausencias Lista de período de ausências
+     * @param ausenciaExternals Lista de período de ausências
      * @return conjunto de LocalDate
      */
-    public static Set<LocalDate> gerarDiasAusentes(List<Ausencia> ausencias) {
+    public static Set<LocalDate> gerarDiasAusentes(List<AusenciaExternal> ausenciaExternals) {
         Set<LocalDate> diasAusentes = new HashSet<>();
 
-        for (Ausencia ausencia : ausencias) {
-            LocalDate dataAtual = ausencia.getInicio();
-            while (!dataAtual.isAfter(ausencia.getFim())) { // Enquanto a data atual não for depois do fim
+        for (AusenciaExternal ausenciaExternal : ausenciaExternals) {
+            LocalDate dataAtual = ausenciaExternal.getInicio();
+            while (!dataAtual.isAfter(ausenciaExternal.getFim())) { // Enquanto a data atual não for depois do fim
                 diasAusentes.add(dataAtual); // Adiciona a data atual ao conjunto
                 dataAtual = dataAtual.plusDays(1); // Avança para o próximo dia
             }

@@ -1,11 +1,11 @@
 package br.jus.trf1.sipe.relatorio;
 
 import br.jus.trf1.sipe.arquivo.db.ArquivoRepository;
-import br.jus.trf1.sipe.externo.jsarh.ausencias.AusenciasService;
-import br.jus.trf1.sipe.externo.jsarh.feriado.FeriadoService;
-import br.jus.trf1.sipe.externo.jsarh.feriado.dto.FeriadoResponse;
-import br.jus.trf1.sipe.externo.jsarh.servidor.ServidorService;
-import br.jus.trf1.sipe.externo.jsarh.servidor.exceptions.ServidorInexistenteException;
+import br.jus.trf1.sipe.externo.jsarh.ausencias.AusenciasExternalService;
+import br.jus.trf1.sipe.externo.jsarh.feriado.FeriadoExternalClient;
+import br.jus.trf1.sipe.externo.jsarh.feriado.dto.FeriadoExternalResponse;
+import br.jus.trf1.sipe.externo.jsarh.servidor.ServidorExternoService;
+import br.jus.trf1.sipe.externo.jsarh.servidor.exceptions.ServidorExternoInexistenteException;
 import br.jus.trf1.sipe.ponto.PontoRepository;
 import br.jus.trf1.sipe.relatorio.model.RelatorioModel;
 import br.jus.trf1.sipe.relatorio.model.UsuarioModel;
@@ -31,11 +31,11 @@ import static net.sf.jasperreports.engine.JasperFillManager.fillReport;
 public class RelatorioService {
 
 
-    private final FeriadoService feriadoService;
+    private final FeriadoExternalClient feriadoService;
     private final PontoRepository pontoRepository;
     private final ArquivoRepository arquivoRepository;
-    private final ServidorService servidorService;
-    private final AusenciasService ausenciasService;
+    private final ServidorExternoService servidorExternoService;
+    private final AusenciasExternalService ausenciasExternalService;
 
 
     /**
@@ -44,17 +44,17 @@ public class RelatorioService {
      * @param feriadoService    Repositório de vínculos.
      * @param pontoRepository   Repositório de pontos.
      * @param arquivoRepository Repositório de arquivos.
-     * @param servidorService   Serviço de acesso a dados do Servidor no Sarh
-     * @param ausenciasService Serviço de busca de ausências
+     * @param servidorExternoService   Serviço de acesso a dados do Servidor no Sarh
+     * @param ausenciasExternalService Serviço de busca de ausências
      */
-    public RelatorioService(FeriadoService feriadoService, PontoRepository pontoRepository,
-                            ArquivoRepository arquivoRepository, ServidorService servidorService,
-                            AusenciasService ausenciasService) {
+    public RelatorioService(FeriadoExternalClient feriadoService, PontoRepository pontoRepository,
+                            ArquivoRepository arquivoRepository, ServidorExternoService servidorExternoService,
+                            AusenciasExternalService ausenciasExternalService) {
         this.feriadoService = feriadoService;
         this.pontoRepository = pontoRepository;
         this.arquivoRepository = arquivoRepository;
-        this.servidorService = servidorService;
-        this.ausenciasService = ausenciasService;
+        this.servidorExternoService = servidorExternoService;
+        this.ausenciasExternalService = ausenciasExternalService;
     }
 
     /**
@@ -82,15 +82,15 @@ public class RelatorioService {
         log.info("Total de pontos recuperados: {}", pontos.size());
 
 
-        var servidor = servidorService.buscaDadosServidor(matricula).
-                orElseThrow(() -> new ServidorInexistenteException("Servidor com matrícula '%s' não encontrado!".formatted(matricula)));
+        var servidor = servidorExternoService.buscaDadosServidor(matricula).
+                orElseThrow(() -> new ServidorExternoInexistenteException("Servidor com matrícula '%s' não encontrado!".formatted(matricula)));
 
         log.info("Consultando feriados no SARH...");
         var feriados = feriadoService.buscaFeriados(inicio, fim, null).
-                stream().map(FeriadoResponse::toModel).toList();
+                stream().map(FeriadoExternalResponse::toModel).toList();
 
         log.info("Consultando licenças, férias e ausências especiais do servidor no SARH...");
-        var ausencias = ausenciasService.buscaAusenciasServidorPorPeriodo(matricula, inicio, fim);
+        var ausencias = ausenciasExternalService.buscaAusenciasServidorPorPeriodo(matricula, inicio, fim);
 
         log.info("Ausencias: {}", ausencias.size());
 

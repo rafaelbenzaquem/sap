@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Builder
 @Getter
 @Setter
-public class Feriado {
+public class FeriadoExternal {
 
     private LocalDate data;
 

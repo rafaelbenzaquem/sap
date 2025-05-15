@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.externo.jsarh.ausencias.ferias;
 
-import br.jus.trf1.sipe.externo.jsarh.ausencias.Ausencia;
+import br.jus.trf1.sipe.externo.jsarh.ausencias.AusenciaExternal;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,14 +9,14 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class Ferias extends Ausencia {
+public class FeriasExternal extends AusenciaExternal {
 
-    private Ocorrencias flag;
+    private OcorrenciasExternal flag;
     private Integer diasGozados;
     private LocalDateTime dataSuspensao;
 
-    public Ferias(LocalDate inicio, LocalDate fim, Ocorrencias flag,
-                  Integer diasGozados, LocalDateTime dataSuspensao) {
+    public FeriasExternal(LocalDate inicio, LocalDate fim, OcorrenciasExternal flag,
+                          Integer diasGozados, LocalDateTime dataSuspensao) {
         super(inicio, fim,"Férias.");
         this.flag = flag;
         this.diasGozados = diasGozados;

@@ -1,5 +1,6 @@
 package br.jus.trf1.sipe.usuario;
 
+import br.jus.trf1.sipe.servidor.Servidor;
 import br.jus.trf1.sipe.usuario.web.dto.UsuarioResponse;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
@@ -16,6 +17,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "usuarios", schema = "sispontodb",uniqueConstraints = {
         @UniqueConstraint(columnNames = {"matricula"}, name = "uk_usuario_matricula"),
         @UniqueConstraint(columnNames = {"cracha"}, name = "uk_usuario_cracha")
@@ -35,6 +37,7 @@ public class Usuario {
     @Max(value = 12)
     @Column(name = "hora_diaria", nullable = false)
     private Integer horaDiaria;
+
 
     public UsuarioResponse toResponse() {
         return new UsuarioResponse(id, nome, matricula, cracha, horaDiaria);

@@ -1,6 +1,6 @@
-package br.jus.trf1.sipe.externo.jsarh.ausencias.ferias;
+package br.jus.trf1.sipe.externo.jsarh.ausencias.licenca;
 
-import br.jus.trf1.sipe.externo.jsarh.ausencias.ferias.dto.FeriasResponse;
+import br.jus.trf1.sipe.externo.jsarh.ausencias.licenca.dto.LicencaExternalResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
@@ -15,24 +15,24 @@ import java.util.Optional;
 import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_ENTRADA_DATA;
 
 @Service
-@FeignClient(url = "${servidor.jsarh.url}", fallback = FeriasServiceFallBackImpl.class, name = "ferias")
-public interface FeriasService {
+@FeignClient(url = "${servidor.jsarh.url}", fallback = LicencaExternalClientFallBackImpl.class, name = "licencas")
+public interface LicencaExternalClient {
 
-    @GetMapping(value = "/v1/sarh/servidores/{matricula}/ausencias/ferias", produces = "application/json")
-    List<FeriasResponse> buscaFeriasServidorPorPeriodo(
+    @GetMapping(value = "/v1/sarh/servidores/{matricula}/ausencias/licencas", produces = "application/json")
+    List<LicencaExternalResponse> buscaLicencaServidorPorPeriodo(
             @PathVariable("matricula") String matricula,
             @RequestParam(name = "inicio", required = false) @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
             LocalDate inicio,
             @RequestParam(name = "fim", required = false) @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
             LocalDate fim);
 
-    @GetMapping(value = "/v1/sarh/servidores/{matricula}/ausencias/ferias/{dia}", produces = "application/json")
-    Optional<FeriasResponse> buscaFeriasServidorNoDia(
-            @PathVariable("matricula") String matricula,
+
+    @GetMapping(value = "/v1/sarh/servidores/{matricula}/ausencias/licencas/{dia}", produces = "application/json")
+    Optional<LicencaExternalResponse> buscaLicencaServidorNoDia(
+            @PathVariable("matricula")
+            String matricula,
             @PathVariable("dia")
             @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
             LocalDate dia);
 
-
 }
-
