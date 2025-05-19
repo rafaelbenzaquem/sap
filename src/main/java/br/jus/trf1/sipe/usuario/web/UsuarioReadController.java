@@ -46,29 +46,29 @@ public class UsuarioReadController {
                                                                                    @RequestParam(defaultValue = "5")
                                                                                    int size) {
         if (nome == null && cracha == null && matricula == null) {
-            var vinculosPage = service.listar(PageRequest.of(page, size));
+            var usuarioPag = service.listar(PageRequest.of(page, size));
             // Adiciona links HATEOAS
-            var pagedModel = addLinksHATEOASCrud(vinculosPage);
-            addLinksPaginacao(vinculosPage,pagedModel,page, size);
+            var pagedModel = addLinksHATEOASCrud(usuarioPag);
+            addLinksPaginacao(usuarioPag,pagedModel,page, size);
             return ResponseEntity.ok(pagedModel);
         }
-        var vinculosPage = service.buscarVinculosPorNomeOuCrachaOuMatricula(nome, cracha, matricula,
+        var usuarioPag = service.buscarVinculosPorNomeOuCrachaOuMatricula(nome, cracha, matricula,
                 PageRequest.of(page, size));
-        var pagedModel = addLinksHATEOASCrud(vinculosPage);
+        var pagedModel = addLinksHATEOASCrud(usuarioPag);
         return ResponseEntity.ok(pagedModel);
     }
 
-    private void addLinksPaginacao(Page<Usuario> vinculosPage,
+    private void addLinksPaginacao(Page<Usuario> usuarioPag,
                                    PagedModel<EntityModel<UsuarioResponse>> pagedModel,
                                    int page, int size) {
         // Links para paginação
-        if (vinculosPage.hasPrevious()) {
+        if (usuarioPag.hasPrevious()) {
             pagedModel.add(Link.of(
                     linkTo(methodOn(UsuarioReadController.class)
                             .listarVinculos(null, null, null,
                                     page - 1, size)).toString(), "prev"));
         }
-        if (vinculosPage.hasNext()) {
+        if (usuarioPag.hasNext()) {
             pagedModel.add(Link.of(
                     linkTo(methodOn(UsuarioReadController.class)
                             .listarVinculos(null, null, null,

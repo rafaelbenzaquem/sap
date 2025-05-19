@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum IndicePonto {
-    AUSENCIA(0f), DIA_UTIL(1.0f), SABADO(1.5f), DOMINGO_E_FERIADOS(2.0f);
+    AUSENCIA(0f), FERIAS(0f), DIA_UTIL(1.0f), SABADO(1.5f), DOMINGO_E_FERIADOS(2.0f);
 
     final float valor;
 

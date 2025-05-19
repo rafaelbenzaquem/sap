@@ -1,5 +1,6 @@
 package br.jus.trf1.sipe.usuario;
 
+import br.jus.trf1.sipe.ausencia.Ausencia;
 import br.jus.trf1.sipe.usuario.web.dto.UsuarioResponse;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
@@ -9,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -16,6 +18,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "usuarios", schema = "sispontodb",uniqueConstraints = {
         @UniqueConstraint(columnNames = {"matricula"}, name = "uk_usuario_matricula"),
         @UniqueConstraint(columnNames = {"cracha"}, name = "uk_usuario_cracha")
@@ -36,6 +39,18 @@ public class Usuario {
     @Column(name = "hora_diaria", nullable = false)
     private Integer horaDiaria;
 
+
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Ausencia> ausencias;
+
+    public Usuario(Integer id, String nome, String matricula, String cracha, Integer horaDiaria) {
+        this.id = id;
+        this.nome = nome;
+        this.matricula = matricula;
+        this.cracha = cracha;
+        this.horaDiaria = horaDiaria;
+    }
+
     public UsuarioResponse toResponse() {
         return new UsuarioResponse(id, nome, matricula, cracha, horaDiaria);
     }
@@ -50,5 +65,16 @@ public class Usuario {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Usuario{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                ", matricula='" + matricula + '\'' +
+                ", cracha='" + cracha + '\'' +
+                ", horaDiaria=" + horaDiaria +
+                '}';
     }
 }

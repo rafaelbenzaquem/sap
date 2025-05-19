@@ -1,9 +1,7 @@
 package br.jus.trf1.sipe.registro;
 
-import br.jus.trf1.sipe.externo.coletor.historico.HistoricoService;
+import br.jus.trf1.sipe.externo.coletor.historico.HistoricoExternalClient;
 import br.jus.trf1.sipe.ponto.Ponto;
-import br.jus.trf1.sipe.ponto.PontoService;
-import br.jus.trf1.sipe.registro.exceptions.RegistroExistenteException;
 import br.jus.trf1.sipe.registro.exceptions.RegistroInexistenteException;
 import br.jus.trf1.sipe.usuario.UsuarioService;
 import lombok.extern.slf4j.Slf4j;
@@ -13,27 +11,23 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
-import static br.jus.trf1.sipe.comum.util.ConstantesParaDataTempo.PADRAO_SAIDA_TEMPO;
 import static br.jus.trf1.sipe.comum.util.DataTempoUtil.paraString;
 
 @Slf4j
 @Service
 public class RegistroService {
 
-    private final PontoService pontoService;
     private final UsuarioService usuarioService;
-    private final HistoricoService historicoService;
+    private final HistoricoExternalClient historicoService;
     private final RegistroRepository registroRepository;
 
 
     public RegistroService(UsuarioService usuarioService,
-                           HistoricoService historicoService,
-                           RegistroRepository registroRepository,
-                           PontoService pontoService) {
+                           HistoricoExternalClient historicoService,
+                           RegistroRepository registroRepository) {
         this.usuarioService = usuarioService;
         this.historicoService = historicoService;
         this.registroRepository = registroRepository;
-        this.pontoService = pontoService;
     }
 
     public Registro buscaRegistroPorId(Long id) {
@@ -44,63 +38,35 @@ public class RegistroService {
         return registroRepository.existsById(id);
     }
 
-    public Registro criarNovoRegistro(Registro registro) {
-        log.debug("Criando Registro - {}", paraString(registro.getHora(), PADRAO_SAIDA_TEMPO));
-        if (registro.getCodigoAcesso() == null) {
-            registro.setVersao(1);
-            Registro registroSalvo = registroRepository.save(registro);
-            log.debug("Registro id = {}  criado com sucesso", registroSalvo.getId());
-            return registroSalvo;
-        }
-        var registroOptional = registroRepository.findByCodigoAcesso(registro.getCodigoAcesso());
-        if (registroOptional.isPresent()) {
-            var registroAntigo = registroOptional.get();
-            if (registroAntigo.getPonto().equals(registro.getPonto())) {
-                throw new RegistroExistenteException(registro);
-            }
-            registro.setId(null);
-            registro.setCodigoAcesso(null);
-            registro.setVersao(registroAntigo.getVersao() + 1);
-            var registroAtualizado = registroRepository.save(registro);
-            registroAntigo.setRegistroAnterior(registroAtualizado);
-            registroRepository.save(registroAntigo);
-            return registroAtualizado;
-        }
-        registro.setVersao(1);
-        return registroRepository.save(registro);
-    }
-
-    public Registro atualizaRegistro(Registro registro) {
-        log.debug("Atualizando Registro - {} - {} - {}", registro.getId(),
-                paraString(registro.getHora(), PADRAO_SAIDA_TEMPO),
-                registro.getCodigoAcesso());
-
-        if (registro.getId() != null) {
-            var registroAnterior = registroRepository.findById(registro.getId()).orElseThrow(() -> new
-                    RegistroInexistenteException(registro));
-            registro.setId(null);
-            registro.setCodigoAcesso(null);
-            registro.setVersao(registroAnterior.getVersao() + 1);
-            var registroAtualizado = registroRepository.save(registro);
-            registroAnterior.setRegistroAnterior(registroAtualizado);
-            return registroRepository.save(registroAnterior);
-
-        }
-        throw new IllegalArgumentException("Registro com id nulo");
-    }
 
     public List<Registro> listarRegistrosPonto(String matricula, LocalDate dia) {
-        return registroRepository.listarRegistrosPonto(matricula, dia);
+        return registroRepository.listarRegistrosAtuaisAtivosDoPonto(matricula, dia);
     }
 
-    public List<Registro> atualizaRegistrosNovos(String matricula, LocalDate dia) {
-        var ponto = pontoService.buscaPonto(matricula, dia);
+    public List<Registro> atualizaRegistrosNovos(Ponto ponto) {
 
-        var registrosAtuais = registroRepository.listarRegistrosPonto(matricula, dia);
+        var matricula = ponto.getId().getMatricula();
+        var dia = ponto.getId().getDia();
+
+        var registrosAtuais = registroRepository.listarRegistrosHistoricosDoPonto(matricula, dia);
+
+        var registros = filtraNovosRegistros(ponto, registrosAtuais);
+
+        registroRepository.saveAll(registros);
+
+        return registroRepository.listarRegistrosAtuaisAtivosDoPonto(matricula, dia);
+
+    }
+
+    private List<Registro> filtraNovosRegistros(Ponto ponto, List<Registro> registrosAtuais) {
+        var matricula = ponto.getId().getMatricula();
+        var dia = ponto.getId().getDia();
+
         var vinculo = usuarioService.buscaPorMatricula(matricula);
         var historicos = historicoService.buscarHistoricoDeAcesso(
                 dia, null, vinculo.getCracha(), null, null);
-        var registros = historicos.stream().
+
+        return historicos.stream().
                 filter(historico ->
                         {
                             log.debug("historico {}", historico);
@@ -120,26 +86,19 @@ public class RegistroService {
                                 .codigoAcesso(hr.acesso())
                                 .hora(hr.dataHora().toLocalTime())
                                 .sentido(hr.sentido())
-                                .versao(1)
+                                .ativo(true)
                                 .ponto(ponto)
                                 .build()
                 )
                 .toList();
-
-        registroRepository.saveAll(registros);
-
-        return registroRepository.listarRegistrosPonto(matricula, dia);
-
     }
 
-    public List<Registro> adicionaNovosRegistros(String matricula, LocalDate dia, List<Registro> registros) {
+    public List<Registro> addRegistros(Ponto ponto, List<Registro> registros) {
 
-        final var ponto = pontoService.buscaPonto(matricula, dia);
-        ponto.getRegistros().addAll(registros.stream().
-                map(registro -> addPonto(registro, ponto)).toList());
-        var pontoSalvo = pontoService.salvaPonto(ponto);
+        var registrosNovos = registros.stream().
+                map(registro -> addPonto(registro, ponto)).toList();
 
-        return pontoSalvo.getRegistros();
+        return registroRepository.saveAll(registrosNovos);
     }
 
     public Registro addPonto(Registro registro, Ponto ponto) {
@@ -147,16 +106,39 @@ public class RegistroService {
                 .id(registro.getId())
                 .hora(registro.getHora())
                 .sentido(registro.getSentido().getCodigo())
+                .ativo(true)
                 .codigoAcesso(registro.getCodigoAcesso())
-                .versao(registro.getVersao())
-                .registroAnterior(registro.getRegistroAnterior())
                 .ponto(ponto)
                 .build();
     }
 
-    public Registro atualizaRegistro(String matricula, LocalDate dia, Registro registroAtualizado) {
-        var ponto = pontoService.buscaPonto(matricula, dia);
-        registroAtualizado.setPonto(ponto);
-        return registroRepository.save(registroAtualizado);
+    public Registro atualizaRegistro(Ponto ponto, Registro registroAtualizado) {
+        var id = registroAtualizado.getId();
+        log.info("Atualiza registro {}", id);
+        var opt = registroRepository.findById(id);
+        if (opt.isPresent()) {
+            var registro = opt.get();
+            if (registro.getPonto().equals(ponto)) {
+                registroAtualizado.setId(null);
+                registroAtualizado.setPonto(ponto);
+                registroAtualizado = registroRepository.save(registroAtualizado);
+                registro.setRegistroNovo(registroAtualizado);
+                registroRepository.save(registro);
+                return registroAtualizado;
+            }
+            throw new IllegalArgumentException("Registro não pertence ao ponto: " + ponto.getId());
+        }
+        throw new RegistroInexistenteException(id);
+    }
+
+    public Registro apagar(Long id) {
+        log.info("apagando registro {}", id);
+        var opt = registroRepository.findById(id);
+        if (opt.isPresent()) {
+            var registro = opt.get();
+            registroRepository.deleteById(id);
+            return registro;
+        }
+        throw new RegistroInexistenteException(id);
     }
 }

@@ -9,21 +9,23 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalTime;
 
-import static br.jus.trf1.sipe.comum.util.ConstantesParaDataTempo.PADRAO_ENTRADA_TEMPO;
+import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_ENTRADA_TEMPO;
 
 public record RegistroNovoRequest(@NotNull(message = "O campo 'hora' não pode ser nulo!")
                                   @JsonFormat(pattern = PADRAO_ENTRADA_TEMPO, shape = JsonFormat.Shape.STRING)
                                   LocalTime hora,
                                   @NotBlank(message = "O campo 'sentido' não pode ser branco ou nulo!")
                                   String sentido,
+                                  @NotNull(message = "O campo 'ativo' não pode ser nulo!")
+                                  Boolean ativo,
                                   @JsonProperty(value = "codigo_acesso")
                                   Integer codigoAcesso) {
     public Registro toModel() {
         return Registro.builder()
                 .hora(hora)
                 .sentido(Sentido.toEnum(sentido).getCodigo())
+                .ativo(ativo)
                 .codigoAcesso(codigoAcesso)
-                .versao(1)
                 .build();
     }
 }

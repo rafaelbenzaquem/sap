@@ -1,7 +1,7 @@
 package br.jus.trf1.sipe.relatorio.model.util;
 
-import br.jus.trf1.sipe.externo.jsarh.ausencias.Ausencia;
 import br.jus.trf1.sipe.ponto.Ponto;
+import br.jus.trf1.sipe.ausencia.Ausencia;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.DayOfWeek;
@@ -57,6 +57,7 @@ public class CalculadoraPeriodosUtil {
      */
     public static Duration calculaHorasDebitoOuCredito(Duration permanenciaTotal, Long diasUteis, Integer horasDiarias) {
         log.debug("Calculando horas de crédito ou débito...");
+        log.info("horas diarias: " + horasDiarias);
         if (permanenciaTotal.toSeconds() > diasUteis * horasDiarias * 60 * 60) {
             return permanenciaTotal.minus(Duration.ofHours(diasUteis * horasDiarias));
         }

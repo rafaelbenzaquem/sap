@@ -1,7 +1,9 @@
 package br.jus.trf1.sipe.relatorio.model;
 
+import br.jus.trf1.sipe.ausencia.Ausencia;
 import lombok.*;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -13,9 +15,13 @@ import java.util.Objects;
  * @param matricula   Matrícula do usuário.
  * @param lotacao     Lotação do usuário.
  * @param horasDiaria Quantidade de horas diárias trabalhadas.
+ * @param ausencias  Lista de ausências encontradas para o usuário
  */
 @Builder
-public record UsuarioModel(String nome, String cargo, String funcao, String matricula, String lotacao, Integer horasDiaria) {
+public record UsuarioModel(String nome, String cargo,
+                           String funcao, String matricula,
+                           String lotacao, Integer horasDiaria,
+                           List<Ausencia> ausencias) {
     public UsuarioModel {
         Objects.requireNonNull(nome, "Nome não pode ser nulo");
         Objects.requireNonNull(cargo, "Cargo não pode ser nulo");

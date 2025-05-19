@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalTime;
 
-import static br.jus.trf1.sipe.comum.util.ConstantesParaDataTempo.PADRAO_ENTRADA_TEMPO;
+import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_ENTRADA_TEMPO;
 
 public record RegistroAtualizadoRequest(@NotNull(message = "O campo 'id' não pode ser nulo!")
                                         Long id,
@@ -17,16 +17,14 @@ public record RegistroAtualizadoRequest(@NotNull(message = "O campo 'id' não po
                                         LocalTime hora,
                                         @NotBlank(message = "O campo 'sentido' não pode ser branco ou nulo!")
                                         String sentido,
-                                        @NotNull(message = "O campo 'versao' não pode ser nulo!")
-                                        Integer versao) {
+                                        @NotNull(message = "O campo 'ativo' não pode ser nulo!")
+                                        Boolean ativo) {
     public Registro toModel() {
         return Registro.builder()
+                .id(id)
                 .hora(hora)
                 .sentido(Sentido.toEnum(sentido).getCodigo())
-                .versao(versao + 1)
-                .registroAnterior(Registro.builder()
-                        .id(id)
-                        .build())
+                .ativo(ativo)
                 .build();
     }
 }

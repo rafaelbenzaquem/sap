@@ -1,15 +1,12 @@
 package br.jus.trf1.sipe.ponto;
 
-import br.jus.trf1.sipe.externo.coletor.historico.HistoricoService;
-import br.jus.trf1.sipe.externo.coletor.historico.dto.HistoricoResponse;
-import br.jus.trf1.sipe.externo.jsarh.ausencias.Ausencia;
-import br.jus.trf1.sipe.externo.jsarh.ausencias.AusenciasService;
-import br.jus.trf1.sipe.externo.jsarh.feriado.FeriadoService;
-import br.jus.trf1.sipe.externo.jsarh.feriado.dto.FeriadoResponse;
+import br.jus.trf1.sipe.externo.jsarh.ausencias.AusenciaExterna;
+import br.jus.trf1.sipe.externo.jsarh.ausencias.AusenciaExternaService;
+import br.jus.trf1.sipe.externo.jsarh.feriado.FeriadoExternalClient;
+import br.jus.trf1.sipe.externo.jsarh.feriado.dto.FeriadoExternalResponse;
 import br.jus.trf1.sipe.ponto.exceptions.PontoExistenteException;
-import br.jus.trf1.sipe.ponto.exceptions.PontoNaoEncontradoException;
-import br.jus.trf1.sipe.registro.Registro;
-import br.jus.trf1.sipe.usuario.Usuario;
+import br.jus.trf1.sipe.ponto.exceptions.PontoInexistenteException;
+import br.jus.trf1.sipe.registro.RegistroService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,12 +22,17 @@ import static br.jus.trf1.sipe.comum.util.DataTempoUtil.*;
 public class PontoService {
 
     private final PontoRepository pontoRepository;
-    private final AusenciasService ausenciaService;
-    private final FeriadoService feriadoService;
+    private final RegistroService registroService;
+    private final AusenciaExternaService ausenciaService;
+    private final FeriadoExternalClient feriadoService;
 
     public PontoService(PontoRepository pontoRepository,
-                        AusenciasService ausenciaService, FeriadoService feriadoService) {
+                        RegistroService registroService,
+                        AusenciaExternaService ausenciaService,
+
+                        FeriadoExternalClient feriadoService) {
         this.pontoRepository = pontoRepository;
+        this.registroService = registroService;
         this.ausenciaService = ausenciaService;
         this.feriadoService = feriadoService;
     }
@@ -50,7 +52,7 @@ public class PontoService {
                 build()
         );
         return pontoOpt.orElseThrow(
-                () -> new PontoNaoEncontradoException(matricula,dia)
+                () -> new PontoInexistenteException(matricula, dia)
         );
     }
 
@@ -60,20 +62,14 @@ public class PontoService {
         return pontoRepository.buscaPontosPorPeriodo(matricula, inicio, fim);
     }
 
-    public Ponto salvaPonto(Ponto ponto) {
-        log.info("Salvando Ponto - {} - {} ", paraString(ponto.getId().getDia()), ponto.getId().getMatricula());
-        return pontoRepository.save(ponto);
+    private String defineDescricao(String descricao, LocalDate dia, Optional<AusenciaExterna> ausencia, Optional<FeriadoExternalResponse> feriado) {
+        return descricao + "\n" +
+                dia.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.of("pt", "BR")) + "\n" +
+                ausencia.map(a -> ", " + a.getDescricao()).orElse("") + "\n" +
+                feriado.map(f -> ", " + f.getDescricao()).orElse("");
     }
 
-
-    private String defineDescricao(LocalDate dia, Optional<Ausencia> ausencia, Optional<FeriadoResponse> feriado) {
-        var descricao = dia.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.of("pt", "BR"));
-        descricao += ausencia.map(a -> ", " + a.getDescricao()).orElse("");
-        descricao += feriado.map(f -> ", " + f.getDescricao()).orElse("");
-        return descricao;
-    }
-
-    private IndicePonto defineIndice(LocalDate dia, Optional<Ausencia> ausencia, Optional<FeriadoResponse> feriado) {
+    private IndicePonto defineIndice(LocalDate dia, Optional<AusenciaExterna> ausencia, Optional<FeriadoExternalResponse> feriado) {
         return ausencia.map(a -> IndicePonto.AUSENCIA).
                 orElseGet(() -> feriado.map(f -> IndicePonto.DOMINGO_E_FERIADOS).
                         orElse(dia.getDayOfWeek().getValue() == 7 ? IndicePonto.DOMINGO_E_FERIADOS :
@@ -83,87 +79,70 @@ public class PontoService {
     }
 
     @Transactional
-    public Ponto salvaPonto(String matricula, LocalDate dia, List<Registro> registros) {
+    public Ponto criaPonto(Ponto ponto) {
+        var matricula = ponto.getId().getMatricula();
+        var dia = ponto.getId().getDia();
+        var descricao = ponto.getDescricao() == null ? "" : "\n" + ponto.getDescricao();
+        log.info("Salvando Ponto - {} - {} ", matricula, dia);
         if (this.existe(matricula, dia)) {
             throw new PontoExistenteException(matricula, dia);
         }
         var ausencia = ausenciaService.buscaAusenciaServidorNoDia(matricula, dia);
         var feriadoResponse = feriadoService.buscaFeriadoDoDia(dia);
-        var descricao = defineDescricao(dia, ausencia, feriadoResponse);
+        descricao = defineDescricao(descricao, dia, ausencia, feriadoResponse);
         var indice = defineIndice(dia, ausencia, feriadoResponse);
+        ponto.setDescricao(descricao);
+        ponto.setIndice(indice);
 
-        var ponto = pontoRepository.save(
-                Ponto.builder().
-                        id(PontoId.builder().
-                                dia(dia).
-                                matricula(matricula).
-                                build()).
-                        descricao(descricao).
-                        indice(indice.getValor()).
-                        build());
+        var pontoSalvo = pontoRepository.save(ponto);
+        registroService.atualizaRegistrosNovos(pontoSalvo);
+        return pontoSalvo;
 
-        if (registros == null || registros.isEmpty()) {
-            return ponto;
+    }
+
+
+    @Transactional
+    public Ponto atualizaPonto(Ponto ponto) {
+        var matricula = ponto.getId().getMatricula();
+        var dia = ponto.getId().getDia();
+        var descricao = ponto.getDescricao() == null ? "" : ponto.getDescricao();
+        log.info("Atualizando Ponto - {} - {} ", matricula, dia);
+        if (this.existe(matricula, dia)) {
+            var ausencia = ausenciaService.buscaAusenciaServidorNoDia(matricula, dia);
+            var feriadoResponse = feriadoService.buscaFeriadoDoDia(dia);
+            descricao = defineDescricao(descricao, dia, ausencia, feriadoResponse);
+            var indice = defineIndice(dia, ausencia, feriadoResponse);
+            ponto.setDescricao(descricao);
+            ponto.setIndice(indice);
+            registroService.atualizaRegistrosNovos(ponto);
+            return pontoRepository.save(ponto);
         }
-        registros.forEach(registro -> registro.setPonto(ponto));
-        ponto.setRegistros(new ArrayList<>(registros));
-
-        return pontoRepository.save(ponto);
+        throw new PontoInexistenteException(matricula, dia);
     }
 
     @Transactional
-    public List<Ponto> carregaPontos(Usuario usuario, LocalDate inicio, LocalDate fim,
-                                     HistoricoService historicoService) {
+    public List<Ponto> carregaPontos(String matricula, LocalDate inicio, LocalDate fim) {
         List<Ponto> pontos = new ArrayList<>();
         LocalDate dataAtual = inicio;
         while (!dataAtual.isAfter(fim)) {
-            var matricula = usuario.getMatricula();
             var id = PontoId.builder().
                     dia(dataAtual).
                     matricula(matricula).
                     build();
 
             Optional<Ponto> pontoOpt = pontoRepository.findById(id);
-
-            var historicos = historicoService.buscarHistoricoDeAcesso(
-                    dataAtual, null, usuario.getCracha(), null, null
-            );
-            var registros = historicos.stream().map(HistoricoResponse::toModel).toList();
-
             if (pontoOpt.isPresent()) {
-                var ausencia = ausenciaService.buscaAusenciaServidorNoDia(matricula, dataAtual);
-                var feriadoResponse = feriadoService.buscaFeriadoDoDia(dataAtual);
-                var descricao = defineDescricao(dataAtual, ausencia, feriadoResponse);
-                var indice = defineIndice(dataAtual, ausencia, feriadoResponse);
-                var registrosFiltrados = pontoOpt.get().getRegistros().stream().filter(
-                        r -> registros.stream().map(Registro::getHora).toList().contains(r.getHora())).toList();
                 var ponto = pontoOpt.get();
-                ponto.setIndice(indice);
-                ponto.setDescricao(descricao);
-                ponto.getRegistros().addAll(new ArrayList<>(registrosFiltrados));
-                ponto = salvaPonto(ponto);
+                var registros = registroService.atualizaRegistrosNovos(ponto);
+                ponto.setRegistros(registros);
                 pontos.add(ponto);
-                dataAtual = dataAtual.plusDays(1); // Avança para o próximo dia
+                dataAtual = dataAtual.plusDays(1);
                 continue;
             }
-
-            pontos.add(
-                    salvaPonto(usuario.getMatricula(), dataAtual, registros)
-            );
+            var ponto = Ponto.builder().id(id).build();
+            pontos.add(criaPonto(ponto));
             dataAtual = dataAtual.plusDays(1); // Avança para o próximo dia
         }
         return pontos;
-    }
-
-    @Transactional
-    public void salvaPontoDeHoje(String matricula, List<Registro> registros) {
-        salvaPonto(matricula, LocalDate.now(), registros);
-    }
-
-    public Ponto adicionaRegistros(String matricula, LocalDate dia, List<Registro> registros) {
-        Ponto ponto = pontoRepository.buscaPonto(matricula, dia).
-                orElseThrow(() -> new PontoNaoEncontradoException(matricula, dia));
-        ponto.getRegistros().addAll(registros);
-        return pontoRepository.save(ponto);
     }
 }
