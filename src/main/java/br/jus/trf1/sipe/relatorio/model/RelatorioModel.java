@@ -1,8 +1,8 @@
 package br.jus.trf1.sipe.relatorio.model;
 
-import br.jus.trf1.sipe.externo.jsarh.ausencias.AusenciaExternal;
 import br.jus.trf1.sipe.externo.jsarh.feriado.FeriadoExternal;
 import br.jus.trf1.sipe.ponto.Ponto;
+import br.jus.trf1.sipe.ausencia.Ausencia;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -37,16 +37,16 @@ public class RelatorioModel {
      * @param usuario Modelo do usuário.
      * @param pontos  Lista de pontos registrados.
      */
-    public RelatorioModel(UsuarioModel usuario, List<Ponto> pontos, List<FeriadoExternal> feriados, List<AusenciaExternal> ausenciaExternals) {
+    public RelatorioModel(UsuarioModel usuario, List<Ponto> pontos, List<FeriadoExternal> feriados) {
         log.debug("Contruindo RelatorioModel...");
         this.usuario = Objects.requireNonNull(usuario, "Usuário não pode ser nulo");
         this.pontos = Objects.requireNonNull(pontos, "Lista de pontos não pode ser nula");
-        var datas = gerarDiasAusentes(ausenciaExternals);
+        var datas = gerarDiasAusentes(usuario.ausencias());
          feriados.forEach(feriado -> datas.add(feriado.getData()));
         this.diasUteis = calculaDiasUteis(pontos, datas);
         this.permanenciaTotal = calculaPermanenciaTotal(pontos);
         this.horasCreditoOuDebito = calculaHorasDebitoOuCredito(permanenciaTotal, diasUteis, usuario.horasDiaria());
-        this.pontoModels = carregarDadosPontos(pontos, feriados, ausenciaExternals);
+        this.pontoModels = carregarDadosPontos(pontos, feriados, usuario.ausencias());
         this.pontosDataSource = new JRBeanCollectionDataSource(pontoModels, false);
     }
 
@@ -67,14 +67,14 @@ public class RelatorioModel {
         return formataTextoDuracao(horasCreditoOuDebito);
     }
 
-    private List<PontoModel> carregarDadosPontos(List<Ponto> pontos, List<FeriadoExternal> feriados, List<AusenciaExternal> ausenciaExternals) {
+    private List<PontoModel> carregarDadosPontos(List<Ponto> pontos, List<FeriadoExternal> feriados, List<Ausencia> ausencia) {
         return pontos.stream()
                 .map(ponto -> {
 
                     // Verifica se a data do ponto está dentro de um período de ausência
-                    AusenciaExternal ausenciaExternalCorrespondente = ausenciaExternals.stream()
-                            .filter(ausencia -> !ponto.getId().getDia().isBefore(ausencia.getInicio()) &&
-                                    !ponto.getId().getDia().isAfter(ausencia.getFim()))
+                    Ausencia ausenciaCorrespondente = ausencia.stream()
+                            .filter(a -> !ponto.getId().getDia().isBefore(a.getInicio()) &&
+                                    !ponto.getId().getDia().isAfter(a.getFim()))
                             .findFirst()
                             .orElse(null);
                     // Verifica se a data do ponto é um feriado
@@ -84,7 +84,7 @@ public class RelatorioModel {
                             .orElse(null);
 
                     var descricao = feriadoCorrespondente == null ? null : feriadoCorrespondente.getDescricao();
-                    descricao = ausenciaExternalCorrespondente == null ? descricao : ausenciaExternalCorrespondente.getDescricao();
+                    descricao = ausenciaCorrespondente == null ? descricao : ausenciaCorrespondente.getDescricao();
 
                     return descricao == null ? new PontoModel(ponto) :
                             new PontoModel(ponto, descricao);

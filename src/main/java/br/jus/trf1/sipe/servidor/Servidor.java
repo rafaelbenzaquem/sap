@@ -1,17 +1,15 @@
 package br.jus.trf1.sipe.servidor;
 
-import br.jus.trf1.sipe.servidor.ausencia.Ausencia;
 import br.jus.trf1.sipe.usuario.Usuario;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@Entity
+@Table(name = "servidores", schema = "sispontodb")
 public class Servidor extends Usuario {
 
     private String email;
@@ -24,18 +22,6 @@ public class Servidor extends Usuario {
 
     private String descricaoLotacao;
 
-    @OneToMany(mappedBy = "servidor", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Ausencia> ausencias;
-
-    public Servidor(Integer id, String nome, String matricula, String cracha, Integer horaDiaria, String email, String funcao, String cargo, String siglaLotacao, String descricaoLotacao) {
-        super(id, nome, matricula, cracha, horaDiaria);
-        this.email = email;
-        this.funcao = funcao;
-        this.cargo = cargo;
-        this.siglaLotacao = siglaLotacao;
-        this.descricaoLotacao = descricaoLotacao;
-    }
-
     public Servidor(Usuario usuario, String email, String funcao, String cargo, String siglaLotacao, String descricaoLotacao) {
         super(usuario.getId(), usuario.getNome(), usuario.getMatricula(), usuario.getCracha(), usuario.getHoraDiaria());
         this.email = email;
@@ -43,5 +29,16 @@ public class Servidor extends Usuario {
         this.cargo = cargo;
         this.siglaLotacao = siglaLotacao;
         this.descricaoLotacao = descricaoLotacao;
+    }
+
+    @Override
+    public String toString() {
+        return "Servidor{" +
+                "'" + super.toString() + '\'' +
+                ", funcao='" + funcao + '\'' +
+                ", cargo='" + cargo + '\'' +
+                ", siglaLotacao='" + siglaLotacao + '\'' +
+                ", descricaoLotacao='" + descricaoLotacao + '\'' +
+                '}';
     }
 }

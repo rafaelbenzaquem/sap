@@ -1,6 +1,6 @@
-package br.jus.trf1.sipe.externo.jsarh.ausencias.especial;
+package br.jus.trf1.sipe.externo.jsarh.ausencias.licenca;
 
-import br.jus.trf1.sipe.externo.jsarh.ausencias.especial.dto.FrequencialEspecialExternoResponse;
+import br.jus.trf1.sipe.externo.jsarh.ausencias.licenca.dto.LicencaExternoResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
@@ -15,20 +15,22 @@ import java.util.Optional;
 import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_ENTRADA_DATA;
 
 @Service
-@FeignClient(url = "${servidor.jsarh.url}", fallback = FrequenciaEspecialExternoClientFallBackImpl.class, name = "especiais")
-public interface FrequenciaEspecialClient {
+@FeignClient(url = "${servidor.jsarh.url}", fallback = LicencaExternaClientFallBackImpl.class, name = "licencas")
+public interface LicencaExternaClient {
 
-    @GetMapping(value = "/v1/sarh/servidores/{matricula}/ausencias/especiais", produces = "application/json")
-    List<FrequencialEspecialExternoResponse> buscaAusenciasEspeciaisServidorPorPeriodo(
+    @GetMapping(value = "/v1/sarh/servidores/{matricula}/ausencias/licencas", produces = "application/json")
+    List<LicencaExternoResponse> buscaLicencaServidorPorPeriodo(
             @PathVariable("matricula") String matricula,
             @RequestParam(name = "inicio", required = false) @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
             LocalDate inicio,
             @RequestParam(name = "fim", required = false) @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
             LocalDate fim);
 
-    @GetMapping(value = "/v1/sarh/servidores/{matricula}/ausencias/especiais/{dia}", produces = "application/json")
-    Optional<FrequencialEspecialExternoResponse> buscaAusenciaEspecialServidorNoDia(
-            @PathVariable("matricula") String matricula,
+
+    @GetMapping(value = "/v1/sarh/servidores/{matricula}/ausencias/licencas/{dia}", produces = "application/json")
+    Optional<LicencaExternoResponse> buscaLicencaServidorNoDia(
+            @PathVariable("matricula")
+            String matricula,
             @PathVariable("dia")
             @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
             LocalDate dia);

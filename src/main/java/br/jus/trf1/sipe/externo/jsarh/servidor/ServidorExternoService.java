@@ -1,17 +1,23 @@
 package br.jus.trf1.sipe.externo.jsarh.servidor;
 
 import br.jus.trf1.sipe.externo.jsarh.servidor.dto.ServidorExternoResponse;
-import org.springframework.cloud.openfeign.FeignClient;
+import br.jus.trf1.sipe.externo.jsarh.servidor.exceptions.ServidorExternoInexistenteException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Optional;
 
 @Service
-@FeignClient(url = "${servidor.jsarh.url}", name = "servidor", fallback = ServidorExternoServiceFallBackImpl.class)
-public interface ServidorExternoService {
+public class ServidorExternoService {
 
-    @GetMapping(value = "/v1/sarh/servidores/{matricula}", produces = "application/json")
-    Optional<ServidorExternoResponse> buscaDadosServidor(@PathVariable("matricula") String matricula);
+    private final ServidorExternoClient servidorExternoClient;
+
+    public ServidorExternoService(ServidorExternoClient servidorExternoClient) {
+        this.servidorExternoClient = servidorExternoClient;
+    }
+
+    public ServidorExternoResponse  buscaServidorExterno(String matricula) {
+        Optional<ServidorExternoResponse> opt = servidorExternoClient.buscaDadosServidor(matricula);
+        return opt.orElseThrow(()-> new ServidorExternoInexistenteException("Servidor '%s' inexistente".formatted(matricula)));
+    }
+
 }

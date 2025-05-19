@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-public class ServidorExternoServiceFallBackImpl implements ServidorExternoService {
+public class ServidorExternoClientFallBackImpl implements ServidorExternoClient {
     @Override
     public Optional<ServidorExternoResponse> buscaDadosServidor(String matricula) {
         return Optional.empty();

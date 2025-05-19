@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.externo.jsarh.ausencias.ferias;
 
-import br.jus.trf1.sipe.externo.jsarh.ausencias.ferias.dto.FeriasExternalResponse;
+import br.jus.trf1.sipe.externo.jsarh.ausencias.ferias.dto.FeriasExternasResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
@@ -15,11 +15,11 @@ import java.util.Optional;
 import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_ENTRADA_DATA;
 
 @Service
-@FeignClient(url = "${servidor.jsarh.url}", fallback = FeriasExternalServiceFallBackImpl.class, name = "ferias")
-public interface FeriasExternalClient {
+@FeignClient(url = "${servidor.jsarh.url}", fallback = FeriasExternasClientFallBackImpl.class, name = "ferias")
+public interface FeriasExternasClient {
 
     @GetMapping(value = "/v1/sarh/servidores/{matricula}/ausencias/ferias", produces = "application/json")
-    List<FeriasExternalResponse> buscaFeriasServidorPorPeriodo(
+    List<FeriasExternasResponse> buscaFeriasServidorPorPeriodo(
             @PathVariable("matricula") String matricula,
             @RequestParam(name = "inicio", required = false) @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
             LocalDate inicio,
@@ -27,7 +27,7 @@ public interface FeriasExternalClient {
             LocalDate fim);
 
     @GetMapping(value = "/v1/sarh/servidores/{matricula}/ausencias/ferias/{dia}", produces = "application/json")
-    Optional<FeriasExternalResponse> buscaFeriasServidorNoDia(
+    Optional<FeriasExternasResponse> buscaFeriasServidorNoDia(
             @PathVariable("matricula") String matricula,
             @PathVariable("dia")
             @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)

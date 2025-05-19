@@ -1,14 +1,12 @@
 package br.jus.trf1.sipe.relatorio;
 
 import br.jus.trf1.sipe.arquivo.db.ArquivoRepository;
-import br.jus.trf1.sipe.externo.jsarh.ausencias.AusenciasExternalService;
 import br.jus.trf1.sipe.externo.jsarh.feriado.FeriadoExternalClient;
 import br.jus.trf1.sipe.externo.jsarh.feriado.dto.FeriadoExternalResponse;
-import br.jus.trf1.sipe.externo.jsarh.servidor.ServidorExternoService;
-import br.jus.trf1.sipe.externo.jsarh.servidor.exceptions.ServidorExternoInexistenteException;
 import br.jus.trf1.sipe.ponto.PontoRepository;
 import br.jus.trf1.sipe.relatorio.model.RelatorioModel;
 import br.jus.trf1.sipe.relatorio.model.UsuarioModel;
+import br.jus.trf1.sipe.servidor.ServidorService;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -31,30 +29,26 @@ import static net.sf.jasperreports.engine.JasperFillManager.fillReport;
 public class RelatorioService {
 
 
-    private final FeriadoExternalClient feriadoService;
+    private final FeriadoExternalClient feriadoExternalClient;
     private final PontoRepository pontoRepository;
     private final ArquivoRepository arquivoRepository;
-    private final ServidorExternoService servidorExternoService;
-    private final AusenciasExternalService ausenciasExternalService;
+    private final ServidorService servidorService;
 
 
     /**
      * Constrói o serviço de relatório com as dependências necessárias.
      *
-     * @param feriadoService    Repositório de vínculos.
+     * @param feriadoExternalClient    Repositório de vínculos.
      * @param pontoRepository   Repositório de pontos.
      * @param arquivoRepository Repositório de arquivos.
-     * @param servidorExternoService   Serviço de acesso a dados do Servidor no Sarh
-     * @param ausenciasExternalService Serviço de busca de ausências
+     * @param servidorService   Serviço de acesso a dados do Servidor no Sarh
      */
-    public RelatorioService(FeriadoExternalClient feriadoService, PontoRepository pontoRepository,
-                            ArquivoRepository arquivoRepository, ServidorExternoService servidorExternoService,
-                            AusenciasExternalService ausenciasExternalService) {
-        this.feriadoService = feriadoService;
+    public RelatorioService(FeriadoExternalClient feriadoExternalClient, PontoRepository pontoRepository,
+                            ArquivoRepository arquivoRepository, ServidorService servidorService) {
+        this.feriadoExternalClient = feriadoExternalClient;
         this.pontoRepository = pontoRepository;
         this.arquivoRepository = arquivoRepository;
-        this.servidorExternoService = servidorExternoService;
-        this.ausenciasExternalService = ausenciasExternalService;
+        this.servidorService = servidorService;
     }
 
     /**
@@ -82,17 +76,16 @@ public class RelatorioService {
         log.info("Total de pontos recuperados: {}", pontos.size());
 
 
-        var servidor = servidorExternoService.buscaDadosServidor(matricula).
-                orElseThrow(() -> new ServidorExternoInexistenteException("Servidor com matrícula '%s' não encontrado!".formatted(matricula)));
+        var servidor = servidorService.vinculaUsuarioServidor(matricula);
 
         log.info("Consultando feriados no SARH...");
-        var feriados = feriadoService.buscaFeriados(inicio, fim, null).
+        var feriados = feriadoExternalClient.buscaFeriados(inicio, fim, null).
                 stream().map(FeriadoExternalResponse::toModel).toList();
 
         log.info("Consultando licenças, férias e ausências especiais do servidor no SARH...");
-        var ausencias = ausenciasExternalService.buscaAusenciasServidorPorPeriodo(matricula, inicio, fim);
+       servidor = servidorService.vinculaAusenciasServidorNoPeriodo(servidor, inicio, fim);
 
-        log.info("Ausencias: {}", ausencias.size());
+        log.info("Ausencias: {}", servidor.getAusencias().size());
 
         log.info("Feriados: {}", feriados.size());
 
@@ -103,11 +96,12 @@ public class RelatorioService {
                 .funcao(servidor.getFuncao())
                 .lotacao(servidor.getDescricaoLotacao())
                 .matricula(matricula)
-                .horasDiaria(7)
+                .horasDiaria(servidor.getHoraDiaria())
+                .ausencias(servidor.getAusencias())
                 .build();
         log.info("Construindo modelo de relatório...");
 
-        var relatorioModel = new RelatorioModel(usuario, pontos, feriados, ausencias);
+        var relatorioModel = new RelatorioModel(usuario, pontos, feriados);
 
         log.info("Preparando parâmetros para o relatório...");
         var parametrosRelatorio = new HashMap<String, Object>();

@@ -31,10 +31,10 @@ public class Ponto {
     private String descricao;
 
     @Transient
-    private Integer numeroRegistrosCalculados = 0;
+    @Builder.Default private Integer numeroRegistrosCalculados = 0;
 
     @Transient
-    private Duration horasPermanencia = Duration.ZERO;
+    @Builder.Default private Duration horasPermanencia = Duration.ZERO;
 
     @OneToMany(mappedBy = "ponto", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Registro> registros;
