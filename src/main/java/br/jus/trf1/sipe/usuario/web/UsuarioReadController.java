@@ -9,6 +9,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -26,6 +27,7 @@ public class UsuarioReadController {
 
 
     @GetMapping(value = "/{id}")
+    @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
     public ResponseEntity<EntityModel<UsuarioResponse>> buscaVinculo(@PathVariable("id") Integer id) {
         var vinculo = service.buscaPorId(id);
         return ResponseEntity.ok(EntityModel.of(vinculo.toResponse(),
@@ -35,6 +37,7 @@ public class UsuarioReadController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('GRP_SIPE_ADMIN')")
     public ResponseEntity<PagedModel<EntityModel<UsuarioResponse>>> listarVinculos(@RequestParam(required = false)
                                                                                    String nome,
                                                                                    @RequestParam(required = false)

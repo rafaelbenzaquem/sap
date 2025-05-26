@@ -9,6 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
@@ -28,6 +29,7 @@ public class RelatorioController {
     }
 
     @GetMapping("/{matricula}")
+    @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
     public ResponseEntity<Resource> downloadRelatorio(@PathVariable("matricula") String matricula,
                                                       @RequestParam("inicio")
                                                       @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)

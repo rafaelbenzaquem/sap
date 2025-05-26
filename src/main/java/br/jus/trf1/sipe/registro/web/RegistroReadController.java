@@ -6,6 +6,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -26,6 +27,7 @@ public class RegistroReadController {
     }
 
     @GetMapping(value = "/pontos")
+    @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
     public ResponseEntity<CollectionModel<EntityModel<RegistroResponse>>> listarRegistrosDoPonto(@RequestParam
                                                                                                  String matricula,
                                                                                                  @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
@@ -35,6 +37,7 @@ public class RegistroReadController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
     public ResponseEntity<EntityModel<RegistroResponse>> buscaRegistro(@PathVariable("id") Long id) {
         var registro = registroService.buscaRegistroPorId(id);
         var registroModel = EntityModel.of(RegistroResponse.of(registro),

@@ -1,6 +1,5 @@
 package br.jus.trf1.sipe.ponto.web;
 
-import br.jus.trf1.sipe.ponto.IndicePonto;
 import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.ponto.PontoService;
 import br.jus.trf1.sipe.ponto.web.dto.PontoAtualizadoRequest;
@@ -11,18 +10,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.time.LocalDate;
 import java.util.List;
 
+import static br.jus.trf1.sipe.comum.util.DataTempoUtil.paraString;
 import static br.jus.trf1.sipe.comum.util.HATEOASUtil.addLinksHATEOAS;
 import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_ENTRADA_DATA;
-import static br.jus.trf1.sipe.comum.util.DataTempoUtil.paraString;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -39,6 +38,7 @@ public class PontoUpdateController {
 
 
     @PutMapping
+    @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
     public ResponseEntity<EntityModel<PontoAtualizadoResponse>> atualizaPonto(@RequestBody
                                                                               @Valid
                                                                               PontoAtualizadoRequest pontoAtualizadoRequest) {
@@ -76,6 +76,7 @@ public class PontoUpdateController {
      * @return Coleção com pontos criados formatado para restfull
      */
     @PostMapping("/usuarios")
+    @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
     public ResponseEntity<CollectionModel<EntityModel<PontoNovoResponse>>> carregaPontosPorPeriodo(@RequestParam
                                                                                                    String matricula,
                                                                                                    @RequestParam

@@ -21,6 +21,11 @@ spring:
     username: ${MYSQL_USER:root}
     password: ${MYSQL_USER_PASSWORD:123456789}
     driver-class-name: com.mysql.cj.jdbc.Driver
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:9000/oauth2/jwks
 
 resilience4j:
   circuitbreaker:
