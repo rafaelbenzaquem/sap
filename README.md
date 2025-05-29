@@ -21,6 +21,21 @@ O SIPE fornece uma solução backend para gestão de ponto eletrônico, capturan
 - Sistema de Controle de Acesso (via Feign client, serviço externo).
 - Sistema JF1 (JSARH) para obter informações de feriados, licenças e ausências.
 
+## Segurança
+Este serviço funciona como **OAuth2 Resource Server**. Todas as requisições devem incluir o header:
+
+```http
+Authorization: Bearer <token-jwt>
+```
+
+O token JWT deve ser emitido pelo Authorization Server em `http://localhost:9000`. As chaves públicas são obtidas em:
+
+```bash
+GET http://localhost:9000/oauth2/jwks
+```
+
+As authorities (roles) são extraídas do claim `authorities` no token e usadas para controle de acesso.
+
 ## Recursos
 - CRUD de Usuários: cadastro, consulta, atualização e remoção.
 - Gestão de Pontos: criação manual e automática, consulta por período.
@@ -62,28 +77,28 @@ O SIPE fornece uma solução backend para gestão de ponto eletrônico, capturan
    ```bash
    cd sipe
    ```
-3. Configure as variáveis de ambiente ou `src/main/resources/application.properties`:
-   ```properties
-   spring.datasource.url=jdbc:mysql://<host>:<porta>/<database>
-   spring.datasource.username=<usuario>
-   spring.datasource.password=<senha>
-
-   ponto.coletor.url=http://<url-coletor>
-   servidor.jsarh.url=http://<url-jsarh>
+3. Defina o profile ativo e as variáveis de ambiente:
+   ```bash
+   export SIPE_API_PROFILE=dev   # ou prod
+   export MYSQL_URL=jdbc:mysql://<host>:<porta>/<database>
+   export MYSQL_USER=<usuario>
+   export MYSQL_USER_PASSWORD=<senha>
+   export COLETOR_URL=http://<url-coletor>
+   export JSARH_URL=http://<url-jsarh>
    ```
-4. Build e run:
+4. Build e execução:
    ```bash
    mvn clean package
-   java -jar target/sipe-0.3.5-SNAPSHOT.jar
+   java -jar target/sipe-0.3.6.jar
    ```
-5. (Opcional) Execução em modo dev:
+5. (Opcional) Modo desenvolvimento:
    ```bash
-   mvn spring-boot:run
+   mvn spring-boot:run -Dspring-boot.run.profiles=dev
    ```
 6. (Opcional) Docker:
    ```bash
    docker build -t sipe .
-   docker run -p 8080:8080 --env-file .env sipe
+   docker run -p 8084:8084 --env-file .env sipe
    ```
 
 ## Estrutura do Projeto
@@ -101,13 +116,21 @@ src/main/java/br/jus/trf1/sipe
 ```
 
 ## Endpoints da API
-Basepath: `http://<host>:8080`
+Basepath: `http://<host>:8084`
 
 ### Arquivos
 - `POST /v1/sipe/arquivos`  
   Parâmetros: `bytes` (MultipartFile), `nome` (String), `descricao` (String, opcional)
-- `PATCH /v1/sipe/arquivos`  
-  Parâmetros: mesmo que POST
+- `PATCH /v1/sipe/arquivos/{id}`  
+  Parâmetros: mesmos do POST  
+- `GET /v1/sipe/arquivos?pag={0}&tamanho={10}`  
+  Lista metadados com paginação  
+- `GET /v1/sipe/arquivos/{id}`  
+  Recupera conteúdo do arquivo  
+- `GET /v1/sipe/arquivos/{id}/metadata`  
+  Recupera metadados do arquivo  
+- `DELETE /v1/sipe/arquivos/{id}`  
+  Remove o arquivo por ID
 
 ### Usuários
 - `POST /v1/sipe/usuarios` — Cadastra usuário  
@@ -133,7 +156,7 @@ Basepath: `http://<host>:8080`
 
 ## Exemplos de Uso
 ```bash
-curl -X POST http://localhost:8080/v1/sipe/usuarios \
+curl -X POST http://localhost:8084/v1/sipe/usuarios \
   -H "Content-Type: application/json" \
   -d '{"nome":"João Silva","matricula":"123","cracha":"ABC123","horaDiaria":8}'
 ```
@@ -141,8 +164,9 @@ curl -X POST http://localhost:8080/v1/sipe/usuarios \
 ## Relatórios
 - `GET /v1/sipe/relatorios/{matricula}?inicio={data}&fim={data}` — Download de relatório em PDF
 
-## Contribuição
-Contribuições são bem-vindas! Abra issues e pull requests para melhorias.
 
-## Licença
-Este projeto não possui licença explícita.
+## Contribuição
+Pull requests são bem-vindos! Abra issues para sugestões e melhorias.
+
+---
+_Desenvolvido pela equipe SEINF/SJRR

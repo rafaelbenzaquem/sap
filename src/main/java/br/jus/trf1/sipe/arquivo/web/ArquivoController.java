@@ -11,6 +11,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -31,6 +32,7 @@ public class ArquivoController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('GRP_SIPE_ADMIN')")
     public ResponseEntity<EntityModel<ArquivoMetadataResponse>> salvarArquivo(@RequestParam("bytes") MultipartFile conteudo,
                                                                               @RequestParam("nome") String nome,
                                                                               @RequestParam(value = "descricao", required = false) String descricao)
@@ -54,6 +56,7 @@ public class ArquivoController {
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasAuthority('GRP_SIPE_ADMIN')")
     public ResponseEntity<EntityModel<ArquivoMetadataResponse>> atualizarArquivo(@PathVariable("id")
                                                                                  String id,
                                                                                  @RequestParam("bytes") MultipartFile conteudo,
@@ -80,6 +83,7 @@ public class ArquivoController {
     
     // Listagem de arquivos com paginação
     @GetMapping
+    @PreAuthorize("hasAuthority('GRP_SIPE_ADMIN')")
     public ResponseEntity<Page<ArquivoListResponse>> listar(@RequestParam(name = "pag", defaultValue = "0") int pag,
                                                                @RequestParam(name = "tamanho", defaultValue = "10") int tamanho) {
         var page = arquivoService.lista(pag, tamanho);
@@ -88,6 +92,7 @@ public class ArquivoController {
     
     // Recupera conteúdo do arquivo (bytes) por ID
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('GRP_SIPE_ADMIN')")
     public ResponseEntity<byte[]> getConteudoPorId(@PathVariable String id) {
         var arquivo = arquivoService.recuperaPorId(id);
         return ResponseEntity.ok()
@@ -97,6 +102,7 @@ public class ArquivoController {
     
     // Recupera metadata do arquivo por ID
     @GetMapping("/{id}/metadata")
+    @PreAuthorize("hasAuthority('GRP_SIPE_ADMIN')")
     public ResponseEntity<ArquivoMetadataResponse> getMetadataPorId(@PathVariable String id) {
         var metadata = arquivoService.recuperaMetadataPorId(id);
         return ResponseEntity.ok(metadata);
@@ -104,6 +110,7 @@ public class ArquivoController {
     
     // Recupera e serve conteúdo do arquivo por nome
     @GetMapping("/nome/{nome}")
+    @PreAuthorize("hasAuthority('GRP_SIPE_ADMIN')")
     public ResponseEntity<byte[]> getConteudoPorNome(@PathVariable String nome) {
         var arquivo = arquivoService.recuperaPorNome(nome);
         return ResponseEntity.ok()
@@ -113,6 +120,7 @@ public class ArquivoController {
     
     // Recupera metadata do arquivo por nome
     @GetMapping("/nome/{nome}/metadata")
+    @PreAuthorize("hasAuthority('GRP_SIPE_ADMIN')")
     public ResponseEntity<ArquivoMetadataResponse> getMetadataPorNome(@PathVariable String nome) {
         var metadata = arquivoService.recuperaMetadataPorNome(nome);
         return ResponseEntity.ok(metadata);
@@ -120,6 +128,7 @@ public class ArquivoController {
     
     // Remove arquivo por ID
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('GRP_SIPE_ADMIN')")
     public ResponseEntity<ArquivoMetadataResponse> deletePorId(@PathVariable String id) {
         var metadata = arquivoService.apagaPorId(id);
         return ResponseEntity.ok(metadata);
@@ -127,6 +136,7 @@ public class ArquivoController {
     
     // Remove arquivo por nome
     @DeleteMapping("/nome/{nome}")
+    @PreAuthorize("hasAuthority('GRP_SIPE_ADMIN')")
     public ResponseEntity<ArquivoMetadataResponse> deletePorNome(@PathVariable String nome) {
         var metadata = arquivoService.apagaPorNome(nome);
         return ResponseEntity.ok(metadata);

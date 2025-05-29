@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -34,6 +35,7 @@ public class PontoCreateController {
      * @return Payload de saída formatada para restfull, contendo o ponto criado
      */
     @PostMapping
+    @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
     public ResponseEntity<EntityModel<PontoNovoResponse>> criaPonto(@RequestBody
                                                                     @Valid
                                                                     PontoNovoRequest pontoNovoRequest) {

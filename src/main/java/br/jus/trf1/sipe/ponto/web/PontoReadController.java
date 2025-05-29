@@ -8,6 +8,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -31,6 +32,7 @@ public class PontoReadController {
     }
 
     @GetMapping("/{matricula}/{dia}")
+    @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
     public ResponseEntity<EntityModel<PontoNovoResponse>> buscaPonto(@PathVariable
                                                                      String matricula,
                                                                      @PathVariable
@@ -50,6 +52,7 @@ public class PontoReadController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
     public ResponseEntity<CollectionModel<EntityModel<PontoNovoResponse>>> buscaPontosPorIntervalosDatas(@RequestParam
                                                                                                          String matricula,
                                                                                                          @RequestParam

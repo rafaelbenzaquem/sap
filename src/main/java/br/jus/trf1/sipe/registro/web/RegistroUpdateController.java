@@ -12,6 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -38,6 +39,7 @@ public class RegistroUpdateController {
     }
 
     @PatchMapping("/pontos")
+    @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
     public ResponseEntity<CollectionModel<EntityModel<RegistroResponse>>> atualizaRegistros(@RequestParam
                                                                                             String matricula,
                                                                                             @RequestParam
@@ -54,6 +56,7 @@ public class RegistroUpdateController {
     }
 
     @PutMapping("/pontos")
+    @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
     public ResponseEntity<EntityModel<RegistroResponse>> atualizaRegistro(@RequestParam
                                                                           String matricula,
                                                                           @RequestParam
