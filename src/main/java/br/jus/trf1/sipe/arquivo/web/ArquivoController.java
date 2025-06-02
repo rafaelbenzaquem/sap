@@ -110,7 +110,6 @@ public class ArquivoController {
     
     // Recupera e serve conteúdo do arquivo por nome
     @GetMapping("/nome/{nome}")
-    @PreAuthorize("hasAuthority('GRP_SIPE_ADMIN')")
     public ResponseEntity<byte[]> getConteudoPorNome(@PathVariable String nome) {
         var arquivo = arquivoService.recuperaPorNome(nome);
         return ResponseEntity.ok()

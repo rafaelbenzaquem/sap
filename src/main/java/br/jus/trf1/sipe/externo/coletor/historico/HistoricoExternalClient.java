@@ -13,7 +13,7 @@ import java.util.List;
 import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_ENTRADA_DATA;
 
 @Service
-@FeignClient(url = "${ponto.coletor.url}", name = "historico")
+@FeignClient(url = "${coletor.api.url}", name = "historico")
 public interface HistoricoExternalClient {
 
 

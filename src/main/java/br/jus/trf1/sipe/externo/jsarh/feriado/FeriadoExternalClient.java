@@ -15,7 +15,7 @@ import java.util.Optional;
 import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_ENTRADA_DATA;
 
 @Service
-@FeignClient(url = "${servidor.jsarh.url}",fallback = FeriadoExternalClientFallBackImpl.class, name = "feriado")
+@FeignClient(url = "${jsarh.api.url}",fallback = FeriadoExternalClientFallBackImpl.class, name = "feriado")
 public interface FeriadoExternalClient {
 
 

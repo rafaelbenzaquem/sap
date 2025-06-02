@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.Optional;
 
 @Service
-@FeignClient(url = "${servidor.jsarh.url}", name = "servidor", fallback = ServidorExternoClientFallBackImpl.class)
+@FeignClient(url = "${jsarh.api.url}", name = "servidor", fallback = ServidorExternoClientFallBackImpl.class)
 public interface ServidorExternoClient {
 
     @GetMapping(value = "/v1/sarh/servidores/{matricula}", produces = "application/json")

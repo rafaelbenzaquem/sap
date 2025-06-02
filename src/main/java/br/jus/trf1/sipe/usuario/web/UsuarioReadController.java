@@ -37,7 +37,7 @@ public class UsuarioReadController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('GRP_SIPE_ADMIN')")
+    @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
     public ResponseEntity<PagedModel<EntityModel<UsuarioResponse>>> listarVinculos(@RequestParam(required = false)
                                                                                    String nome,
                                                                                    @RequestParam(required = false)

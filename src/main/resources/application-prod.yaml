@@ -1,5 +1,5 @@
 server:
-  port: 8084
+  port: ${SERVER_PORT}
 logging:
   level:
     root: info
@@ -17,15 +17,15 @@ spring:
       hibernate:
         show_sql: false
   datasource:
-    url: ${MYSQL_URL:jdbc:mysql://localhost:3306/sispontodb?allowPublicKeyRetrieval=true&sslMode=DISABLED}
-    username: ${MYSQL_USER:root}
-    password: ${MYSQL_USER_PASSWORD:123456789}
+    url: ${MYSQL_URL}
+    username: ${MYSQL_USER}
+    password: ${MYSQL_USER_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   security:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://localhost:9000/oauth2/jwks
+          jwk-set-uri: ${JWK_SET_URI}
 
 resilience4j:
   circuitbreaker:
@@ -36,9 +36,15 @@ resilience4j:
     instances:
       DemoClientgetDemo:
         timeoutDuration: 10s
-ponto:
-  coletor:
-    url: ${COLETOR_URL:localhost:8082}
-servidor:
-    jsarh:
-      url: ${JSARH_URL:localhost:8087}
+
+sipe:
+  web:
+    url: ${SIPE_WEB_URL}
+
+coletor:
+  api:
+    url: ${COLETOR_API_URL}
+
+jsarh:
+  api:
+    url: ${JSARH_API_URL}
