@@ -15,7 +15,7 @@ import java.util.Optional;
 import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_ENTRADA_DATA;
 
 @Service
-@FeignClient(url = "${servidor.jsarh.url}", fallback = FrequenciaEspecialExternaClientFallBackImpl.class, name = "especiais")
+@FeignClient(url = "${jsarh.api.url}", fallback = FrequenciaEspecialExternaClientFallBackImpl.class, name = "especiais")
 public interface FrequenciaEspecialExternaClient {
 
     @GetMapping(value = "/v1/sarh/servidores/{matricula}/ausencias/especiais", produces = "application/json")

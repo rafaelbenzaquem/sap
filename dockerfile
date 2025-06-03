@@ -8,5 +8,5 @@ RUN mvn -f /usr/src/app/pom.xml clean package -DskipTests
 ## Runner Image
 FROM openjdk:21
 COPY --from=builder /usr/src/app/target/*.jar /usr/app/app.jar
-EXPOSE 80
+EXPOSE 8084
 ENTRYPOINT ["java","-jar","/usr/app/app.jar"]
