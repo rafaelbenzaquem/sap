@@ -36,7 +36,7 @@ public class Ponto {
     @Transient
     @Builder.Default private Duration horasPermanencia = Duration.ZERO;
 
-    @OneToMany(mappedBy = "ponto", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "ponto", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Registro> registros;
 
 
@@ -51,14 +51,17 @@ public class Ponto {
 
     public Duration getHorasPermanencia() {
         log.info("getHorasPermanencia - buscando registros do ponto id:{}", this.id);
-        var registros = getRegistros().stream().filter(r -> r.getRegistroNovo() == null && r.getAtivo()).toList();
-        if (registros.isEmpty()) {
+        var registros = getRegistros();
+        if (registros == null || registros.isEmpty()) {
             log.info("getHorasPermanencia - registros encontrados: 0");
             return Duration.ZERO;
         }
+        registros = getRegistros().stream().filter(r -> r.getRegistroNovo() == null && r.getAtivo()).toList();
         log.info("getHorasPermanencia - registros encontrados:{}", registros.size());
         if (horasPermanencia.isZero() || !Objects.equals(numeroRegistrosCalculados, registros.size())) {
             horasPermanencia = calculaHorasPermanencia(this);
+            // Atualiza o contador de registros calculados para evitar recálculos desnecessários
+            numeroRegistrosCalculados = registros.size();
             log.info("horas {}", horasPermanencia.toString());
         }
         return horasPermanencia;

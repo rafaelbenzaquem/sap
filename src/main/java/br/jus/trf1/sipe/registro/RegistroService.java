@@ -51,7 +51,9 @@ public class RegistroService {
         var registrosAtuais = registroRepository.listarRegistrosHistoricosDoPonto(matricula, dia);
 
         var registros = filtraNovosRegistros(ponto, registrosAtuais);
-
+        if(registrosAtuais.isEmpty()) {
+          return registroRepository.saveAll(registros);
+        }
         registroRepository.saveAll(registros);
 
         return registroRepository.listarRegistrosAtuaisAtivosDoPonto(matricula, dia);
@@ -63,6 +65,7 @@ public class RegistroService {
         var dia = ponto.getId().getDia();
 
         var vinculo = usuarioService.buscaPorMatricula(matricula);
+
         var historicos = historicoService.buscarHistoricoDeAcesso(
                 dia, null, vinculo.getCracha(), null, null);
 
