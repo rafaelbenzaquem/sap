@@ -3,7 +3,9 @@ package br.jus.trf1.sipe.registro;
 import br.jus.trf1.sipe.externo.coletor.historico.HistoricoExternalClient;
 import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.registro.exceptions.RegistroInexistenteException;
+import br.jus.trf1.sipe.servidor.Servidor;
 import br.jus.trf1.sipe.usuario.UsuarioService;
+import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAprovadorException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -94,6 +96,17 @@ public class RegistroService {
                                 .build()
                 )
                 .toList();
+    }
+
+
+    public Registro aprovarRegistro(Long idRegistro, Integer idServidor) {
+        var registro = registroRepository.findById(idRegistro).orElseThrow(() -> new RegistroInexistenteException(idRegistro));
+        var usuario = usuarioService.buscaPorId(idServidor);
+        if(usuario instanceof Servidor servidor) {
+            registro.setServidorAprovador(servidor);
+            return registroRepository.save(registro);
+        }
+        throw new UsuarioNaoAprovadorException(idServidor);
     }
 
     public List<Registro> addRegistros(Ponto ponto, List<Registro> registros) {

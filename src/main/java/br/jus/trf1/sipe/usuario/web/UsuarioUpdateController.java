@@ -34,7 +34,7 @@ public class UsuarioUpdateController {
         usuario.setMatricula(request.matricula());
         usuario.setHoraDiaria(request.horaDiaria());
 
-        var usuarioAtualizado = service.atualiza(usuario);
+        var usuarioAtualizado = service.salve(usuario);
 
         var entityModel = EntityModel.of(
                 usuarioAtualizado.toResponse(),

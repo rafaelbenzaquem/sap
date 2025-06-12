@@ -24,6 +24,7 @@ public record RegistroAtualizadoRequest(@NotNull(message = "O campo 'id' não po
                 .id(id)
                 .hora(hora)
                 .sentido(Sentido.toEnum(sentido).getCodigo())
+                .codigoAcesso(0)
                 .ativo(ativo)
                 .build();
     }

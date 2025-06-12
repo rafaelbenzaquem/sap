@@ -16,7 +16,9 @@ public record RegistroResponse(Long id,
                                String sentido,
                                Boolean ativo,
                                @JsonProperty("codigo_acesso")
-                               Integer codigoAcesso
+                               Integer codigoAcesso,
+                               @JsonProperty("id_servidor")
+                               Integer idServidor
 ) {
     public static RegistroResponse of(Registro registro) {
         return RegistroResponse.builder()
@@ -25,6 +27,7 @@ public record RegistroResponse(Long id,
                 .sentido(registro.getSentido().getPalavra())
                 .ativo(registro.getAtivo())
                 .codigoAcesso(registro.getCodigoAcesso())
+                .idServidor(registro.getServidorAprovador() == null ? null : registro.getServidorAprovador().getId())
                 .build();
     }
 }

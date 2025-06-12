@@ -41,7 +41,9 @@ public class UsuarioService {
                 orElseThrow(() -> new UsuarioInexistenteException(id));
     }
 
-    public Usuario atualiza(Usuario usuario) {
+
+
+    public Usuario salve(Usuario usuario) {
         var mapCampoMensagem = new HashMap<String, String>();
 
         var existeCracha = usuarioRepository.checaSeExisteUsuarioComCracha(usuario.getCracha(), usuario.getId());
