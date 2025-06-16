@@ -4,22 +4,24 @@ import lombok.Getter;
 
 @Getter
 public enum Mes {
-    JANEIRO(1),
-    FEVEREIRO(2),
-    MARCO(3),
-    ABRIL(4),
-    MAIO(5),
-    JUNHO(6),
-    JULHO(7),
-    AGOSTO(8),
-    SETEMBRO(9),
-    OUTUBRO(10),
-    NOVEMBRO(11),
-    DEZEMBRO(12);
+    JANEIRO(1, "Janeiro"),
+    FEVEREIRO(2, "Fevereiro"),
+    MARCO(3, "Março"),
+    ABRIL(4, "Abril"),
+    MAIO(5, "Maio"),
+    JUNHO(6, "Junho"),
+    JULHO(7, "Julho"),
+    AGOSTO(8, "Agosto"),
+    SETEMBRO(9, "Setembro"),
+    OUTUBRO(10, "Outubro"),
+    NOVEMBRO(11, "Novembro"),
+    DEZEMBRO(12, "Dezembro");
     private final Integer valor;
+    private final String nome;
 
-    Mes(Integer valor) {
+    Mes(Integer valor, String nome) {
         this.valor = valor;
+        this.nome = nome;
     }
 
     public static Mes getMes(Integer valor) {

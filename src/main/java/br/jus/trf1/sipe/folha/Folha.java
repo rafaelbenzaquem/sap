@@ -15,45 +15,25 @@ import java.util.List;
 @Setter
 @Getter
 @Entity
+@Table(name = "folhas", schema = "sispontodb")
 public class Folha {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    @Column(nullable = false, length = 2)
-    private int mes;
-
-    @Column(nullable = false, length = 4)
-    private int ano;
+    @EmbeddedId
+    private FolhaId id;
 
     @CreationTimestamp
     private Timestamp dataAbertura;
 
     @ManyToOne
     @JoinColumns(value = {
-            @JoinColumn(name = "id_servidor", referencedColumnName = "id", nullable = false, updatable = false),
-    }, foreignKey = @ForeignKey(name = "fk_servidor_folha"))
-    private Servidor servidor;
-
-    private Timestamp dataHomologacao;
-    @ManyToOne
-    @JoinColumns(value = {
-            @JoinColumn(name = "id_servidor_homologador", referencedColumnName = "id", nullable = false, updatable = false),
+            @JoinColumn(name = "id_servidor_homologador", referencedColumnName = "id"),
     }, foreignKey = @ForeignKey(name = "fk_homologador_folha"))
     private Servidor servidorHomologador;
 
+    private Timestamp dataHomologacao;
+
     @OneToMany(mappedBy = "folha", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Ponto> pontos;
-
-
-    public Mes getMes() {
-        return Mes.getMes(mes);
-    }
-
-    public void setMes(Mes mes) {
-        this.mes = mes.getValor();
-    }
 
 
     public void homologar(Servidor servidor) {
@@ -61,6 +41,6 @@ public class Folha {
             this.servidorHomologador = servidor;
             this.dataHomologacao = new Timestamp(System.currentTimeMillis());
         }
-        throw new IllegalArgumentException("Somente Diretor pode homologar folha");
+        throw new IllegalArgumentException("Somente Diretor pode homologar uma folha!");
     }
 }
