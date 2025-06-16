@@ -32,9 +32,9 @@ class UsuarioServiceIntegrationTest {
     }
 
     @Test
-    void buscarVinculosPorNomeOuCrachaOuMatricula() {
+    void buscaPorNomeOuCrachaOuMatricula() {
         Pageable page = PageRequest.of(0, 10);
-        Page<Usuario> p = usuarioService.buscarVinculosPorNomeOuCrachaOuMatricula("Alice", null, null, page);
+        Page<Usuario> p = usuarioService.buscaPorNomeOuCrachaOuMatricula("Alice", null, null, page);
         assertEquals(1, p.getTotalElements());
         assertEquals("Alice Wonderland", p.getContent().getFirst().getNome());
     }

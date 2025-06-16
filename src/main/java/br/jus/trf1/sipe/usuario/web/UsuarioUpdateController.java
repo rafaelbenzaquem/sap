@@ -38,7 +38,7 @@ public class UsuarioUpdateController {
 
         var entityModel = EntityModel.of(
                 usuarioAtualizado.toResponse(),
-                linkTo(methodOn(UsuarioReadController.class).buscaVinculo(usuarioAtualizado.getId())).withSelfRel(),
+                linkTo(methodOn(UsuarioReadController.class).buscaUsuario(usuarioAtualizado.getMatricula())).withSelfRel(),
                 linkTo(methodOn(UsuarioDeleteController.class).apagaVinculo(usuarioAtualizado.getId())).withRel("delete"));
 
         return ResponseEntity.ok().body(entityModel);

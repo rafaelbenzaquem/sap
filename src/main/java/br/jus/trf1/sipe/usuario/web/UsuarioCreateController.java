@@ -30,7 +30,7 @@ public class UsuarioCreateController {
     }
 
     @PostMapping()
-    @PreAuthorize("hasAuthority('GRP_SIPE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('GRP_SIPE_ADMIN', 'GRP_SIPE_RH')")
     public ResponseEntity<EntityModel<UsuarioResponse>> cadastraUsuario(@RequestBody @Valid UsuarioNovoRequest request) {
         log.info("Criando usuario: {}", request);
 
@@ -39,9 +39,9 @@ public class UsuarioCreateController {
 
         servidorService.vinculaUsuarioServidor(usuario.getMatricula());
 
-        var uriResponse = ServletUriComponentsBuilder.fromCurrentContextPath().path("/usuarios/{id}").buildAndExpand(usuario.getId()).toUri();
+        var uriResponse = ServletUriComponentsBuilder.fromCurrentContextPath().path("/usuarios/{matricula}").buildAndExpand(usuario.getMatricula()).toUri();
 
-        var entityModel = EntityModel.of(usuario.toResponse(), linkTo(methodOn(UsuarioReadController.class).buscaVinculo(usuario.getId())).withSelfRel(),
+        var entityModel = EntityModel.of(usuario.toResponse(), linkTo(methodOn(UsuarioReadController.class).buscaUsuario(usuario.getMatricula())).withSelfRel(),
                 linkTo(methodOn(UsuarioDeleteController.class).apagaVinculo(usuario.getId())).withRel("delete"));
 
         return ResponseEntity.created(uriResponse).body(entityModel);

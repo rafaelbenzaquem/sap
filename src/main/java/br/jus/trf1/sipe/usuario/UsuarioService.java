@@ -18,10 +18,10 @@ public class UsuarioService {
     }
 
 
-    public Page<Usuario> buscarVinculosPorNomeOuCrachaOuMatricula(String nome,
-                                                                  String cracha,
-                                                                  String matricula,
-                                                                  Pageable pageable) {
+    public Page<Usuario> buscaPorNomeOuCrachaOuMatricula(String nome,
+                                                         String cracha,
+                                                         String matricula,
+                                                         Pageable pageable) {
         return usuarioRepository.findAllByNomeOrCrachaOrMatricula(nome, cracha, matricula, pageable);
     }
 

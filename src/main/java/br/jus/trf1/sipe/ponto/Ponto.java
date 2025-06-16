@@ -1,5 +1,6 @@
 package br.jus.trf1.sipe.ponto;
 
+import br.jus.trf1.sipe.folha.Folha;
 import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.registro.Sentido;
 import jakarta.persistence.*;
@@ -39,6 +40,12 @@ public class Ponto {
     @OneToMany(mappedBy = "ponto", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Registro> registros;
 
+
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumns(value = {
+            @JoinColumn(name = "id_folha", referencedColumnName = "id")
+    }, foreignKey = @ForeignKey(name = "fk_folha_ponto"))
+    private Folha folha;
 
     public IndicePonto getIndice() {
         return IndicePonto.toEnum(indice);
