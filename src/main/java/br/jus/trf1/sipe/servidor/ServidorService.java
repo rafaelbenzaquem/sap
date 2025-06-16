@@ -43,7 +43,7 @@ public class ServidorService {
         return servidorRepository.save(servidor);
     }
 
-    public Servidor buscaServidor(String matricula) {
+    public Servidor buscaPorMatricula(String matricula) {
         Optional<Servidor> optServidor = servidorRepository.findByMatricula(matricula);
         return optServidor.orElseGet(() -> vinculaUsuarioServidor(matricula));
     }
