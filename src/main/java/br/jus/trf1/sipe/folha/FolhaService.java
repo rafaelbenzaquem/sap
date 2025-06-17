@@ -2,6 +2,7 @@ package br.jus.trf1.sipe.folha;
 
 import br.jus.trf1.sipe.ponto.PontoService;
 import br.jus.trf1.sipe.servidor.ServidorService;
+import br.jus.trf1.sipe.usuario.UsuarioService;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
