@@ -9,7 +9,9 @@ import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAprovadorException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -104,6 +106,7 @@ public class RegistroService {
         var usuario = usuarioService.buscaPorId(idServidor);
         if(usuario instanceof Servidor servidor) {
             registro.setServidorAprovador(servidor);
+            registro.setDataAprovacao(Timestamp.valueOf(LocalDateTime.now()));
             return registroRepository.save(registro);
         }
         throw new UsuarioNaoAprovadorException(idServidor);

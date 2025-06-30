@@ -62,6 +62,7 @@ public class RegistroUpdateController {
 
 
         var registro = registroService.aprovarRegistro(idRegistro, idServidor);
+
         var registroModel = EntityModel.of(RegistroResponse.of(registro),
                 linkTo(methodOn(RegistroReadController.class).buscaRegistro(registro.getId())).withSelfRel());
 

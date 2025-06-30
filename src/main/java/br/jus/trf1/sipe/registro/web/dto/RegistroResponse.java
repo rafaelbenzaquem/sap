@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import org.springframework.hateoas.server.core.Relation;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Builder
@@ -18,7 +19,9 @@ public record RegistroResponse(Long id,
                                @JsonProperty("codigo_acesso")
                                Integer codigoAcesso,
                                @JsonProperty("id_servidor")
-                               Integer idServidor
+                               Integer idServidor,
+                               @JsonProperty("data_aprovacao")
+                               LocalDateTime dataAprovacao
 ) {
     public static RegistroResponse of(Registro registro) {
         return RegistroResponse.builder()
@@ -28,6 +31,7 @@ public record RegistroResponse(Long id,
                 .ativo(registro.getAtivo())
                 .codigoAcesso(registro.getCodigoAcesso())
                 .idServidor(registro.getServidorAprovador() == null ? null : registro.getServidorAprovador().getId())
+                .dataAprovacao(registro.getDataAprovacao() == null ? null :registro.getDataAprovacao().toLocalDateTime())
                 .build();
     }
 }
