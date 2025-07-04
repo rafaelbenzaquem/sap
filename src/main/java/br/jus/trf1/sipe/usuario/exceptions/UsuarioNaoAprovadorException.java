@@ -1,7 +1,7 @@
 package br.jus.trf1.sipe.usuario.exceptions;
 
 public class UsuarioNaoAprovadorException extends RuntimeException {
-    public UsuarioNaoAprovadorException(Integer idUsuario) {
-        super("Usuário com o ID: " + idUsuario+" não pode aprovar registro!");
+    public UsuarioNaoAprovadorException(String matricula) {
+        super("Usuário com o matrícula: " + matricula + " não pode aprovar registro!");
     }
 }

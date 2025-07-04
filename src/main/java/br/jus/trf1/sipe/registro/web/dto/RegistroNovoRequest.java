@@ -2,6 +2,7 @@ package br.jus.trf1.sipe.registro.web.dto;
 
 import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.registro.Sentido;
+import br.jus.trf1.sipe.servidor.Servidor;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
@@ -20,12 +21,14 @@ public record RegistroNovoRequest(@NotNull(message = "O campo 'hora' não pode s
                                   Boolean ativo,
                                   @JsonProperty(value = "codigo_acesso")
                                   Integer codigoAcesso) {
-    public Registro toModel() {
+
+    public Registro toModel(Servidor servidorCriador) {
         return Registro.builder()
                 .hora(hora)
                 .sentido(Sentido.toEnum(sentido).getCodigo())
                 .ativo(ativo)
                 .codigoAcesso(codigoAcesso)
+                .servidorCriador(servidorCriador)
                 .build();
     }
 }

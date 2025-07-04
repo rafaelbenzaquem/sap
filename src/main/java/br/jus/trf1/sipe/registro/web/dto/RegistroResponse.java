@@ -16,10 +16,14 @@ public record RegistroResponse(Long id,
                                LocalTime hora,
                                String sentido,
                                Boolean ativo,
+                               @JsonProperty("data_criacao")
+                               LocalDateTime dataCriacao,
+                               @JsonProperty("matricula_criador")
+                               String matriculaCriador,
                                @JsonProperty("codigo_acesso")
                                Integer codigoAcesso,
-                               @JsonProperty("id_servidor")
-                               Integer idServidor,
+                               @JsonProperty("matricula_aprovador")
+                               String matriculaAprovador,
                                @JsonProperty("data_aprovacao")
                                LocalDateTime dataAprovacao
 ) {
@@ -29,9 +33,11 @@ public record RegistroResponse(Long id,
                 .hora(registro.getHora())
                 .sentido(registro.getSentido().getPalavra())
                 .ativo(registro.getAtivo())
+                .matriculaCriador(registro.getServidorCriador() == null ? null : registro.getServidorCriador().getMatricula())
+                .dataCriacao(registro.getDataCadastro().toLocalDateTime())
                 .codigoAcesso(registro.getCodigoAcesso())
-                .idServidor(registro.getServidorAprovador() == null ? null : registro.getServidorAprovador().getId())
-                .dataAprovacao(registro.getDataAprovacao() == null ? null :registro.getDataAprovacao().toLocalDateTime())
+                .matriculaAprovador(registro.getServidorAprovador() == null ? null : registro.getServidorAprovador().getMatricula())
+                .dataAprovacao(registro.getDataAprovacao() == null ? null : registro.getDataAprovacao().toLocalDateTime())
                 .build();
     }
 }

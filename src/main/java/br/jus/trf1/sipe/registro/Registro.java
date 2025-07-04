@@ -38,6 +38,12 @@ public final class Registro implements Comparable<Registro> {
     @CreationTimestamp
     private Timestamp dataCadastro;
 
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumns(value = {
+            @JoinColumn(name = "id_servidor_criador", referencedColumnName = "id")
+    }, foreignKey = @ForeignKey(name = "fk_criador_registro"))
+    private Servidor servidorCriador;
+
     @OneToOne
     @JoinColumn(name = "registro_novo_id", foreignKey = @ForeignKey(name = "fk_registro_novo"))
     private Registro registroNovo;

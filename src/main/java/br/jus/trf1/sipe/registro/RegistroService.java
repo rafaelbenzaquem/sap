@@ -55,8 +55,8 @@ public class RegistroService {
         var registrosAtuais = registroRepository.listarRegistrosHistoricosDoPonto(matricula, dia);
 
         var registros = filtraNovosRegistros(ponto, registrosAtuais);
-        if(registrosAtuais.isEmpty()) {
-          return registroRepository.saveAll(registros);
+        if (registrosAtuais.isEmpty()) {
+            return registroRepository.saveAll(registros);
         }
         registroRepository.saveAll(registros);
 
@@ -101,15 +101,15 @@ public class RegistroService {
     }
 
 
-    public Registro aprovarRegistro(Long idRegistro, Integer idServidor) {
+    public Registro aprovarRegistro(Long idRegistro, String matriculaAprovador) {
         var registro = registroRepository.findById(idRegistro).orElseThrow(() -> new RegistroInexistenteException(idRegistro));
-        var usuario = usuarioService.buscaPorId(idServidor);
-        if(usuario instanceof Servidor servidor) {
+        var usuario = usuarioService.buscaPorMatricula(matriculaAprovador);
+        if (usuario instanceof Servidor servidor) {
             registro.setServidorAprovador(servidor);
             registro.setDataAprovacao(Timestamp.valueOf(LocalDateTime.now()));
             return registroRepository.save(registro);
         }
-        throw new UsuarioNaoAprovadorException(idServidor);
+        throw new UsuarioNaoAprovadorException(matriculaAprovador);
     }
 
     public List<Registro> addRegistros(Ponto ponto, List<Registro> registros) {
@@ -125,8 +125,9 @@ public class RegistroService {
                 .id(registro.getId())
                 .hora(registro.getHora())
                 .sentido(registro.getSentido().getCodigo())
+                .servidorCriador(registro.getServidorCriador())
                 .ativo(true)
-                .codigoAcesso(registro.getCodigoAcesso())
+                .codigoAcesso(registro.getCodigoAcesso() == null ? 0 : registro.getCodigoAcesso())
                 .ponto(ponto)
                 .build();
     }

@@ -6,6 +6,7 @@ import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.registro.RegistroService;
 import br.jus.trf1.sipe.registro.web.dto.RegistroAtualizadoRequest;
 import br.jus.trf1.sipe.registro.web.dto.RegistroResponse;
+import br.jus.trf1.sipe.servidor.ServidorService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -32,36 +33,39 @@ public class RegistroUpdateController {
 
     private final RegistroService registroService;
     private final PontoService pontoService;
+    private final ServidorService servidorService;
 
-    public RegistroUpdateController(RegistroService registroService, PontoService pontoService) {
+
+    public RegistroUpdateController(RegistroService registroService, PontoService pontoService, ServidorService servidorService) {
         this.registroService = registroService;
         this.pontoService = pontoService;
+        this.servidorService = servidorService;
     }
 
     @PatchMapping("/pontos")
     @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
     public ResponseEntity<CollectionModel<EntityModel<RegistroResponse>>> atualizaRegistros(@RequestParam
-                                                                                            String matricula,
+                                                                                            String matriculaPonto,
                                                                                             @RequestParam
                                                                                             @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
                                                                                             LocalDate dia) {
 
-        log.info("Atualizando Registros do ponto - {} - {}", matricula, dia);
+        log.info("Atualizando Registros do ponto - {} - {}", matriculaPonto, dia);
 
 
-        Ponto ponto = pontoService.buscaPonto(matricula, dia);
+        Ponto ponto = pontoService.buscaPonto(matriculaPonto, dia);
         List<Registro> registros = registroService.atualizaRegistrosNovos(ponto);
 
         return ResponseEntity.ok(addLinksHATEOAS(registros));
     }
 
-    @PutMapping("/{id_registro}/servidores/{id_servidor}")
+    @PutMapping("/{id_registro}/servidores/{matricula}")
     @PreAuthorize("hasAnyAuthority('GRP_SIPE_ADMIN', 'GRP_SIPE_RH', 'GRP_SIPE_DIRETOR')")
     public ResponseEntity<EntityModel<RegistroResponse>> aprovaRegistro(@PathVariable("id_registro") Long idRegistro,
-                                                                        @PathVariable("id_servidor") Integer idServidor) {
+                                                                        @PathVariable("matricula") String matricula) {
 
 
-        var registro = registroService.aprovarRegistro(idRegistro, idServidor);
+        var registro = registroService.aprovarRegistro(idRegistro, matricula);
 
         var registroModel = EntityModel.of(RegistroResponse.of(registro),
                 linkTo(methodOn(RegistroReadController.class).buscaRegistro(registro.getId())).withSelfRel());
@@ -72,8 +76,10 @@ public class RegistroUpdateController {
 
     @PutMapping("/pontos")
     @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
-    public ResponseEntity<EntityModel<RegistroResponse>> atualizaRegistro(@RequestParam
-                                                                          String matricula,
+    public ResponseEntity<EntityModel<RegistroResponse>> atualizaRegistro(@RequestParam("matricula_criador")
+                                                                          String matriculaCriador,
+                                                                          @RequestParam("matricula_ponto")
+                                                                          String matriculaPonto,
                                                                           @RequestParam
                                                                           @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
                                                                           LocalDate dia,
@@ -82,12 +88,15 @@ public class RegistroUpdateController {
                                                                           RegistroAtualizadoRequest registroAtualizadoRequest) {
 
         log.info("Adiciona novo registro no Ponto - {} - {}",
-                matricula, paraString(dia, PADRAO_SAIDA_DATA));
+                matriculaPonto, paraString(dia, PADRAO_SAIDA_DATA));
 
-        var ponto = pontoService.buscaPonto(matricula, dia);
-        var registro = registroService.atualizaRegistro(ponto, registroAtualizadoRequest.toModel());
-        var registroModel = EntityModel.of(RegistroResponse.of(registro),
-                linkTo(methodOn(RegistroReadController.class).buscaRegistro(registro.getId())).withSelfRel());
+        var ponto = pontoService.buscaPonto(matriculaPonto, dia);
+        var servidorCriador = servidorService.buscaPorMatricula(matriculaCriador);
+        var registro = registroAtualizadoRequest.toModel();
+        registro.setServidorCriador(servidorCriador);
+        var registroAtualizado = registroService.atualizaRegistro(ponto, registro);
+        var registroModel = EntityModel.of(RegistroResponse.of(registroAtualizado),
+                linkTo(methodOn(RegistroReadController.class).buscaRegistro(registroAtualizado.getId())).withSelfRel());
 
         return ResponseEntity.ok(registroModel);
     }
