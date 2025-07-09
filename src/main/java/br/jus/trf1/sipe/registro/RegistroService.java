@@ -152,13 +152,15 @@ public class RegistroService {
     }
 
     public Registro apagar(Long id) {
-        log.info("apagando registro {}", id);
-        var opt = registroRepository.findById(id);
-        if (opt.isPresent()) {
-            var registro = opt.get();
-            registroRepository.deleteById(id);
-            return registro;
-        }
-        throw new RegistroInexistenteException(id);
+        registroRepository.deleteById(id);
+//        var opt = registroRepository.findById(id);
+//        if (opt.isPresent()) {
+//            var registro = opt.get();
+//            log.info("apagando registro {}", id);
+//            registroRepository.delete(registro);
+//            return registro;
+//        }
+//        throw new RegistroInexistenteException(id);
+        return Registro.builder().build();
     }
 }
