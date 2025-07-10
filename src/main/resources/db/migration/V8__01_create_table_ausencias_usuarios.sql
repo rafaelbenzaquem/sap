@@ -6,6 +6,6 @@ CREATE TABLE ausencias_usuarios
     inicio     date         DEFAULT NULL,
     usuario_id int         NOT NULL,
     PRIMARY KEY (id),
-    KEY        fk_ausencia_usuario (usuario_id),
-    CONSTRAINT fk_ausencia_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
+    KEY        fk_usuario_ausencia (usuario_id),
+    CONSTRAINT fk_usuario_ausencia FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
 );
