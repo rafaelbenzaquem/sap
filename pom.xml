@@ -5,17 +5,17 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.4</version>
+		<version>3.5.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>br.jus.trf1</groupId>
 	<artifactId>sipe</artifactId>
-	<version>0.3.6</version>
+	<version>0.3.9</version>
 	<name>sipe</name>
 	<description>Api restfull para Sistemas Integrados de Ponto Eletrônico - SIPE</description>
 	<properties>
 		<java.version>21</java.version>
-		<spring-cloud.version>2024.0.0</spring-cloud.version>
+		<spring-cloud.version>2025.0.0</spring-cloud.version>
 		<sonar.java.coveragePuling>jacoco</sonar.java.coveragePuling>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.jacoco.reportPath>${project.basedir}/target/jacoco.exec</sonar.jacoco.reportPath>
@@ -67,6 +67,14 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-hateoas</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-mysql</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>

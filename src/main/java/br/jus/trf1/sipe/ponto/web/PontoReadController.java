@@ -2,6 +2,7 @@ package br.jus.trf1.sipe.ponto.web;
 
 import br.jus.trf1.sipe.ponto.PontoService;
 import br.jus.trf1.sipe.ponto.web.dto.PontoNovoResponse;
+import br.jus.trf1.sipe.ponto.web.dto.PontoResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.CollectionModel;
@@ -33,9 +34,9 @@ public class PontoReadController {
 
     @GetMapping("/{matricula}/{dia}")
     @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
-    public ResponseEntity<EntityModel<PontoNovoResponse>> buscaPonto(@PathVariable
+    public ResponseEntity<EntityModel<PontoResponse>> buscaPonto(@PathVariable
                                                                      String matricula,
-                                                                     @PathVariable
+                                                                 @PathVariable
                                                                      @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
                                                                      LocalDate dia) {
         var diaFormatado = paraString(dia);
@@ -44,7 +45,7 @@ public class PontoReadController {
         var uri = ServletUriComponentsBuilder.fromCurrentContextPath().
                 path("/v1/sipe/registros/pontos?matricula={matricula}&dia={dia}").
                 buildAndExpand(matricula, diaFormatado).toUriString();
-        var pontoModel = EntityModel.of(PontoNovoResponse.of(ponto),
+        var pontoModel = EntityModel.of(PontoResponse.of(ponto),
                 linkTo(methodOn(PontoReadController.class).buscaPonto(matricula, dia)).withSelfRel(),
                 Link.of(uri).withRel("registros")
         );
@@ -53,7 +54,7 @@ public class PontoReadController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
-    public ResponseEntity<CollectionModel<EntityModel<PontoNovoResponse>>> buscaPontosPorIntervalosDatas(@RequestParam
+    public ResponseEntity<CollectionModel<EntityModel<PontoResponse>>> buscaPontosPorIntervalosDatas(@RequestParam
                                                                                                          String matricula,
                                                                                                          @RequestParam
                                                                                                          @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
@@ -74,7 +75,7 @@ public class PontoReadController {
             var uri = ServletUriComponentsBuilder.fromCurrentContextPath().
                     path("/v1/sipe/registros/pontos?matricula={matricula}&dia={dia}").
                     buildAndExpand(matricula, diaFormatado).toUriString();
-            return EntityModel.of(PontoNovoResponse.of(ponto),
+            return EntityModel.of(PontoResponse.of(ponto),
                     linkTo(methodOn(PontoReadController.class).buscaPonto(matricula, dia)).withSelfRel(),
                     Link.of(uri).withRel("registros")
             );

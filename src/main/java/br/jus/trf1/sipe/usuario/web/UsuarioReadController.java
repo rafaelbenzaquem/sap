@@ -3,6 +3,7 @@ package br.jus.trf1.sipe.usuario.web;
 import br.jus.trf1.sipe.usuario.Usuario;
 import br.jus.trf1.sipe.usuario.UsuarioService;
 import br.jus.trf1.sipe.usuario.web.dto.UsuarioResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.hateoas.EntityModel;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+@Slf4j
 @RestController
 @RequestMapping(value = "/v1/sipe/usuarios")
 public class UsuarioReadController {
@@ -25,37 +27,36 @@ public class UsuarioReadController {
         this.service = service;
     }
 
-
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{matricula}")
     @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
-    public ResponseEntity<EntityModel<UsuarioResponse>> buscaVinculo(@PathVariable("id") Integer id) {
-        var vinculo = service.buscaPorId(id);
-        return ResponseEntity.ok(EntityModel.of(vinculo.toResponse(),
-                linkTo(methodOn(UsuarioReadController.class).buscaVinculo(vinculo.getId())).withSelfRel(),
-                linkTo(methodOn(UsuarioDeleteController.class).apagaVinculo(vinculo.getId())).withRel("delete")
+    public ResponseEntity<EntityModel<UsuarioResponse>> buscaUsuario(@PathVariable("matricula") String matricula) {
+        var usuario = service.buscaPorMatricula(matricula);
+        return ResponseEntity.ok(EntityModel.of(usuario.toResponse(),
+                linkTo(methodOn(UsuarioReadController.class).buscaUsuario(matricula)).withSelfRel(),
+                linkTo(methodOn(UsuarioDeleteController.class).apagaVinculo(usuario.getId())).withRel("delete")
         ));
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
-    public ResponseEntity<PagedModel<EntityModel<UsuarioResponse>>> listarVinculos(@RequestParam(required = false)
-                                                                                   String nome,
-                                                                                   @RequestParam(required = false)
-                                                                                   String cracha,
-                                                                                   @RequestParam(required = false)
-                                                                                   String matricula,
-                                                                                   @RequestParam(defaultValue = "0")
-                                                                                   int page,
-                                                                                   @RequestParam(defaultValue = "5")
-                                                                                   int size) {
+    @PreAuthorize("hasAnyAuthority('GRP_SIPE_ADMIN', 'GRP_SIPE_RH', 'GRP_SIPE_DIRETOR')")
+    public ResponseEntity<PagedModel<EntityModel<UsuarioResponse>>> listaUsuarios(@RequestParam(required = false)
+                                                                                  String nome,
+                                                                                  @RequestParam(required = false)
+                                                                                  String cracha,
+                                                                                  @RequestParam(required = false)
+                                                                                  String matricula,
+                                                                                  @RequestParam(defaultValue = "0")
+                                                                                  int page,
+                                                                                  @RequestParam(defaultValue = "5")
+                                                                                  int size) {
         if (nome == null && cracha == null && matricula == null) {
             var usuarioPag = service.listar(PageRequest.of(page, size));
             // Adiciona links HATEOAS
             var pagedModel = addLinksHATEOASCrud(usuarioPag);
-            addLinksPaginacao(usuarioPag,pagedModel,page, size);
+            addLinksPaginacao(usuarioPag, pagedModel, page, size);
             return ResponseEntity.ok(pagedModel);
         }
-        var usuarioPag = service.buscarVinculosPorNomeOuCrachaOuMatricula(nome, cracha, matricula,
+        var usuarioPag = service.buscaPorNomeOuCrachaOuMatricula(nome, cracha, matricula,
                 PageRequest.of(page, size));
         var pagedModel = addLinksHATEOASCrud(usuarioPag);
         return ResponseEntity.ok(pagedModel);
@@ -68,29 +69,29 @@ public class UsuarioReadController {
         if (usuarioPag.hasPrevious()) {
             pagedModel.add(Link.of(
                     linkTo(methodOn(UsuarioReadController.class)
-                            .listarVinculos(null, null, null,
+                            .listaUsuarios(null, null, null,
                                     page - 1, size)).toString(), "prev"));
         }
         if (usuarioPag.hasNext()) {
             pagedModel.add(Link.of(
                     linkTo(methodOn(UsuarioReadController.class)
-                            .listarVinculos(null, null, null,
+                            .listaUsuarios(null, null, null,
                                     page + 1, size)).toString(), "next"));
         }
     }
 
-    private PagedModel<EntityModel<UsuarioResponse>> addLinksHATEOASCrud(Page<Usuario> vinculosPage) {
+    private PagedModel<EntityModel<UsuarioResponse>> addLinksHATEOASCrud(Page<Usuario> usuarioPage) {
         return PagedModel.of(
-                vinculosPage.getContent().stream()
-                        .map(vinculo -> EntityModel.of(vinculo.toResponse(),
-                                linkTo(methodOn(UsuarioReadController.class).buscaVinculo(vinculo.getId())).withSelfRel(),
-                                linkTo(methodOn(UsuarioDeleteController.class).apagaVinculo(vinculo.getId())).withRel("delete")
+                usuarioPage.getContent().stream()
+                        .map(usuario -> EntityModel.of(usuario.toResponse(),
+                                linkTo(methodOn(UsuarioReadController.class).buscaUsuario(usuario.getMatricula())).withSelfRel(),
+                                linkTo(methodOn(UsuarioDeleteController.class).apagaVinculo(usuario.getId())).withRel("delete")
                         )).toList(),
                 new PagedModel.PageMetadata(
-                        vinculosPage.getSize(),
-                        vinculosPage.getNumber(),
-                        vinculosPage.getTotalElements(),
-                        vinculosPage.getTotalPages())
+                        usuarioPage.getSize(),
+                        usuarioPage.getNumber(),
+                        usuarioPage.getTotalElements(),
+                        usuarioPage.getTotalPages())
         );
     }
 

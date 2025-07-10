@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import static br.jus.trf1.sipe.servidor.ServidorMapping.toModel;
 
@@ -33,11 +34,18 @@ public class ServidorService {
     }
 
     public Servidor vinculaUsuarioServidor(String matricula) {
+        log.info("Buscando usuário com matricula: {}", matricula);
         var usuario = usuarioService.buscaPorMatricula(matricula);
         var servidorExterno = servidorExternoService.buscaServidorExterno(matricula);
+
         var servidor = toModel(usuario, servidorExterno);
 
         return servidorRepository.save(servidor);
+    }
+
+    public Servidor buscaPorMatricula(String matricula) {
+        Optional<Servidor> optServidor = servidorRepository.findByMatricula(matricula);
+        return optServidor.orElseGet(() -> vinculaUsuarioServidor(matricula));
     }
 
     public Servidor vinculaAusenciasServidorNoPeriodo(Servidor servidor, LocalDate dataInicio, LocalDate dataFim) {
@@ -50,8 +58,8 @@ public class ServidorService {
 
         var novasAusencias = ausenciasExternas.stream().map(auEx -> auEx.toModel(servidor)).toList();
 
-        var ausenciasParaDelete =  ausenciasExistentes.stream().filter(ae-> !novasAusencias.contains(ae)).toList();
-        var ausenciasParaSalve = novasAusencias.stream().filter(ae-> !ausenciasExistentes.contains(ae)).toList();
+        var ausenciasParaDelete = ausenciasExistentes.stream().filter(ae -> !novasAusencias.contains(ae)).toList();
+        var ausenciasParaSalve = novasAusencias.stream().filter(ae -> !ausenciasExistentes.contains(ae)).toList();
 
         ausenciaRepository.deleteAll(ausenciasParaDelete);
 

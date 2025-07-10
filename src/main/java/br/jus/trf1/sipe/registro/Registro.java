@@ -1,6 +1,7 @@
 package br.jus.trf1.sipe.registro;
 
 import br.jus.trf1.sipe.ponto.Ponto;
+import br.jus.trf1.sipe.servidor.Servidor;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,8 +27,9 @@ public final class Registro implements Comparable<Registro> {
 
     private LocalTime hora;
 
-    @Column()
+    @Column
     private Integer codigoAcesso;
+
     private Character sentido;
 
     @Column
@@ -36,12 +38,25 @@ public final class Registro implements Comparable<Registro> {
     @CreationTimestamp
     private Timestamp dataCadastro;
 
+    @ManyToOne
+    @JoinColumns(value = {
+            @JoinColumn(name = "id_servidor_criador", referencedColumnName = "id")
+    }, foreignKey = @ForeignKey(name = "fk_criador_registro"))
+    private Servidor servidorCriador;
+
     @OneToOne
     @JoinColumn(name = "registro_novo_id", foreignKey = @ForeignKey(name = "fk_registro_novo"))
     private Registro registroNovo;
 
+    @ManyToOne
+    @JoinColumns(value = {
+            @JoinColumn(name = "id_servidor_aprovador", referencedColumnName = "id")
+    }, foreignKey = @ForeignKey(name = "fk_aprovador_registro"))
+    private Servidor servidorAprovador;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    private Timestamp dataAprovacao;
+
+    @ManyToOne
     @JoinColumns(value = {
             @JoinColumn(name = "ponto_matricula", referencedColumnName = "matricula", nullable = false),
             @JoinColumn(name = "ponto_dia", referencedColumnName = "dia", nullable = false)

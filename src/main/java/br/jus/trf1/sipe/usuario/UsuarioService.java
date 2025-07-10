@@ -18,10 +18,10 @@ public class UsuarioService {
     }
 
 
-    public Page<Usuario> buscarVinculosPorNomeOuCrachaOuMatricula(String nome,
-                                                                  String cracha,
-                                                                  String matricula,
-                                                                  Pageable pageable) {
+    public Page<Usuario> buscaPorNomeOuCrachaOuMatricula(String nome,
+                                                         String cracha,
+                                                         String matricula,
+                                                         Pageable pageable) {
         return usuarioRepository.findAllByNomeOrCrachaOrMatricula(nome, cracha, matricula, pageable);
     }
 
@@ -41,7 +41,9 @@ public class UsuarioService {
                 orElseThrow(() -> new UsuarioInexistenteException(id));
     }
 
-    public Usuario atualiza(Usuario usuario) {
+
+
+    public Usuario salve(Usuario usuario) {
         var mapCampoMensagem = new HashMap<String, String>();
 
         var existeCracha = usuarioRepository.checaSeExisteUsuarioComCracha(usuario.getCracha(), usuario.getId());

@@ -3,6 +3,7 @@ package br.jus.trf1.sipe.registro.web.dto;
 import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.registro.Sentido;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -12,6 +13,9 @@ import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_ENTRADA_TE
 
 public record RegistroAtualizadoRequest(@NotNull(message = "O campo 'id' não pode ser nulo!")
                                         Long id,
+                                        @NotBlank(message = "O campo 'matricula_criador' não pode ser branco ou nulo!")
+                                        @JsonProperty("matricula_criador")
+                                        String matriculaCriador,
                                         @NotNull(message = "O campo 'hora' não pode ser nulo!")
                                         @JsonFormat(pattern = PADRAO_ENTRADA_TEMPO, shape = JsonFormat.Shape.STRING)
                                         LocalTime hora,
@@ -24,6 +28,7 @@ public record RegistroAtualizadoRequest(@NotNull(message = "O campo 'id' não po
                 .id(id)
                 .hora(hora)
                 .sentido(Sentido.toEnum(sentido).getCodigo())
+                .codigoAcesso(0)
                 .ativo(ativo)
                 .build();
     }

@@ -32,9 +32,9 @@ class UsuarioServiceIntegrationTest {
     }
 
     @Test
-    void buscarVinculosPorNomeOuCrachaOuMatricula() {
+    void buscaPorNomeOuCrachaOuMatricula() {
         Pageable page = PageRequest.of(0, 10);
-        Page<Usuario> p = usuarioService.buscarVinculosPorNomeOuCrachaOuMatricula("Alice", null, null, page);
+        Page<Usuario> p = usuarioService.buscaPorNomeOuCrachaOuMatricula("Alice", null, null, page);
         assertEquals(1, p.getTotalElements());
         assertEquals("Alice Wonderland", p.getContent().getFirst().getNome());
     }
@@ -68,40 +68,40 @@ class UsuarioServiceIntegrationTest {
     }
 
     @Test
-    void atualizaSucesso() {
+    void salveSucesso() {
         Usuario u = usuarioRepository.findUsuarioByMatricula("M001").orElseThrow();
         u.setHoraDiaria(9);
-        Usuario updated = usuarioService.atualiza(u);
+        Usuario updated = usuarioService.salve(u);
         assertEquals(9, updated.getHoraDiaria());
         Usuario fromDb = usuarioRepository.findById(u.getId()).orElseThrow();
         assertEquals(9, fromDb.getHoraDiaria());
     }
 
     @Test
-    void atualizaMatriculaDuplicadaLancaExcecao() {
+    void salveMatriculaDuplicadaLancaExcecao() {
         Usuario bob = usuarioRepository.findUsuarioByMatricula("M002").orElseThrow();
         bob.setMatricula("M001");
         CamposUnicosExistentesException ex = assertThrows(CamposUnicosExistentesException.class,
-            () -> usuarioService.atualiza(bob));
+            () -> usuarioService.salve(bob));
         assertTrue(ex.getMapCampoUnicoMensagem().containsKey("matricula"));
     }
 
     @Test
-    void atualizaCrachaDuplicadoLancaExcecao() {
+    void salveCrachaDuplicadoLancaExcecao() {
         Usuario bob = usuarioRepository.findUsuarioByMatricula("M002").orElseThrow();
         bob.setCracha("C001");
         CamposUnicosExistentesException ex = assertThrows(CamposUnicosExistentesException.class,
-            () -> usuarioService.atualiza(bob));
+            () -> usuarioService.salve(bob));
         assertTrue(ex.getMapCampoUnicoMensagem().containsKey("cracha"));
     }
 
     @Test
-    void atualizaMatriculaECrachaDuplicadosLancaExcecao() {
+    void salveMatriculaECrachaDuplicadosLancaExcecao() {
         Usuario bob = usuarioRepository.findUsuarioByMatricula("M002").orElseThrow();
         bob.setMatricula("M001");
         bob.setCracha("C001");
         CamposUnicosExistentesException ex = assertThrows(CamposUnicosExistentesException.class,
-            () -> usuarioService.atualiza(bob));
+            () -> usuarioService.salve(bob));
         assertTrue(ex.getMapCampoUnicoMensagem().containsKey("matricula"));
         assertTrue(ex.getMapCampoUnicoMensagem().containsKey("cracha"));
     }

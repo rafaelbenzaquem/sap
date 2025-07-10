@@ -34,11 +34,11 @@ public class UsuarioUpdateController {
         usuario.setMatricula(request.matricula());
         usuario.setHoraDiaria(request.horaDiaria());
 
-        var usuarioAtualizado = service.atualiza(usuario);
+        var usuarioAtualizado = service.salve(usuario);
 
         var entityModel = EntityModel.of(
                 usuarioAtualizado.toResponse(),
-                linkTo(methodOn(UsuarioReadController.class).buscaVinculo(usuarioAtualizado.getId())).withSelfRel(),
+                linkTo(methodOn(UsuarioReadController.class).buscaUsuario(usuarioAtualizado.getMatricula())).withSelfRel(),
                 linkTo(methodOn(UsuarioDeleteController.class).apagaVinculo(usuarioAtualizado.getId())).withRel("delete"));
 
         return ResponseEntity.ok().body(entityModel);

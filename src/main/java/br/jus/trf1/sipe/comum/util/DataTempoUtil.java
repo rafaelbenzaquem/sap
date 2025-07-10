@@ -41,6 +41,7 @@ public class DataTempoUtil {
         DateTimeFormatter formatoData = DateTimeFormatter.ofPattern(padraoData);
         return LocalDate.parse(textoData, formatoData);
     }
+
     public static String paraString(LocalDate data) {
         return paraString(data, PADRAO_ENTRADA_DATA);
     }

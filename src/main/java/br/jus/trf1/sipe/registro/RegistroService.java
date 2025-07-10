@@ -3,11 +3,15 @@ package br.jus.trf1.sipe.registro;
 import br.jus.trf1.sipe.externo.coletor.historico.HistoricoExternalClient;
 import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.registro.exceptions.RegistroInexistenteException;
+import br.jus.trf1.sipe.servidor.Servidor;
 import br.jus.trf1.sipe.usuario.UsuarioService;
+import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAprovadorException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -51,8 +55,8 @@ public class RegistroService {
         var registrosAtuais = registroRepository.listarRegistrosHistoricosDoPonto(matricula, dia);
 
         var registros = filtraNovosRegistros(ponto, registrosAtuais);
-        if(registrosAtuais.isEmpty()) {
-          return registroRepository.saveAll(registros);
+        if (registrosAtuais.isEmpty()) {
+            return registroRepository.saveAll(registros);
         }
         registroRepository.saveAll(registros);
 
@@ -96,6 +100,18 @@ public class RegistroService {
                 .toList();
     }
 
+
+    public Registro aprovarRegistro(Long idRegistro, String matriculaAprovador) {
+        var registro = registroRepository.findById(idRegistro).orElseThrow(() -> new RegistroInexistenteException(idRegistro));
+        var usuario = usuarioService.buscaPorMatricula(matriculaAprovador);
+        if (usuario instanceof Servidor servidor) {
+            registro.setServidorAprovador(servidor);
+            registro.setDataAprovacao(Timestamp.valueOf(LocalDateTime.now()));
+            return registroRepository.save(registro);
+        }
+        throw new UsuarioNaoAprovadorException(matriculaAprovador);
+    }
+
     public List<Registro> addRegistros(Ponto ponto, List<Registro> registros) {
 
         var registrosNovos = registros.stream().
@@ -109,8 +125,9 @@ public class RegistroService {
                 .id(registro.getId())
                 .hora(registro.getHora())
                 .sentido(registro.getSentido().getCodigo())
+                .servidorCriador(registro.getServidorCriador())
                 .ativo(true)
-                .codigoAcesso(registro.getCodigoAcesso())
+                .codigoAcesso(registro.getCodigoAcesso() == null ? 0 : registro.getCodigoAcesso())
                 .ponto(ponto)
                 .build();
     }
@@ -135,13 +152,15 @@ public class RegistroService {
     }
 
     public Registro apagar(Long id) {
-        log.info("apagando registro {}", id);
-        var opt = registroRepository.findById(id);
-        if (opt.isPresent()) {
-            var registro = opt.get();
-            registroRepository.deleteById(id);
-            return registro;
-        }
-        throw new RegistroInexistenteException(id);
+        registroRepository.deleteById(id);
+//        var opt = registroRepository.findById(id);
+//        if (opt.isPresent()) {
+//            var registro = opt.get();
+//            log.info("apagando registro {}", id);
+//            registroRepository.delete(registro);
+//            return registro;
+//        }
+//        throw new RegistroInexistenteException(id);
+        return Registro.builder().build();
     }
 }
