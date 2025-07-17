@@ -7,6 +7,7 @@ import br.jus.trf1.sipe.externo.jsarh.feriado.dto.FeriadoExternalResponse;
 import br.jus.trf1.sipe.ponto.exceptions.PontoExistenteException;
 import br.jus.trf1.sipe.ponto.exceptions.PontoInexistenteException;
 import br.jus.trf1.sipe.registro.RegistroService;
+import br.jus.trf1.sipe.usuario.UsuarioAtualService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,16 +33,18 @@ public class PontoService {
     private final RegistroService registroService;
     private final AusenciaExternaService ausenciaService;
     private final FeriadoExternalClient feriadoService;
+    private final UsuarioAtualService usuarioAtualService;
 
     public PontoService(PontoRepository pontoRepository,
                         RegistroService registroService,
                         AusenciaExternaService ausenciaService,
-
-                        FeriadoExternalClient feriadoService) {
+                        FeriadoExternalClient feriadoService,
+                        UsuarioAtualService usuarioAtualService) {
         this.pontoRepository = pontoRepository;
         this.registroService = registroService;
         this.ausenciaService = ausenciaService;
         this.feriadoService = feriadoService;
+        this.usuarioAtualService = usuarioAtualService;
     }
 
     /**
@@ -68,6 +71,7 @@ public class PontoService {
      */
     public Ponto buscaPonto(String matricula, LocalDate dia) {
         log.info("Buscando Ponto - {} - {} ", paraString(dia), matricula);
+        usuarioAtualService.permissoesNivelUsuario(matricula);
         var pontoOpt = pontoRepository.findById(PontoId.builder().
                 matricula(matricula).
                 dia(dia).
@@ -89,6 +93,7 @@ public class PontoService {
      */
     public List<Ponto> buscarPontos(String matricula, LocalDate inicio, LocalDate fim) {
         log.info("Lista de Pontos - {} - {} - {} ", paraString(inicio), paraString(fim), matricula);
+        usuarioAtualService.permissoesNivelUsuario(matricula);
         return pontoRepository.buscaPontosPorPeriodo(matricula, inicio, fim);
     }
 
@@ -134,6 +139,7 @@ public class PontoService {
     @Transactional
     public Ponto criaPonto(Ponto ponto) {
         var matricula = ponto.getId().getMatricula();
+        usuarioAtualService.permissoesNivelUsuario(matricula);
         var dia = ponto.getId().getDia();
         log.info("Salvando Ponto - {} - {} ", matricula, dia);
         if (this.existe(matricula, dia)) {
@@ -171,6 +177,7 @@ public class PontoService {
      */
     public Ponto atualizaPonto(Ponto ponto) {
         var matricula = ponto.getId().getMatricula();
+        usuarioAtualService.permissoesNivelUsuario(matricula);
         var dia = ponto.getId().getDia();
         log.info("Atualizando Ponto - {} - {} ", matricula, dia);
         if (this.existe(matricula, dia)) {
@@ -199,6 +206,8 @@ public class PontoService {
      * @return lista de pontos carregados ou criados
      */
     public List<Ponto> carregaPontos(String matricula, LocalDate inicio, LocalDate fim) {
+
+        usuarioAtualService.permissoesNivelUsuario(matricula);
 
         List<Ponto> pontos = pontoRepository.buscaPontosPorPeriodo(matricula, inicio, fim);
 

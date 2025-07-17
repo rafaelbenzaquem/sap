@@ -12,9 +12,11 @@ import java.util.HashMap;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final UsuarioAtualService usuarioAtualService;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioAtualService usuarioAtualService) {
         this.usuarioRepository = usuarioRepository;
+        this.usuarioAtualService = usuarioAtualService;
     }
 
 
@@ -23,6 +25,10 @@ public class UsuarioService {
                                                          String matricula,
                                                          Pageable pageable) {
         return usuarioRepository.findAllByNomeOrCrachaOrMatricula(nome, cracha, matricula, pageable);
+    }
+
+    public Usuario getUsuarioAtual() {
+        return usuarioAtualService.getUsuario();
     }
 
     public Page<Usuario> listar(Pageable pageable) {
@@ -40,7 +46,6 @@ public class UsuarioService {
         return usuarioRepository.findById(id).
                 orElseThrow(() -> new UsuarioInexistenteException(id));
     }
-
 
 
     public Usuario salve(Usuario usuario) {
