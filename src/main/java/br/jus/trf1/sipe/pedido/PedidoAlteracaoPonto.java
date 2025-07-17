@@ -7,14 +7,13 @@ import lombok.*;
 
 import java.util.List;
 
-@Builder
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "pedidos_modificaoes_pontos", schema = "sispontodb")
-public class PedidoModificaoPonto extends PedidoModificao {
+@Table(name = "pedidos_alteracoes_pontos", schema = "sispontodb")
+public class PedidoAlteracaoPonto extends PedidoAlteracao {
 
     @OneToOne
     @JoinColumns(value = {
@@ -23,9 +22,9 @@ public class PedidoModificaoPonto extends PedidoModificao {
     }, foreignKey = @ForeignKey(name = "fk_ponto_notificao"))
     private Ponto ponto;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "registro")
+    @OneToMany(fetch = FetchType.LAZY)
     private List<Registro> registrosOriginais;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "registro")
+    @OneToMany(fetch = FetchType.LAZY)
     private List<Registro> registrosModificados;
 
 }
