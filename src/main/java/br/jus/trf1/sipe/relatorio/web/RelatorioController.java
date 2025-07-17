@@ -41,6 +41,7 @@ public class RelatorioController {
         log.info("Matricula: {}", matricula);
         log.info("Periodo: {} a {}", inicio, fim);
 
+
         byte[] bytes = relatorioService.gerarRelatorio(matricula, inicio, fim);
 
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(bytes));

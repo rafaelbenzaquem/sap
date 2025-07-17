@@ -21,4 +21,14 @@ public class UsuarioExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
+
+    @ExceptionHandler(UsuarioNaoAutorizadoException.class)
+    public ResponseEntity<Erro> usuarioNaoAutorizadoExceptionHandler(UsuarioNaoAutorizadoException ex, HttpServletRequest request) {
+        Erro error = new Erro(HttpStatus.FORBIDDEN.value(),
+                ex.getMessage(),
+                System.currentTimeMillis(),
+                request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+
 }

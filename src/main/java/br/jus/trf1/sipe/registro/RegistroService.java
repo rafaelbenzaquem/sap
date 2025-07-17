@@ -43,7 +43,10 @@ public class RegistroService {
     }
 
 
-    public List<Registro> listarRegistrosPonto(String matricula, LocalDate dia) {
+    public List<Registro> listarRegistrosPonto(String matricula, LocalDate dia, boolean todos) {
+        if(todos) {
+            return registroRepository.listarRegistrosAtuaisDoPonto(matricula, dia);
+        }
         return registroRepository.listarRegistrosAtuaisAtivosDoPonto(matricula, dia);
     }
 
@@ -101,15 +104,15 @@ public class RegistroService {
     }
 
 
-    public Registro aprovarRegistro(Long idRegistro, String matriculaAprovador) {
+    public Registro aprovarRegistro(Long idRegistro) {
         var registro = registroRepository.findById(idRegistro).orElseThrow(() -> new RegistroInexistenteException(idRegistro));
-        var usuario = usuarioService.buscaPorMatricula(matriculaAprovador);
+        var usuario = usuarioService.getUsuarioAtual();
         if (usuario instanceof Servidor servidor) {
             registro.setServidorAprovador(servidor);
             registro.setDataAprovacao(Timestamp.valueOf(LocalDateTime.now()));
             return registroRepository.save(registro);
         }
-        throw new UsuarioNaoAprovadorException(matriculaAprovador);
+        throw new UsuarioNaoAprovadorException(usuario.getMatricula());
     }
 
     public List<Registro> addRegistros(Ponto ponto, List<Registro> registros) {
@@ -152,7 +155,7 @@ public class RegistroService {
     }
 
     public Registro apagar(Long id) {
-        registroRepository.deleteById(id);
+        registroRepository.apagarRegistroPorId(id);
 //        var opt = registroRepository.findById(id);
 //        if (opt.isPresent()) {
 //            var registro = opt.get();

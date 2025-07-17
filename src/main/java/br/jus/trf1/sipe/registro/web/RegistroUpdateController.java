@@ -59,13 +59,11 @@ public class RegistroUpdateController {
         return ResponseEntity.ok(addLinksHATEOAS(registros));
     }
 
-    @PutMapping("/{id_registro}/servidores/{matricula}")
+    @PutMapping("/{id_registro}")
     @PreAuthorize("hasAnyAuthority('GRP_SIPE_ADMIN', 'GRP_SIPE_RH', 'GRP_SIPE_DIRETOR')")
-    public ResponseEntity<EntityModel<RegistroResponse>> aprovaRegistro(@PathVariable("id_registro") Long idRegistro,
-                                                                        @PathVariable("matricula") String matricula) {
+    public ResponseEntity<EntityModel<RegistroResponse>> aprovaRegistro(@PathVariable("id_registro") Long idRegistro) {
 
-
-        var registro = registroService.aprovarRegistro(idRegistro, matricula);
+        var registro = registroService.aprovarRegistro(idRegistro);
 
         var registroModel = EntityModel.of(RegistroResponse.of(registro),
                 linkTo(methodOn(RegistroReadController.class).buscaRegistro(registro.getId())).withSelfRel());
