@@ -11,6 +11,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Objects;
 
 @Builder
@@ -44,9 +45,12 @@ public final class Registro implements Comparable<Registro> {
     }, foreignKey = @ForeignKey(name = "fk_criador_registro"))
     private Servidor servidorCriador;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "registro_novo_id", foreignKey = @ForeignKey(name = "fk_registro_novo"))
     private Registro registroNovo;
+
+    @OneToMany(mappedBy = "registroNovo", fetch = FetchType.LAZY)
+    private List<Registro> registrosAntigos;
 
     @ManyToOne
     @JoinColumns(value = {

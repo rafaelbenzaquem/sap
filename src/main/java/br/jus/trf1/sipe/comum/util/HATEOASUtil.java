@@ -37,7 +37,7 @@ public class HATEOASUtil {
         ).toList();
 
         return CollectionModel.of(registrosEntityModelList,
-                linkTo(methodOn(RegistroReadController.class).listarRegistrosDoPonto(matricula, dia)).withSelfRel()
+                linkTo(methodOn(RegistroReadController.class).listarRegistrosDoPonto(matricula, dia,false)).withSelfRel()
         );
     }
 

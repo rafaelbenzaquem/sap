@@ -43,7 +43,10 @@ public class RegistroService {
     }
 
 
-    public List<Registro> listarRegistrosPonto(String matricula, LocalDate dia) {
+    public List<Registro> listarRegistrosPonto(String matricula, LocalDate dia, boolean todos) {
+        if(todos) {
+            return registroRepository.listarRegistrosAtuaisDoPonto(matricula, dia);
+        }
         return registroRepository.listarRegistrosAtuaisAtivosDoPonto(matricula, dia);
     }
 

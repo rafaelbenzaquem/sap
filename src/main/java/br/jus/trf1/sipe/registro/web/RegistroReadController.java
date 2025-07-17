@@ -31,8 +31,11 @@ public class RegistroReadController {
     public ResponseEntity<CollectionModel<EntityModel<RegistroResponse>>> listarRegistrosDoPonto(@RequestParam
                                                                                                  String matricula,
                                                                                                  @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
-                                                                                                 @RequestParam LocalDate dia) {
-        var registros = registroService.listarRegistrosPonto(matricula, dia);
+                                                                                                 @RequestParam
+                                                                                                 LocalDate dia,
+                                                                                                 @RequestParam(required = false, defaultValue = "false")
+                                                                                                 boolean todos) {
+        var registros = registroService.listarRegistrosPonto(matricula, dia, todos);
         return ResponseEntity.ok(addLinksHATEOAS(registros));
     }
 
