@@ -1,12 +1,9 @@
 package br.jus.trf1.sipe.registro;
 
 import br.jus.trf1.sipe.alteracao.alteracao_registro.AlteracaoRegistroService;
-import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracao;
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracaoService;
-import br.jus.trf1.sipe.alteracao.pedido_alteracao.StatusPedido;
 import br.jus.trf1.sipe.externo.coletor.historico.HistoricoExternalClient;
 import br.jus.trf1.sipe.ponto.Ponto;
-import br.jus.trf1.sipe.ponto.PontoService;
 import br.jus.trf1.sipe.registro.exceptions.RegistroInexistenteException;
 import br.jus.trf1.sipe.servidor.Servidor;
 import br.jus.trf1.sipe.usuario.UsuarioService;
@@ -20,8 +17,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-
-import static br.jus.trf1.sipe.comum.util.DataTempoUtil.paraString;
 
 @Slf4j
 @Service
@@ -53,7 +48,7 @@ public class RegistroService {
 
 
     public List<Registro> listarRegistrosPonto(String matricula, LocalDate dia, boolean todos) {
-        if (todos) {
+        if(todos) {
             return registroRepository.listarRegistrosAtuaisDoPonto(matricula, dia);
         }
         return registroRepository.listarRegistrosAtuaisAtivosDoPonto(matricula, dia);
