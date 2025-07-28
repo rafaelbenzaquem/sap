@@ -54,7 +54,7 @@ public class RegistroUpdateController {
 
 
         Ponto ponto = pontoService.buscaPonto(matriculaPonto, dia);
-        List<Registro> registros = registroService.atualizaRegistrosNovos(ponto);
+        List<Registro> registros = registroService.atualizaRegistrosSistemaDeAcesso(ponto);
 
         return ResponseEntity.ok(addLinksHATEOAS(registros));
     }
@@ -74,25 +74,20 @@ public class RegistroUpdateController {
 
     @PutMapping("/pontos")
     @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
-    public ResponseEntity<EntityModel<RegistroResponse>> atualizaRegistro(@RequestParam("matricula_criador")
-                                                                          String matriculaCriador,
-                                                                          @RequestParam("matricula_ponto")
-                                                                          String matriculaPonto,
+    public ResponseEntity<EntityModel<RegistroResponse>> atualizaRegistro(@RequestParam("matricula")
+                                                                          String matricula,
                                                                           @RequestParam
                                                                           @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
                                                                           LocalDate dia,
+                                                                          String justificativa,
                                                                           @RequestBody
                                                                           @Valid
                                                                           RegistroAtualizadoRequest registroAtualizadoRequest) {
 
         log.info("Adiciona novo registro no Ponto - {} - {}",
-                matriculaPonto, paraString(dia, PADRAO_SAIDA_DATA));
-
-        var ponto = pontoService.buscaPonto(matriculaPonto, dia);
-        var servidorCriador = servidorService.buscaPorMatricula(matriculaCriador);
-        var registro = registroAtualizadoRequest.toModel();
-        registro.setServidorCriador(servidorCriador);
-        var registroAtualizado = registroService.atualizaRegistro(ponto, registro);
+                matricula, paraString(dia, PADRAO_SAIDA_DATA));
+        var ponto = pontoService.buscaPonto(matricula, dia);
+        var registroAtualizado = registroService.atualizaRegistro(ponto, justificativa, registroAtualizadoRequest.toModel());
         var registroModel = EntityModel.of(RegistroResponse.of(registroAtualizado),
                 linkTo(methodOn(RegistroReadController.class).buscaRegistro(registroAtualizado.getId())).withSelfRel());
 

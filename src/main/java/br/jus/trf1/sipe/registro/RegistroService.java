@@ -1,13 +1,19 @@
 package br.jus.trf1.sipe.registro;
 
+import br.jus.trf1.sipe.alteracao.alteracao_registro.AlteracaoRegistroService;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracao;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracaoService;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.StatusPedido;
 import br.jus.trf1.sipe.externo.coletor.historico.HistoricoExternalClient;
 import br.jus.trf1.sipe.ponto.Ponto;
+import br.jus.trf1.sipe.ponto.PontoService;
 import br.jus.trf1.sipe.registro.exceptions.RegistroInexistenteException;
 import br.jus.trf1.sipe.servidor.Servidor;
 import br.jus.trf1.sipe.usuario.UsuarioService;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAprovadorException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -24,14 +30,17 @@ public class RegistroService {
     private final UsuarioService usuarioService;
     private final HistoricoExternalClient historicoService;
     private final RegistroRepository registroRepository;
+    private final PedidoAlteracaoService pedidoAlteracaoService;
+    private final AlteracaoRegistroService alteracaoRegistroService;
 
-
-    public RegistroService(UsuarioService usuarioService,
-                           HistoricoExternalClient historicoService,
-                           RegistroRepository registroRepository) {
+    public RegistroService(UsuarioService usuarioService, HistoricoExternalClient historicoService,
+                           RegistroRepository registroRepository, PedidoAlteracaoService pedidoAlteracaoService,
+                           AlteracaoRegistroService alteracaoRegistroService) {
         this.usuarioService = usuarioService;
         this.historicoService = historicoService;
         this.registroRepository = registroRepository;
+        this.pedidoAlteracaoService = pedidoAlteracaoService;
+        this.alteracaoRegistroService = alteracaoRegistroService;
     }
 
     public Registro buscaRegistroPorId(Long id) {
@@ -44,13 +53,13 @@ public class RegistroService {
 
 
     public List<Registro> listarRegistrosPonto(String matricula, LocalDate dia, boolean todos) {
-        if(todos) {
+        if (todos) {
             return registroRepository.listarRegistrosAtuaisDoPonto(matricula, dia);
         }
         return registroRepository.listarRegistrosAtuaisAtivosDoPonto(matricula, dia);
     }
 
-    public List<Registro> atualizaRegistrosNovos(Ponto ponto) {
+    public List<Registro> atualizaRegistrosSistemaDeAcesso(Ponto ponto) {
 
         var matricula = ponto.getId().getMatricula();
         var dia = ponto.getId().getDia();
@@ -135,7 +144,11 @@ public class RegistroService {
                 .build();
     }
 
-    public Registro atualizaRegistro(Ponto ponto, Registro registroAtualizado) {
+    @Transactional
+    public Registro atualizaRegistro(Ponto ponto, String justificativa, Registro registroAtualizado) {
+        var usuarioAtual = usuarioService.getUsuarioAtual();
+
+        registroAtualizado.setServidorCriador((Servidor) usuarioAtual);
         var id = registroAtualizado.getId();
         log.info("Atualiza registro {}", id);
         var opt = registroRepository.findById(id);

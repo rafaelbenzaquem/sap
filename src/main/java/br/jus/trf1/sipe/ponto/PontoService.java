@@ -148,7 +148,7 @@ public class PontoService {
         // Persiste ponto com descrição e índice já definidos
         var pontoSalvo = pontoRepository.save(defineDescricaoIndice(ponto));
         // Atualiza registros associados e define no ponto retornado para permitir cálculo imediato
-        var registros = registroService.atualizaRegistrosNovos(pontoSalvo);
+        var registros = registroService.atualizaRegistrosSistemaDeAcesso(pontoSalvo);
         pontoSalvo.setRegistros(registros);
         return pontoSalvo;
 
@@ -184,7 +184,7 @@ public class PontoService {
             // Recalcula descrição e índice
             defineDescricaoIndice(ponto);
             // Atualiza registros e define no ponto
-            var registros = registroService.atualizaRegistrosNovos(ponto);
+            var registros = registroService.atualizaRegistrosSistemaDeAcesso(ponto);
             ponto.setRegistros(registros);
             // Persiste alterações
             var pontoAtualizado = pontoRepository.save(ponto);
@@ -212,7 +212,7 @@ public class PontoService {
         List<Ponto> pontos = pontoRepository.buscaPontosPorPeriodo(matricula, inicio, fim);
 
         pontos.forEach(ponto -> {
-            var registros = registroService.atualizaRegistrosNovos(ponto);
+            var registros = registroService.atualizaRegistrosSistemaDeAcesso(ponto);
             ponto.setRegistros(registros);
         });
 
