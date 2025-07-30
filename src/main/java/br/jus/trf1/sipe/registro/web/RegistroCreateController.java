@@ -1,12 +1,11 @@
 package br.jus.trf1.sipe.registro.web;
 
-import br.jus.trf1.sipe.ponto.Ponto;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracaoService;
 import br.jus.trf1.sipe.ponto.PontoService;
 import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.registro.RegistroService;
 import br.jus.trf1.sipe.registro.web.dto.RegistroNovoRequest;
 import br.jus.trf1.sipe.registro.web.dto.RegistroResponse;
-import br.jus.trf1.sipe.servidor.ServidorService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,10 +18,10 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
-import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_ENTRADA_DATA;
-import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_SAIDA_DATA;
 import static br.jus.trf1.sipe.comum.util.DataTempoUtil.paraString;
 import static br.jus.trf1.sipe.comum.util.HATEOASUtil.addLinksHATEOAS;
+import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_ENTRADA_DATA;
+import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_SAIDA_DATA;
 
 @Slf4j
 @RestController
@@ -31,34 +30,35 @@ public class RegistroCreateController {
 
     private final RegistroService registroService;
     private final PontoService pontoService;
-    private final ServidorService servidorService;
+    private final PedidoAlteracaoService pedidoAlteracaoService;
 
-    public RegistroCreateController(RegistroService registroService, PontoService pontoService, ServidorService servidorService) {
+
+    public RegistroCreateController(RegistroService registroService, PontoService pontoService, PedidoAlteracaoService pedidoAlteracaoService) {
         this.registroService = registroService;
         this.pontoService = pontoService;
-        this.servidorService = servidorService;
+        this.pedidoAlteracaoService = pedidoAlteracaoService;
     }
-
 
     @PostMapping("/pontos")
     @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
-    public ResponseEntity<CollectionModel<EntityModel<RegistroResponse>>> adicionaNovosRegistros(@RequestParam("matricula_ponto")
-                                                                                                 String matriculaPonto,
-                                                                                                 @RequestParam("matricula_criador")
-                                                                                                 String matriculaCriador,
-                                                                                                 @RequestParam
+    public ResponseEntity<CollectionModel<EntityModel<RegistroResponse>>> adicionaNovosRegistros(@RequestParam("matricula")
+                                                                                                 String matricula,
+                                                                                                 @RequestParam("dia")
                                                                                                  @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
                                                                                                  LocalDate dia,
+                                                                                                 @RequestParam("id_pedido_alteracao")
+                                                                                                 Long idPedidoAlteracao,
                                                                                                  @RequestBody
                                                                                                  @Valid
                                                                                                  List<RegistroNovoRequest> registrosNovos) {
 
         log.info("Adiciona novos registros no Ponto - {} - {} - registros size: {}",
-                matriculaPonto, paraString(dia, PADRAO_SAIDA_DATA), registrosNovos.size());
-        var servidorCriador = servidorService.buscaPorMatricula(matriculaCriador);
-        Ponto ponto = pontoService.buscaPonto(matriculaPonto, dia);
-        List<Registro> registros = registroService.addRegistros(ponto,
-                registrosNovos.stream().map(r-> r.toModel(servidorCriador)).toList());
+                matricula, paraString(dia, PADRAO_SAIDA_DATA), registrosNovos.size());
+
+        var pedidoAlteracao = pedidoAlteracaoService.buscaPedidoAlteracao(idPedidoAlteracao);
+        var ponto = pontoService.buscaPonto(matricula, dia);
+        List<Registro> registros = registroService.addRegistros(pedidoAlteracao,ponto,
+                registrosNovos.stream().map(RegistroNovoRequest::toModel).toList());
 
         return ResponseEntity.ok(addLinksHATEOAS(registros));
     }

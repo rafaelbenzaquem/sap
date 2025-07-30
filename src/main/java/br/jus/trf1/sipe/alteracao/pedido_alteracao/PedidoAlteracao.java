@@ -4,7 +4,9 @@ import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.usuario.Usuario;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Builder
@@ -20,8 +22,11 @@ public class PedidoAlteracao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime dataCadastro;
+    @Column(name = "data_solicitacao")
+    @CreationTimestamp
+    private Timestamp dataSolicitacao;
 
+    @Column(name = "data_aprovacao")
     private LocalDateTime dataAprovacao;
 
     private StatusPedido status;

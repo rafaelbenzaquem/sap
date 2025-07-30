@@ -1,21 +1,16 @@
 package br.jus.trf1.sipe.alteracao.pedido_alteracao.web;
 
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracaoService;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.web.dto.PedidoAlteracaoRequest;
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.web.dto.PedidoAlteracaoResponse;
 import br.jus.trf1.sipe.ponto.PontoService;
 import br.jus.trf1.sipe.usuario.UsuarioAtualService;
+import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.time.LocalDate;
-
-import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_ENTRADA_DATA;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -33,21 +28,31 @@ public class PedidoAlteracaoController {
     }
 
 
-    @PatchMapping()
+    @PostMapping
     @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
-    public ResponseEntity<PedidoAlteracaoResponse> realizarPedido(@RequestParam("matricula_ponto")
-                                                                  String matriculaPonto,
-                                                                  @RequestParam("dia_ponto")
-                                                                  @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
-                                                                  LocalDate diaPonto,
-                                                                  @RequestParam
-                                                                  String justificativa) {
+    public ResponseEntity<PedidoAlteracaoResponse> realizarPedido(@Valid @RequestBody PedidoAlteracaoRequest pedidoAlteracaoRequest) {
+
+        var matriculaPonto = pedidoAlteracaoRequest.matriculaPonto();
+        var diaPonto = pedidoAlteracaoRequest.diaPonto();
+        var justificativa = pedidoAlteracaoRequest.justificativa();
 
         log.info("Atualizando realizando Pedido de Alteracao de Ponto - {} - {}", matriculaPonto, diaPonto);
 
         var usuario = usuarioAtualService.getUsuario();
         var ponto = pontoService.buscaPonto(matriculaPonto, diaPonto);
         var pedidoAlteracao = pedidoAlteracaoService.criarPedidoAlteracao(ponto, justificativa, usuario);
+
+
+        return ResponseEntity.ok(PedidoAlteracaoResponse.of(pedidoAlteracao));
+    }
+
+    @DeleteMapping("/{idPedido}")
+    @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
+    public ResponseEntity<PedidoAlteracaoResponse> apagarPedido(@PathParam("idPedido") long idPedido) {
+
+        log.info("Apagando Pedido de Alteracao de Ponto - {}", idPedido);
+
+        var pedidoAlteracao = pedidoAlteracaoService.apagar(idPedido);
 
 
         return ResponseEntity.ok(PedidoAlteracaoResponse.of(pedidoAlteracao));

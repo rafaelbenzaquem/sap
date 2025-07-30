@@ -1,5 +1,6 @@
 package br.jus.trf1.sipe.registro.web;
 
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracaoService;
 import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.ponto.PontoService;
 import br.jus.trf1.sipe.registro.Registro;
@@ -34,12 +35,14 @@ public class RegistroUpdateController {
     private final RegistroService registroService;
     private final PontoService pontoService;
     private final ServidorService servidorService;
+    private final PedidoAlteracaoService pedidoAlteracaoService;
 
 
-    public RegistroUpdateController(RegistroService registroService, PontoService pontoService, ServidorService servidorService) {
+    public RegistroUpdateController(RegistroService registroService, PontoService pontoService, ServidorService servidorService, PedidoAlteracaoService pedidoAlteracaoService) {
         this.registroService = registroService;
         this.pontoService = pontoService;
         this.servidorService = servidorService;
+        this.pedidoAlteracaoService = pedidoAlteracaoService;
     }
 
     @PatchMapping("/pontos")
@@ -79,15 +82,17 @@ public class RegistroUpdateController {
                                                                           @RequestParam
                                                                           @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
                                                                           LocalDate dia,
-                                                                          String justificativa,
+                                                                          @RequestParam("id_pedido_alteracao")
+                                                                          Long idPedidoAlteracao,
                                                                           @RequestBody
                                                                           @Valid
                                                                           RegistroAtualizadoRequest registroAtualizadoRequest) {
 
         log.info("Adiciona novo registro no Ponto - {} - {}",
                 matricula, paraString(dia, PADRAO_SAIDA_DATA));
+        var pedidoAlteracao = pedidoAlteracaoService.buscaPedidoAlteracao(idPedidoAlteracao);
         var ponto = pontoService.buscaPonto(matricula, dia);
-        var registroAtualizado = registroService.atualizaRegistro(ponto, justificativa, registroAtualizadoRequest.toModel());
+        var registroAtualizado = registroService.atualizaRegistro(pedidoAlteracao, ponto, registroAtualizadoRequest.toModel());
         var registroModel = EntityModel.of(RegistroResponse.of(registroAtualizado),
                 linkTo(methodOn(RegistroReadController.class).buscaRegistro(registroAtualizado.getId())).withSelfRel());
 

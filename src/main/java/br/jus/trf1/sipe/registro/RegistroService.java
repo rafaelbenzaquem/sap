@@ -1,6 +1,8 @@
 package br.jus.trf1.sipe.registro;
 
+import br.jus.trf1.sipe.alteracao.alteracao_registro.Acao;
 import br.jus.trf1.sipe.alteracao.alteracao_registro.AlteracaoRegistroService;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracao;
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracaoService;
 import br.jus.trf1.sipe.externo.coletor.historico.HistoricoExternalClient;
 import br.jus.trf1.sipe.ponto.Ponto;
@@ -48,7 +50,7 @@ public class RegistroService {
 
 
     public List<Registro> listarRegistrosPonto(String matricula, LocalDate dia, boolean todos) {
-        if(todos) {
+        if (todos) {
             return registroRepository.listarRegistrosAtuaisDoPonto(matricula, dia);
         }
         return registroRepository.listarRegistrosAtuaisAtivosDoPonto(matricula, dia);
@@ -119,20 +121,28 @@ public class RegistroService {
         throw new UsuarioNaoAprovadorException(usuario.getMatricula());
     }
 
-    public List<Registro> addRegistros(Ponto ponto, List<Registro> registros) {
+    @Transactional
+    public List<Registro> addRegistros(PedidoAlteracao pedidoAlteracao, Ponto ponto, List<Registro> registros) {
+        var usuarioAtual = usuarioService.getUsuarioAtual();
+        usuarioService.permissaoRecurso(ponto);
 
         var registrosNovos = registros.stream().
-                map(registro -> addPonto(registro, ponto)).toList();
+                map(registro -> addPontoCriador(registro, ponto, (Servidor) usuarioAtual)).toList();
+        registrosNovos = registroRepository.saveAll(registrosNovos);
 
-        return registroRepository.saveAll(registrosNovos);
+        registrosNovos.forEach(registroNovo -> {
+            alteracaoRegistroService.salvarAlteracaoNoRegistroDePonto(pedidoAlteracao.getId(), null, registroNovo.getId(), Acao.CREATE);
+        });
+
+        return registrosNovos;
     }
 
-    public Registro addPonto(Registro registro, Ponto ponto) {
+    public Registro addPontoCriador(Registro registro, Ponto ponto, Servidor servidor) {
         return Registro.builder()
                 .id(registro.getId())
                 .hora(registro.getHora())
                 .sentido(registro.getSentido().getCodigo())
-                .servidorCriador(registro.getServidorCriador())
+                .servidorCriador(servidor)
                 .ativo(true)
                 .codigoAcesso(registro.getCodigoAcesso() == null ? 0 : registro.getCodigoAcesso())
                 .ponto(ponto)
@@ -140,13 +150,14 @@ public class RegistroService {
     }
 
     @Transactional
-    public Registro atualizaRegistro(Ponto ponto, String justificativa, Registro registroAtualizado) {
+    public Registro atualizaRegistro(PedidoAlteracao pedidoAlteracao, Ponto ponto, Registro registroAtualizado) {
         var usuarioAtual = usuarioService.getUsuarioAtual();
-
+        usuarioService.permissaoRecurso(ponto);
         registroAtualizado.setServidorCriador((Servidor) usuarioAtual);
         var id = registroAtualizado.getId();
         log.info("Atualiza registro {}", id);
         var opt = registroRepository.findById(id);
+
         if (opt.isPresent()) {
             var registro = opt.get();
             if (registro.getPonto().equals(ponto)) {
@@ -155,6 +166,9 @@ public class RegistroService {
                 registroAtualizado = registroRepository.save(registroAtualizado);
                 registro.setRegistroNovo(registroAtualizado);
                 registroRepository.save(registro);
+
+                alteracaoRegistroService.salvarAlteracaoNoRegistroDePonto(pedidoAlteracao.getId(), registro.getId(), registroAtualizado.getId(), Acao.UPDATE);
+
                 return registroAtualizado;
             }
             throw new IllegalArgumentException("Registro não pertence ao ponto: " + ponto.getId());

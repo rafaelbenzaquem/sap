@@ -1,12 +1,14 @@
 package br.jus.trf1.sipe.usuario;
 
 import br.jus.trf1.sipe.comum.exceptions.CamposUnicosExistentesException;
+import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioInexistenteException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 @Service
 public class UsuarioService {
@@ -29,6 +31,13 @@ public class UsuarioService {
 
     public Usuario getUsuarioAtual() {
         return usuarioAtualService.getUsuario();
+    }
+
+    public void permissaoRecurso(Ponto ponto) {
+        Objects.requireNonNull(ponto);
+        Objects.requireNonNull(ponto.getId());
+        Objects.requireNonNull(ponto.getId().getMatricula());
+        usuarioAtualService.permissoesNivelUsuario(ponto.getId().getMatricula());
     }
 
     public Page<Usuario> listar(Pageable pageable) {
