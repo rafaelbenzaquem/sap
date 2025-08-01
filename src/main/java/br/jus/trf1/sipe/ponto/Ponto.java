@@ -1,5 +1,6 @@
 package br.jus.trf1.sipe.ponto;
 
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracao;
 import br.jus.trf1.sipe.folha.Folha;
 import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.registro.Sentido;
@@ -42,6 +43,9 @@ public class Ponto {
     @OneToMany(mappedBy = "ponto", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Registro> registros;
 
+    @OneToMany(mappedBy = "ponto", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<PedidoAlteracao> pedidos;
+
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumns(value = {
@@ -77,6 +81,13 @@ public class Ponto {
         }
         return horasPermanencia;
     }
+
+    public boolean pedidoAlteracaoPendente() {
+        var i = getPedidos().stream().filter(pedidoAlteracao -> pedidoAlteracao.getDataAprovacao() == null).count();
+        log.info("Pedido alteraço de pendente: {}", i);
+        return i > 0;
+    }
+
 
     /**
      * Calcula a permanência do ponto.

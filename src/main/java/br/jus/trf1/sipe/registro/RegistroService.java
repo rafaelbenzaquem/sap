@@ -131,7 +131,7 @@ public class RegistroService {
         registrosNovos = registroRepository.saveAll(registrosNovos);
 
         registrosNovos.forEach(registroNovo -> {
-            alteracaoRegistroService.salvarAlteracaoNoRegistroDePonto(pedidoAlteracao.getId(), null, registroNovo.getId(), Acao.CREATE);
+            alteracaoRegistroService.salvarAlteracaoNoRegistroDePonto(pedidoAlteracao.getId(), null, registroNovo.getId(), Acao.CRIAR);
         });
 
         return registrosNovos;
@@ -167,7 +167,7 @@ public class RegistroService {
                 registro.setRegistroNovo(registroAtualizado);
                 registroRepository.save(registro);
 
-                alteracaoRegistroService.salvarAlteracaoNoRegistroDePonto(pedidoAlteracao.getId(), registro.getId(), registroAtualizado.getId(), Acao.UPDATE);
+                alteracaoRegistroService.salvarAlteracaoNoRegistroDePonto(pedidoAlteracao.getId(), registro.getId(), registroAtualizado.getId(), Acao.ALTERAR);
 
                 return registroAtualizado;
             }

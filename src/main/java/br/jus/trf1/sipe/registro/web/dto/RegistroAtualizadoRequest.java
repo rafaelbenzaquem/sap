@@ -13,9 +13,6 @@ import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_ENTRADA_TE
 
 public record RegistroAtualizadoRequest(@NotNull(message = "O campo 'id' não pode ser nulo!")
                                         Long id,
-                                        @NotBlank(message = "O campo 'matricula_criador' não pode ser branco ou nulo!")
-                                        @JsonProperty("matricula_criador")
-                                        String matriculaCriador,
                                         @NotNull(message = "O campo 'hora' não pode ser nulo!")
                                         @JsonFormat(pattern = PADRAO_ENTRADA_TEMPO, shape = JsonFormat.Shape.STRING)
                                         LocalTime hora,

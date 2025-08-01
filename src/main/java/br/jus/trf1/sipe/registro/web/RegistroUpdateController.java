@@ -48,15 +48,15 @@ public class RegistroUpdateController {
     @PatchMapping("/pontos")
     @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
     public ResponseEntity<CollectionModel<EntityModel<RegistroResponse>>> atualizaRegistros(@RequestParam
-                                                                                            String matriculaPonto,
+                                                                                            String matricula,
                                                                                             @RequestParam
                                                                                             @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
                                                                                             LocalDate dia) {
 
-        log.info("Atualizando Registros do ponto - {} - {}", matriculaPonto, dia);
+        log.info("Atualizando Registros do ponto - {} - {}", matricula, dia);
 
 
-        Ponto ponto = pontoService.buscaPonto(matriculaPonto, dia);
+        Ponto ponto = pontoService.buscaPonto(matricula, dia);
         List<Registro> registros = registroService.atualizaRegistrosSistemaDeAcesso(ponto);
 
         return ResponseEntity.ok(addLinksHATEOAS(registros));
