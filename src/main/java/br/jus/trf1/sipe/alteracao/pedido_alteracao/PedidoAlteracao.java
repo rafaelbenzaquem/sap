@@ -29,6 +29,7 @@ public class PedidoAlteracao {
     @Column(name = "data_aprovacao")
     private LocalDateTime dataAprovacao;
 
+    @Enumerated(EnumType.STRING)
     private StatusPedido status;
 
     private String justificativa;
