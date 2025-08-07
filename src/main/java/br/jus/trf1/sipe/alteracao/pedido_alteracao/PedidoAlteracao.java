@@ -36,7 +36,7 @@ public class PedidoAlteracao {
 
     private String justificativa;
 
-    @OneToMany(mappedBy = "peidoAlteracao")
+    @OneToMany(mappedBy = "peidoAlteracao", orphanRemoval = true)
     private List<AlteracaoRegistro> alteracaoRegistros;
 
     @ManyToOne
