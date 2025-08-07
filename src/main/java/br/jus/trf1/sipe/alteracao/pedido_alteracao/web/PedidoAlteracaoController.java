@@ -6,7 +6,6 @@ import br.jus.trf1.sipe.alteracao.pedido_alteracao.web.dto.PedidoAlteracaoRespon
 import br.jus.trf1.sipe.ponto.PontoService;
 import br.jus.trf1.sipe.usuario.UsuarioAtualService;
 import jakarta.validation.Valid;
-import jakarta.websocket.server.PathParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -48,11 +47,23 @@ public class PedidoAlteracaoController {
 
     @DeleteMapping("/{idPedido}")
     @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
-    public ResponseEntity<PedidoAlteracaoResponse> apagarPedido(@PathParam("idPedido") long idPedido) {
+    public ResponseEntity<PedidoAlteracaoResponse> apagarPedido(@PathVariable("idPedido") long idPedido) {
 
         log.info("Apagando Pedido de Alteracao de Ponto - {}", idPedido);
 
         var pedidoAlteracao = pedidoAlteracaoService.apagar(idPedido);
+
+
+        return ResponseEntity.ok(PedidoAlteracaoResponse.of(pedidoAlteracao));
+    }
+
+    @GetMapping("/{idPedido}")
+    @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
+    public ResponseEntity<PedidoAlteracaoResponse> buscarPedido(@PathVariable("idPedido") long idPedido) {
+
+        log.info("Apagando Pedido de Alteracao de Ponto - {}", idPedido);
+
+        var pedidoAlteracao = pedidoAlteracaoService.buscaPedidoAlteracao(idPedido);
 
 
         return ResponseEntity.ok(PedidoAlteracaoResponse.of(pedidoAlteracao));
