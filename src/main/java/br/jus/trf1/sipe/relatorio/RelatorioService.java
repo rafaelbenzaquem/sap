@@ -91,7 +91,7 @@ public class RelatorioService {
                 .nome(servidor.getNome())
                 .cargo(servidor.getCargo() == null ? "Servidor Requisitado" : servidor.getCargo())
                 .funcao(servidor.getFuncao())
-                .lotacao(servidor.getDescricaoLotacao())
+                .lotacao(servidor.getLotacao().getDescricao())
                 .matricula(matricula)
                 .horasDiaria(servidor.getHoraDiaria())
                 .ausencias(servidor.getAusencias())

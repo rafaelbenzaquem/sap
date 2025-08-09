@@ -83,7 +83,10 @@ public class Ponto {
     }
 
     public boolean pedidoAlteracaoPendente() {
-        var i = getPedidos().stream().filter(pedidoAlteracao -> pedidoAlteracao.getDataAprovacao() == null).count();
+        if (pedidos == null) {
+            return false;
+        }
+        var i = pedidos.stream().filter(pedidoAlteracao -> pedidoAlteracao.getDataAprovacao() == null).count();
         log.info("Pedido alteraço de pendente: {}", i);
         return i > 0;
     }

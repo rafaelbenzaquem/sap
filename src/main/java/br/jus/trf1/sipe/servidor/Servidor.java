@@ -1,5 +1,6 @@
 package br.jus.trf1.sipe.servidor;
 
+import br.jus.trf1.sipe.lotacao.Lotacao;
 import br.jus.trf1.sipe.usuario.Usuario;
 import jakarta.persistence.*;
 import lombok.*;
@@ -18,17 +19,15 @@ public class Servidor extends Usuario {
 
     private String cargo;
 
-    private String siglaLotacao;
+    @ManyToOne
+    private Lotacao lotacao;
 
-    private String descricaoLotacao;
-
-    public Servidor(Usuario usuario, String email, String funcao, String cargo, String siglaLotacao, String descricaoLotacao) {
+    public Servidor(Usuario usuario, String email, String funcao, String cargo, Lotacao lotacao) {
         super(usuario.getId(), usuario.getNome(), usuario.getMatricula(), usuario.getCracha(), usuario.getHoraDiaria());
         this.email = email;
         this.funcao = funcao;
         this.cargo = cargo;
-        this.siglaLotacao = siglaLotacao;
-        this.descricaoLotacao = descricaoLotacao;
+        this.lotacao = lotacao;
     }
 
     @Override
@@ -37,8 +36,6 @@ public class Servidor extends Usuario {
                 "'" + super.toString() + '\'' +
                 ", funcao='" + funcao + '\'' +
                 ", cargo='" + cargo + '\'' +
-                ", siglaLotacao='" + siglaLotacao + '\'' +
-                ", descricaoLotacao='" + descricaoLotacao + '\'' +
-                '}';
+                ", siglaLotacao='" + lotacao.getSigla() + "'}";
     }
 }
