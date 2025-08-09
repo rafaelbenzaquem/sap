@@ -1,0 +1,26 @@
+package br.jus.trf1.sipe.lotacao;
+
+import jakarta.persistence.*;
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+@Entity
+@Table(schema = "sisponto", name = "lotacoes")
+public class Lotacao {
+
+    @Id
+    private Integer id;
+
+    private String sigla;
+
+    private String descricao;
+
+    @ManyToOne
+    @JoinColumn(name = "id_lotacao_pai")
+    private Lotacao lotacaoPai;
+
+    @OneToMany(mappedBy = "lotacaoPai", fetch = FetchType.LAZY)
+    private List<Lotacao> subLotacoes;
+}
