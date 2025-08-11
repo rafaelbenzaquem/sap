@@ -80,7 +80,7 @@ public class RegistroService {
         var vinculo = usuarioService.buscaPorMatricula(matricula);
 
         var historicos = historicoService.buscarHistoricoDeAcesso(
-                dia, null, vinculo.getCracha(), null, null);
+                dia, null,String.format("%016d",vinculo.getCracha()), null, null);
 
         return historicos.stream().
                 filter(historico ->

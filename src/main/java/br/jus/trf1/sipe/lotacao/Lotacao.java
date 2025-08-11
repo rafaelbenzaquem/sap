@@ -1,11 +1,14 @@
 package br.jus.trf1.sipe.lotacao;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.util.List;
 
+@Builder
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(schema = "sisponto", name = "lotacoes")
 public class Lotacao {

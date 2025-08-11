@@ -1,7 +1,8 @@
 package br.jus.trf1.sipe.servidor;
 
-import br.jus.trf1.sipe.externo.jsarh.servidor.dto.ServidorExternoResponse;
 import br.jus.trf1.sipe.ausencia.Ausencia;
+import br.jus.trf1.sipe.externo.jsarh.servidor.ServidorExterno;
+import br.jus.trf1.sipe.lotacao.LotacaoMapping;
 import br.jus.trf1.sipe.usuario.Usuario;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,17 +14,17 @@ public class ServidorMapping {
     private ServidorMapping() {
     }
 
-    public static Servidor toModel(Usuario usuario, ServidorExternoResponse servidorExternoResponse, List<Ausencia> ausencias) {
-        var servidor = new Servidor(usuario, servidorExternoResponse.getEmail(), servidorExternoResponse.getFuncao(),
-                servidorExternoResponse.getCargo(), servidorExternoResponse.getSiglaLotacao(), servidorExternoResponse.getDescricaoLotacao());
+    public static Servidor toModel(Usuario usuario, ServidorExterno servidorExterno, List<Ausencia> ausencias) {
+        var servidor = new Servidor(usuario, servidorExterno.getEmail(), servidorExterno.getFuncao(),
+                servidorExterno.getCargo(), LotacaoMapping.toModel(servidorExterno.getLotacao()));
         servidor.setAusencias(ausencias);
         return servidor;
     }
 
-    public static Servidor toModel(Usuario usuario, ServidorExternoResponse servidorExternoResponse) {
+    public static Servidor toModel(Usuario usuario, ServidorExterno servidorExterno) {
         log.info("Vinculando dados do SARH para usuário: {}", usuario.getMatricula());
-        return new Servidor(usuario, servidorExternoResponse.getEmail(), servidorExternoResponse.getFuncao(),
-                servidorExternoResponse.getCargo(), servidorExternoResponse.getSiglaLotacao(), servidorExternoResponse.getDescricaoLotacao());
+        return new Servidor(usuario, servidorExterno.getEmail(), servidorExterno.getFuncao(),
+                servidorExterno.getCargo(), LotacaoMapping.toModel(servidorExterno.getLotacao()));
     }
 
 }

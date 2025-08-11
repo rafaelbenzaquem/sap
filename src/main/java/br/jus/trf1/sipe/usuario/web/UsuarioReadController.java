@@ -42,7 +42,7 @@ public class UsuarioReadController {
     public ResponseEntity<PagedModel<EntityModel<UsuarioResponse>>> listaUsuarios(@RequestParam(required = false)
                                                                                   String nome,
                                                                                   @RequestParam(required = false)
-                                                                                  String cracha,
+                                                                                  Integer cracha,
                                                                                   @RequestParam(required = false)
                                                                                   String matricula,
                                                                                   @RequestParam(defaultValue = "0")

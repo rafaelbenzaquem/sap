@@ -90,16 +90,4 @@ public class PedidoAlteracaoController {
         return ResponseEntity.ok(PedidoAlteracaoResponse.from(pedidoAlteracao));
     }
 
-    @GetMapping("/{idPedido}")
-    @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
-    public ResponseEntity<PedidoAlteracaoResponse> buscarPedido(@PathVariable("idPedido") long idPedido) {
-
-        log.info("Apagando Pedido de Alteracao de Ponto - {}", idPedido);
-
-        var pedidoAlteracao = pedidoAlteracaoService.buscaPedidoAlteracao(idPedido);
-
-
-        return ResponseEntity.ok(PedidoAlteracaoResponse.of(pedidoAlteracao));
-    }
-
 }

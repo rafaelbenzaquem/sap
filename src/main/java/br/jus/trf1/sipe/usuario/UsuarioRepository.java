@@ -14,17 +14,17 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     @Query(value = """
             SELECT u FROM Usuario u
             WHERE LOWER(u.nome) LIKE LOWER(CONCAT('%', :nome, '%'))
-            OR LOWER(u.cracha) LIKE LOWER(CONCAT('%', :cracha, '%'))
+            OR u.cracha=  :cracha
             OR u.matricula = :matricula
             """,
             countQuery = """
                     SELECT COUNT(u) FROM Usuario u
                     WHERE LOWER(u.nome) LIKE LOWER(CONCAT('%', :nome, '%'))
-                    OR LOWER(u.cracha) LIKE LOWER(CONCAT('%', :cracha, '%'))
+                    OR u.cracha=  :cracha
                     OR u.matricula = :matricula
                     """)
     Page<Usuario> findAllByNomeOrCrachaOrMatricula(@Param("nome") String nome,
-                                                   @Param("cracha") String cracha,
+                                                   @Param("cracha") Integer cracha,
                                                    @Param("matricula") String matricula,
                                                    Pageable pageable);
 
@@ -52,6 +52,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
      * @param id Identificador o Usuario que faz a requisição
      * @return true se um usuário com o cracha existir, false caso contrário.
      */
-    @Query("SELECT COUNT(u.id) > 0 FROM Usuario u WHERE u.cracha = :crachaParam AND u.id != :idParam")
-    boolean checaSeExisteUsuarioComCracha(@Param("crachaParam") String cracha, @Param("idParam") Integer id);
+    @Query("SELECT COUNT(u.id) > 0 FROM Usuario u WHERE u.cracha = :cracha AND u.id != :idParam")
+    boolean checaSeExisteUsuarioComCracha(@Param("cracha") Integer cracha, @Param("idParam") Integer id);
 }

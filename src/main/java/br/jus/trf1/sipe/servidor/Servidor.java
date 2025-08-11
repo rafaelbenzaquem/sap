@@ -20,6 +20,16 @@ public class Servidor extends Usuario {
     private String cargo;
 
     @ManyToOne
+    @JoinColumn(name = "servidor_gestor_id", referencedColumnName = "id", nullable = true, foreignKey = @ForeignKey(name = "fk_gestor_servidor"))
+    private Servidor gestor;
+
+    @ManyToOne
+    @JoinColumn(name = "servidor_gestor_substituto_id", referencedColumnName = "id", nullable = true, foreignKey = @ForeignKey(name = "fk_gestor_substituto_servidor"))
+    private Servidor gestorSubstituto;
+
+
+    @ManyToOne
+    @JoinColumn(name = "lotacao_id", referencedColumnName = "id", nullable = true, foreignKey = @ForeignKey(name = "fk_lotacao_servidor"))
     private Lotacao lotacao;
 
     public Servidor(Usuario usuario, String email, String funcao, String cargo, Lotacao lotacao) {

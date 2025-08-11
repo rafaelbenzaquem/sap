@@ -23,7 +23,7 @@ public class UsuarioService {
 
 
     public Page<Usuario> buscaPorNomeOuCrachaOuMatricula(String nome,
-                                                         String cracha,
+                                                         Integer cracha,
                                                          String matricula,
                                                          Pageable pageable) {
         return usuarioRepository.findAllByNomeOrCrachaOrMatricula(nome, cracha, matricula, pageable);

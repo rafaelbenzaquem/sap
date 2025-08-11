@@ -89,7 +89,7 @@ class UsuarioServiceIntegrationTest {
     @Test
     void salveCrachaDuplicadoLancaExcecao() {
         Usuario bob = usuarioRepository.findUsuarioByMatricula("M002").orElseThrow();
-        bob.setCracha("C001");
+        bob.setCracha(100);
         CamposUnicosExistentesException ex = assertThrows(CamposUnicosExistentesException.class,
             () -> usuarioService.salve(bob));
         assertTrue(ex.getMapCampoUnicoMensagem().containsKey("cracha"));
@@ -99,7 +99,7 @@ class UsuarioServiceIntegrationTest {
     void salveMatriculaECrachaDuplicadosLancaExcecao() {
         Usuario bob = usuarioRepository.findUsuarioByMatricula("M002").orElseThrow();
         bob.setMatricula("M001");
-        bob.setCracha("C001");
+        bob.setCracha(100);
         CamposUnicosExistentesException ex = assertThrows(CamposUnicosExistentesException.class,
             () -> usuarioService.salve(bob));
         assertTrue(ex.getMapCampoUnicoMensagem().containsKey("matricula"));

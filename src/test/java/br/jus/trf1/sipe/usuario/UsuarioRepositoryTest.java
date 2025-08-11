@@ -42,7 +42,7 @@ class UsuarioRepositoryTest {
         Pageable page = PageRequest.of(0, 10);
         Page<Usuario> p1 = repository.findAllByNomeOrCrachaOrMatricula("ali", null, null, page);
         assertEquals(1, p1.getTotalElements());
-        Page<Usuario> p2 = repository.findAllByNomeOrCrachaOrMatricula(null, "C002", null, page);
+        Page<Usuario> p2 = repository.findAllByNomeOrCrachaOrMatricula(null, 200, null, page);
         assertEquals(1, p2.getTotalElements());
         Page<Usuario> p3 = repository.findAllByNomeOrCrachaOrMatricula(null, null, "M002", page);
         assertEquals(1, p3.getTotalElements());
@@ -62,7 +62,7 @@ class UsuarioRepositoryTest {
     void testChecaSeExisteUsuarioComCracha() {
         Usuario a = repository.findUsuarioByMatricula("M001").orElseThrow();
         Usuario b = repository.findUsuarioByMatricula("M002").orElseThrow();
-        assertFalse(repository.checaSeExisteUsuarioComCracha("C001", a.getId()));
-        assertTrue(repository.checaSeExisteUsuarioComCracha("C001", b.getId()));
+        assertFalse(repository.checaSeExisteUsuarioComCracha(200, a.getId()));
+        assertTrue(repository.checaSeExisteUsuarioComCracha(100, b.getId()));
     }
 }
