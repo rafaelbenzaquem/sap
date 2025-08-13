@@ -32,4 +32,11 @@ public class AlteracaoRegistroService {
 
         return alteracaoRegistroRepository.save(alteracaoRegistro);
     }
+
+    public void apagar(Long id) {
+        alteracaoRegistroRepository.findById(id).ifPresent(alteracaoRegistro -> {
+            alteracaoRegistroRepository.delete(alteracaoRegistro); });
+    }
+
+
 }

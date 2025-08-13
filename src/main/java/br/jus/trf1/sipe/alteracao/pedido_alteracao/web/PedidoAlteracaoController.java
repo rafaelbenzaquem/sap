@@ -1,6 +1,7 @@
 package br.jus.trf1.sipe.alteracao.pedido_alteracao.web;
 
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracaoService;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.exceptions.PedidoAlteracaoInexistenteException;
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.web.dto.PedidoAlteracaoRequest;
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.web.dto.PedidoAlteracaoResponse;
 import br.jus.trf1.sipe.comum.util.DataTempoUtil;
@@ -85,7 +86,8 @@ public class PedidoAlteracaoController {
 
         log.info("Buscando Pedido de Alteracao por Ponto - {} - {}", matricula, DataTempoUtil.paraString(dia));
 
-        var pedidoAlteracao = pedidoAlteracaoService.buscaPedidoAlteracao(matricula, dia);
+        var pedidoAlteracao = pedidoAlteracaoService.buscaPedidoAlteracao(matricula, dia).orElseThrow(() ->
+                new PedidoAlteracaoInexistenteException("Não existe pedido de alteração para o ponto matricula: " + matricula + " dia: " + DataTempoUtil.paraString(dia)));;
 
         return ResponseEntity.ok(PedidoAlteracaoResponse.from(pedidoAlteracao));
     }

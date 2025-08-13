@@ -137,6 +137,23 @@ public class RegistroService {
         return registrosNovos;
     }
 
+
+    @Transactional
+    public void removeRegistro(PedidoAlteracao pedidoAlteracao, Ponto ponto,Registro registro) {
+        var usuarioAtual = usuarioService.getUsuarioAtual();
+        usuarioService.permissaoRecurso(ponto);
+
+       var alteracaoRegistroOpt = pedidoAlteracao.getAlteracaoRegistros().stream().
+               filter(pa -> registro.equals(pa.getRegistroOriginal())||registro.equals(pa.getRegistroNovo())).findFirst();
+
+       if(alteracaoRegistroOpt.isPresent()) {
+           var alteracaoRegistro = alteracaoRegistroOpt.get();
+           alteracaoRegistroService.apagar(alteracaoRegistro.getId());
+       }
+
+
+    }
+
     public Registro addPontoCriador(Registro registro, Ponto ponto, Servidor servidor) {
         return Registro.builder()
                 .id(registro.getId())

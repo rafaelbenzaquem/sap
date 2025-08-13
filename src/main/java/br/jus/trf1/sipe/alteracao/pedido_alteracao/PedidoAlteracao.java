@@ -56,4 +56,7 @@ public class PedidoAlteracao {
     }, foreignKey = @ForeignKey(name = "fk_pa_ponto"))
     private Ponto ponto;
 
+    public void setJustificativa(String justificativa) {
+        this.justificativa = this.justificativa ==null? justificativa: this.justificativa +" - "+justificativa;
+    }
 }

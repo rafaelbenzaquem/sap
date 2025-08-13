@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class PedidoAlteracaoService {
@@ -37,9 +38,8 @@ public class PedidoAlteracaoService {
         return pedidoAlteracaoRepository.findById(idPedidoAlteracao).orElseThrow(() -> new PedidoAlteracaoInexistenteException(idPedidoAlteracao));
     }
 
-    public PedidoAlteracao buscaPedidoAlteracao(String matricula, LocalDate dia) {
-        return pedidoAlteracaoRepository.buscaPorPontoEmAprovacao(matricula, dia).orElseThrow(() ->
-                new PedidoAlteracaoInexistenteException("Não existe pedido de alteração para o ponto matricula: " + matricula + " dia: " + DataTempoUtil.paraString(dia)));
+    public Optional<PedidoAlteracao> buscaPedidoAlteracao(String matricula, LocalDate dia) {
+        return pedidoAlteracaoRepository.buscaPorPontoEmAprovacao(matricula, dia);
     }
 
     public PedidoAlteracao apagar(long idPedido) {
