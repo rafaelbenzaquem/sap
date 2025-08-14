@@ -1,14 +1,11 @@
 package br.jus.trf1.sipe.registro.web;
 
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracaoService;
-import br.jus.trf1.sipe.ponto.Ponto;
-import br.jus.trf1.sipe.ponto.PontoId;
 import br.jus.trf1.sipe.ponto.PontoService;
 import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.registro.RegistroService;
 import br.jus.trf1.sipe.registro.web.dto.RegistroNovoRequest;
 import br.jus.trf1.sipe.registro.web.dto.RegistroResponse;
-import br.jus.trf1.sipe.usuario.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -34,14 +31,12 @@ public class RegistroCreateController {
     private final RegistroService registroService;
     private final PontoService pontoService;
     private final PedidoAlteracaoService pedidoAlteracaoService;
-    private final UsuarioService usuarioService;
 
-    public RegistroCreateController(RegistroService registroService, PontoService pontoService,
-                                    PedidoAlteracaoService pedidoAlteracaoService, UsuarioService usuarioService) {
+
+    public RegistroCreateController(RegistroService registroService, PontoService pontoService, PedidoAlteracaoService pedidoAlteracaoService) {
         this.registroService = registroService;
         this.pontoService = pontoService;
         this.pedidoAlteracaoService = pedidoAlteracaoService;
-        this.usuarioService = usuarioService;
     }
 
     @PostMapping("/pontos")
@@ -51,22 +46,18 @@ public class RegistroCreateController {
                                                                                                  @RequestParam("dia")
                                                                                                  @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
                                                                                                  LocalDate dia,
-                                                                                                 @RequestParam("justificativa")
-                                                                                                 String justificativa,
+                                                                                                 @RequestParam("id_pedido_alteracao")
+                                                                                                 Long idPedidoAlteracao,
                                                                                                  @RequestBody
                                                                                                  @Valid
                                                                                                  List<RegistroNovoRequest> registrosNovos) {
 
         log.info("Adiciona novos registros no Ponto - {} - {} - registros size: {}",
                 matricula, paraString(dia, PADRAO_SAIDA_DATA), registrosNovos.size());
-        var usuarioAtual = usuarioService.getUsuarioAtual();
+
+        var pedidoAlteracao = pedidoAlteracaoService.buscaPedidoAlteracao(idPedidoAlteracao);
         var ponto = pontoService.buscaPonto(matricula, dia);
-        var pedidoAlteracao = pedidoAlteracaoService.buscaPedidoAlteracao(matricula, dia)
-                .orElse(pedidoAlteracaoService.criarPedidoAlteracao(ponto, "", usuarioAtual));
-
-        pedidoAlteracao.setJustificativa(justificativa);
-
-        List<Registro> registros = registroService.addRegistros(pedidoAlteracao, ponto,
+        List<Registro> registros = registroService.addRegistros(pedidoAlteracao,ponto,
                 registrosNovos.stream().map(RegistroNovoRequest::toModel).toList());
 
         return ResponseEntity.ok(addLinksHATEOAS(registros));

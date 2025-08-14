@@ -3,10 +3,8 @@ package br.jus.trf1.sipe.registro.web;
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracaoService;
 import br.jus.trf1.sipe.ponto.PontoService;
 import br.jus.trf1.sipe.registro.RegistroService;
-import br.jus.trf1.sipe.registro.web.dto.RegistroResponse;
 import br.jus.trf1.sipe.usuario.UsuarioService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -32,21 +30,11 @@ public class RegistroDeleteController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
-    public ResponseEntity<String> apagar(@PathVariable("id") Long id, @RequestParam("justificativa") String justificativa) {
+    public ResponseEntity<String> apagar(@PathVariable("id") Long idRegistro, @RequestParam("id_pedido_alteracao") Long idPedidoAlteracao) {
 
-        log.info("apagando registro {}", id);
-        var usuarioAtual = usuarioService.getUsuarioAtual();
-        var registro = registroService.buscaRegistroPorId(id);
-        var ponto = registro.getPonto();
-        var matricula = ponto.getId().getMatricula();
-        var dia = ponto.getId().getDia();
-        var pedidoAlteracao = pedidoAlteracaoService.buscaPedidoAlteracao(matricula, dia)
-                .orElse(pedidoAlteracaoService.criarPedidoAlteracao(ponto, "", usuarioAtual));
-
-        pedidoAlteracao.setJustificativa(justificativa);
-
-        registroService.apagar(id);
-        return ResponseEntity.ok("Registro id :" + id + " apagado com sucesso!");
+        log.info("Apagando registro {}", idRegistro);
+        registroService.apagar(idRegistro, idPedidoAlteracao);
+        return ResponseEntity.ok("Registro id :" + idRegistro + " apagado com sucesso!");
     }
 
 }

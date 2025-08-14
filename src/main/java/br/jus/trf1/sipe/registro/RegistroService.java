@@ -193,16 +193,22 @@ public class RegistroService {
         throw new RegistroInexistenteException(id);
     }
 
-    public Registro apagar(Long id) {
-        registroRepository.apagarRegistroPorId(id);
-//        var opt = registroRepository.findById(id);
-//        if (opt.isPresent()) {
-//            var registro = opt.get();
-//            log.info("apagando registro {}", id);
-//            registroRepository.delete(registro);
-//            return registro;
-//        }
-//        throw new RegistroInexistenteException(id);
+    public Registro apagar(Long idRegistro, Long idPedidoAlteracao) {
+
+        var usuarioAtual = usuarioService.getUsuarioAtual();
+        var registro = buscaRegistroPorId(idRegistro);
+        var ponto = registro.getPonto();
+        usuarioService.permissaoRecurso(ponto);
+        var matricula = ponto.getId().getMatricula();
+        var dia = ponto.getId().getDia();
+        var pedidoAlteracao = pedidoAlteracaoService.buscaPedidoAlteracao(idPedidoAlteracao);
+
+        var alteracaoRegistroOptional = pedidoAlteracao.getAlteracaoRegistros().
+                stream().filter(ar -> registro.equals(ar.getRegistroOriginal())||registro.equals(ar.getRegistroNovo()))
+                .findFirst();
+        alteracaoRegistroOptional.ifPresent(alteracaoRegistro -> alteracaoRegistroService.apagar(alteracaoRegistro.getId()));
+        registroRepository.apagarRegistroPorId(idRegistro);
+
         return Registro.builder().build();
     }
 }
