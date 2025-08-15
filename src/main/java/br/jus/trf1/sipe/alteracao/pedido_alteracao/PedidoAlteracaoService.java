@@ -1,5 +1,6 @@
 package br.jus.trf1.sipe.alteracao.pedido_alteracao;
 
+import br.jus.trf1.sipe.alteracao.alteracao_registro.AlteracaoRegistro;
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.exceptions.PedidoAlteracaoInexistenteException;
 import br.jus.trf1.sipe.comum.util.DataTempoUtil;
 import br.jus.trf1.sipe.ponto.Ponto;
@@ -34,6 +35,12 @@ public class PedidoAlteracaoService {
         return pedidoAlteracaoRepository.save(pedidoAlteracao);
     }
 
+    public PedidoAlteracao atualizaPedidoAlteracao(PedidoAlteracao pedidoAlteracao) {
+        var ponto = pedidoAlteracao.getPonto();
+        usuarioAtualService.permissoesNivelUsuario(ponto.getId().getMatricula());
+        return pedidoAlteracaoRepository.save(pedidoAlteracao);
+    }
+
     public PedidoAlteracao buscaPedidoAlteracao(Long idPedidoAlteracao) {
         return pedidoAlteracaoRepository.findById(idPedidoAlteracao).orElseThrow(() -> new PedidoAlteracaoInexistenteException(idPedidoAlteracao));
     }
@@ -42,12 +49,13 @@ public class PedidoAlteracaoService {
         return pedidoAlteracaoRepository.buscaPorPontoEmAprovacao(matricula, dia);
     }
 
-    public PedidoAlteracao apagar(long idPedido) {
+    public PedidoAlteracao apagar(long idPedidoAlteracao) {
 
-        var pedidoAlteracao = buscaPedidoAlteracao(idPedido);
+        var pedidoAlteracao = buscaPedidoAlteracao(idPedidoAlteracao);
 
-        pedidoAlteracaoRepository.delete(pedidoAlteracao);
+        pedidoAlteracaoRepository.apagarPedidoAlteracaoPorId(idPedidoAlteracao);
 
         return pedidoAlteracao;
     }
+
 }

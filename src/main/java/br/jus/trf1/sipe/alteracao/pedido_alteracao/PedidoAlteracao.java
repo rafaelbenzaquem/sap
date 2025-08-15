@@ -14,8 +14,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
-@Getter
+@Data
 @Entity
 @Table(name = "pedidos_alteracoes", schema = "sispontodb")
 public class PedidoAlteracao {
@@ -35,6 +34,9 @@ public class PedidoAlteracao {
     private StatusPedido status;
 
     private String justificativa;
+
+    @Column(name = "justificativa_aprovador", nullable = true)
+    private String justificativaAprovador;
 
     @OneToMany(mappedBy = "peidoAlteracao", orphanRemoval = true)
     private List<AlteracaoRegistro> alteracaoRegistros;

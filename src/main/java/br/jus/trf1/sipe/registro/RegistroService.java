@@ -10,6 +10,7 @@ import br.jus.trf1.sipe.registro.exceptions.RegistroInexistenteException;
 import br.jus.trf1.sipe.servidor.Servidor;
 import br.jus.trf1.sipe.usuario.UsuarioService;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAprovadorException;
+import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAutorizadoException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,7 +81,7 @@ public class RegistroService {
         var vinculo = usuarioService.buscaPorMatricula(matricula);
 
         var historicos = historicoService.buscarHistoricoDeAcesso(
-                dia, null,String.format("%016d",vinculo.getCracha()), null, null);
+                dia, null, String.format("%016d", vinculo.getCracha()), null, null);
 
         return historicos.stream().
                 filter(historico ->
@@ -139,17 +140,17 @@ public class RegistroService {
 
 
     @Transactional
-    public void removeRegistro(PedidoAlteracao pedidoAlteracao, Ponto ponto,Registro registro) {
+    public void removeRegistro(PedidoAlteracao pedidoAlteracao, Ponto ponto, Registro registro) {
         var usuarioAtual = usuarioService.getUsuarioAtual();
         usuarioService.permissaoRecurso(ponto);
 
-       var alteracaoRegistroOpt = pedidoAlteracao.getAlteracaoRegistros().stream().
-               filter(pa -> registro.equals(pa.getRegistroOriginal())||registro.equals(pa.getRegistroNovo())).findFirst();
+        var alteracaoRegistroOpt = pedidoAlteracao.getAlteracaoRegistros().stream().
+                filter(pa -> registro.equals(pa.getRegistroOriginal()) || registro.equals(pa.getRegistroNovo())).findFirst();
 
-       if(alteracaoRegistroOpt.isPresent()) {
-           var alteracaoRegistro = alteracaoRegistroOpt.get();
-           alteracaoRegistroService.apagar(alteracaoRegistro.getId());
-       }
+        if (alteracaoRegistroOpt.isPresent()) {
+            var alteracaoRegistro = alteracaoRegistroOpt.get();
+            alteracaoRegistroService.apagar(alteracaoRegistro.getId());
+        }
 
 
     }
@@ -193,22 +194,28 @@ public class RegistroService {
         throw new RegistroInexistenteException(id);
     }
 
+    @Transactional
     public Registro apagar(Long idRegistro, Long idPedidoAlteracao) {
 
         var usuarioAtual = usuarioService.getUsuarioAtual();
         var registro = buscaRegistroPorId(idRegistro);
         var ponto = registro.getPonto();
-        usuarioService.permissaoRecurso(ponto);
-        var matricula = ponto.getId().getMatricula();
-        var dia = ponto.getId().getDia();
-        var pedidoAlteracao = pedidoAlteracaoService.buscaPedidoAlteracao(idPedidoAlteracao);
+        if (registro.getServidorAprovador() == null || registro.getServidorAprovador().equals(usuarioAtual)) {
 
-        var alteracaoRegistroOptional = pedidoAlteracao.getAlteracaoRegistros().
-                stream().filter(ar -> registro.equals(ar.getRegistroOriginal())||registro.equals(ar.getRegistroNovo()))
-                .findFirst();
-        alteracaoRegistroOptional.ifPresent(alteracaoRegistro -> alteracaoRegistroService.apagar(alteracaoRegistro.getId()));
-        registroRepository.apagarRegistroPorId(idRegistro);
+            usuarioService.permissaoRecurso(ponto);
+            var pedidoAlteracao = pedidoAlteracaoService.buscaPedidoAlteracao(idPedidoAlteracao);
 
-        return Registro.builder().build();
+            var alteracaoRegistroOptional = pedidoAlteracao.getAlteracaoRegistros().
+                    stream().filter(ar -> registro.equals(ar.getRegistroOriginal()) || registro.equals(ar.getRegistroNovo()))
+                    .findFirst();
+            alteracaoRegistroOptional.ifPresent(alteracaoRegistro -> {
+                alteracaoRegistroService.apagar(alteracaoRegistro.getId());
+            });
+            registroRepository.apagarRegistroPorId(idRegistro);
+
+
+            return registro;
+        }
+        throw new UsuarioNaoAutorizadoException("Usuário %s não autorizado a manipular o recurso".formatted(usuarioAtual.getMatricula()));
     }
 }

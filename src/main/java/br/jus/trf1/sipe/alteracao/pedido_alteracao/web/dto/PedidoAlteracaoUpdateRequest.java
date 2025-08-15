@@ -13,7 +13,7 @@ import java.util.Objects;
 import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_ENTRADA_DATA;
 
 @Builder
-public record PedidoAlteracaoRequest(
+public record PedidoAlteracaoUpdateRequest(
         @NotBlank(message = "O campo 'matricula_ponto' não pode ser branco ou nulo!")
         @JsonProperty("matricula_ponto")
         String matriculaPonto,
@@ -22,15 +22,17 @@ public record PedidoAlteracaoRequest(
         @JsonProperty("dia_ponto")
         LocalDate diaPonto,
         String status,
-        String justificativa) {
+        String justificativa,
+        @JsonProperty("justificativa_aprovador")
+        String justificativaAprovador) {
 
 
 
-    public static PedidoAlteracaoRequest of(PedidoAlteracao pedidoAlteracao) {
+    public static PedidoAlteracaoUpdateRequest of(PedidoAlteracao pedidoAlteracao) {
         Objects.requireNonNull(pedidoAlteracao);
         Objects.requireNonNull(pedidoAlteracao.getPonto());
 
-        return PedidoAlteracaoRequest.builder()
+        return PedidoAlteracaoUpdateRequest.builder()
                 .matriculaPonto(pedidoAlteracao.getPonto().getId().getMatricula())
                 .diaPonto(pedidoAlteracao.getPonto().getId().getDia())
                 .status(pedidoAlteracao.getStatus().name())

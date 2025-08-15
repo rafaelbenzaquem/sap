@@ -15,18 +15,11 @@ import org.springframework.web.bind.annotation.*;
 public class RegistroDeleteController {
 
     private final RegistroService registroService;
-    private final PontoService pontoService;
-    private final PedidoAlteracaoService pedidoAlteracaoService;
-    private final UsuarioService usuarioService;
 
-    public RegistroDeleteController(RegistroService registroService, PontoService pontoService,
-                                    PedidoAlteracaoService pedidoAlteracaoService, UsuarioService usuarioService) {
+
+    public RegistroDeleteController(RegistroService registroService) {
         this.registroService = registroService;
-        this.pontoService = pontoService;
-        this.pedidoAlteracaoService = pedidoAlteracaoService;
-        this.usuarioService = usuarioService;
     }
-
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
