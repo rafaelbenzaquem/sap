@@ -14,6 +14,7 @@ import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_ENTRADA_DA
 
 @Builder
 public record PedidoAlteracaoUpdateRequest(
+        Long id,
         @NotBlank(message = "O campo 'matricula_ponto' não pode ser branco ou nulo!")
         @JsonProperty("matricula_ponto")
         String matriculaPonto,
@@ -33,6 +34,7 @@ public record PedidoAlteracaoUpdateRequest(
         Objects.requireNonNull(pedidoAlteracao.getPonto());
 
         return PedidoAlteracaoUpdateRequest.builder()
+                .id(pedidoAlteracao.getId())
                 .matriculaPonto(pedidoAlteracao.getPonto().getId().getMatricula())
                 .diaPonto(pedidoAlteracao.getPonto().getId().getDia())
                 .status(pedidoAlteracao.getStatus().name())

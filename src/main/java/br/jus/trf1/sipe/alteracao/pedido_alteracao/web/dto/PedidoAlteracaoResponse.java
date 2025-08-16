@@ -21,6 +21,8 @@ public record PedidoAlteracaoResponse(Long id,
                                       LocalDate diaPonto,
                                       String status,
                                       String justificativa,
+                                      @JsonProperty("justificativa_aprovador")
+                                      String justificativaAprovador,
                                       List<AlteracaoRegistroResponse> alteracoes) {
 
 
