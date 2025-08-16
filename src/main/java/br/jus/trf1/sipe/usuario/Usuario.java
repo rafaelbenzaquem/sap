@@ -33,7 +33,7 @@ public class Usuario {
     @Column(unique = true, nullable = false, length = 15)
     private String matricula;
     @Column(unique = true, nullable = false, length = 20)
-    private String cracha;
+    private Integer cracha;
     @Min(value = 4)
     @Max(value = 12)
     @Column(name = "hora_diaria", nullable = false)
@@ -43,7 +43,7 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Ausencia> ausencias;
 
-    public Usuario(Integer id, String nome, String matricula, String cracha, Integer horaDiaria) {
+    public Usuario(Integer id, String nome, String matricula, Integer cracha, Integer horaDiaria) {
         this.id = id;
         this.nome = nome;
         this.matricula = matricula;

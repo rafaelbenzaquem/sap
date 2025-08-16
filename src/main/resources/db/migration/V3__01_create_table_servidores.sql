@@ -1,307 +1,291 @@
 CREATE TABLE servidores
 (
-    cargo             varchar(255) DEFAULT NULL,
-    descricao_lotacao varchar(255) DEFAULT NULL,
-    email             varchar(255) DEFAULT NULL,
-    funcao            varchar(255) DEFAULT NULL,
-    sigla_lotacao     varchar(255) DEFAULT NULL,
-    id                int NOT NULL,
+    email                         VARCHAR(255) DEFAULT NULL,
+    funcao                        VARCHAR(255) DEFAULT NULL,
+    cargo                         VARCHAR(255) DEFAULT NULL,
+    servidor_gestor_id            INT          DEFAULT NULL,
+    servidor_gestor_substituto_id INT          DEFAULT NULL,
+    lotacao_id                    INT          DEFAULT NULL,
+    id                            INT NOT NULL,
     PRIMARY KEY (id),
-    CONSTRAINT fk_usuario_servidor FOREIGN KEY (id) REFERENCES usuarios (id)
+    CONSTRAINT fk_usuario_servidor FOREIGN KEY (id) REFERENCES usuarios (id),
+    CONSTRAINT fk_lotacao_servidor FOREIGN KEY (lotacao_id) REFERENCES lotacoes (id),
+    CONSTRAINT fk_gestor_servidor FOREIGN KEY (servidor_gestor_id) REFERENCES servidores (id),
+    CONSTRAINT fk_gestor_substituto_servidor FOREIGN KEY (servidor_gestor_substituto_id) REFERENCES servidores (id)
 );
 
+-- INSERT INTO servidores
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (51, NULL, NULL, 'ANALISTA JUDICIÁRIO/ JUDICIÁRIA', 124);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (37, NULL, NULL, 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA (TELEFONIA)', 224);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (1, NULL, 'CJ - 03 DIRETOR DE SECRETARIA DE VARA SECRETARIA DE VARA/SECVA/3ª VARA/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 136);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (67, NULL, NULL, 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 112);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (19, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE SERVIÇOS GERAIS/SESEG/NUCAD/SECAD/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 227);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (97, NULL, 'FC - 03 ASSISTENTE ADJUNTO III GABINETE DE JUIZ FEDERAL/GABJU/4ª VARA/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 215);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (86, NULL, 'FC - 06 DIRETOR DE NÚCLEO NÚCLEO DE ADMINISTRAÇÃO ORÇAMENTÁRIA, FINANCEIRA E PATRIMONIAL/NUCAF/SECAD/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 77);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (53, NULL, 'FC - 03 ASSISTENTE ADJUNTO III GAB.JUIZ FEDERAL SUBSTITUTO/GAJUS/2ª VARA/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 124);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (2, NULL, 'FC - 05 ASSESSOR ADJUNTO V SERVIÇO DE ATIVIDADES DESTACADAS/SAD/SECVA/3ª VARA/SJRR', 'REQUISITADO(A)', 136);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (87, NULL, 'FC - 06 DIRETOR DE NÚCLEO NÚCLEO DE ADMINISTRAÇÃO/NUCAD/SECAD/SJRR', 'TÉCNICO JUDICIÁRIO/ APOIO ESPECIALIZADO (CONTABILIDADE)', 77);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (82, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE SUPORTE ADMINISTRATIVO/SESUD/DIREF/SJRR', 'REQUISITADO(A)', 70);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (20, NULL, NULL, 'TÉCNICO JUDICIÁRIO/ APOIO ESPECIALIZADO (SUPORTE TÉCNICO)', 227);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (38, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE ATENDIMENTO, PROTOCOLO, CERTIDÕES E CARTAS PRECATÓRIAS/SEATE/NUCJU/SECAD/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 224);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (98, NULL, NULL, 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 215);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (39, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE CÁLCULOS JUDICIAIS/SECAJ/NUCJU/SECAD/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 224);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (99, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE SUPORTE ADMINISTRATIVO/SESUD/SECVA/4ª VARA/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 215);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (21, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE CADASTRO DE PESSOAL/SECAP/NUCAD/SECAD/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 227);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (40, NULL, NULL, 'ANALISTA JUDICIÁRIO/ JUDICIÁRIA (OFICIAL DE JUSTIÇA AVALIADOR FEDERAL)', 224);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (54, NULL, 'FC - 05 ASSESSOR ADJUNTO V SERVIÇO DE ATIVIDADES DESTACADAS/SAD/SECVA/2ª VARA/SJRR', 'ANALISTA JUDICIÁRIO/ JUDICIÁRIA', 124);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (68, NULL, 'FC - 02 ASSISTENTE ADJUNTO II SERVIÇO DE ATIVIDADES DESTACADAS/SAD/SECVA/1ª VARA/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 112);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (4, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE SUPORTE ADMINISTRATIVO/SESUD/SECVA/3ª VARA/SJRR', 'REQUISITADO(A)', 136);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (22, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE PAGAMENTO DE PESSOAL/SEPAG/NUCAD/SECAD/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 227);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (12, NULL, 'FC - 06 DIRETOR DO NÚCLEO DE APOIO À COORDENAÇÃO NÚCLEO DE APOIO À COORDENAÇÃO/NUCOD/COJEF/SJRR', 'REQUISITADO(A)', 110);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (88, NULL, 'FC - 05 ASSESSOR ADJUNTO V SERVIÇO DE ATIVIDADES DESTACADAS/SAD/SECAD/SJRR', 'REQUISITADO(A)', 77);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (55, NULL, NULL, 'ANALISTA JUDICIÁRIO/ JUDICIÁRIA', 124);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (23, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE FISCALIZAÇÃO DE CONTRATOS/SEFIC/NUCAD/SECAD/SJRR', 'REQUISITADO(A)', 227);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (89, NULL, 'FC - 06 DIRETOR DE NÚCLEO NÚCLEO JUDICIÁRIO/NUCJU/SECAD/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 224);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (56, NULL, 'FC - 05 ASSESSOR ADJUNTO V GAB.JUIZ FEDERAL/GABJU/2ª VARA/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 124);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (41, NULL, NULL, 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 224);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (5, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE EXECUÇÕES/SEXEC/SECVA/3ª VARA/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 136);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (57, NULL, NULL, 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 124);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (69, NULL, 'FC - 02 ASSISTENTE ADJUNTO II SERVIÇO DE ATIVIDADES DESTACADAS/SAD/SECVA/1ª VARA/SJRR', 'TÉCNICO JUDICIÁRIO/ APOIO ESPECIALIZADO (CONTABILIDADE)', 112);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (100, NULL, 'FC - 03 ASSISTENTE ADJUNTO III GABINETE DE JUIZ FEDERAL SUBSTITUTO/GAJUS/4ª VARA/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 215);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (58, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE SUPORTE ADMINISTRATIVO/SESUD/SECVA/2ª VARA/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 124);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (70, NULL, 'FC - 05 OFICIAL DE GABINETE GABINETE DO JUIZ FEDERAL 1ªVARA/GABJU/1ª VARA/SJRR', 'ANALISTA JUDICIÁRIO/ JUDICIÁRIA', 112);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (24, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE DESENVOLVIMENTO E AVALIAÇÃO DE RECURSOS HUMANOS/SEDER/NUCAD/SECAD/SJRR', 'REQUISITADO(A)', 227);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (101, NULL, 'FC - 05 OFICIAL DE GABINETE GABINETE DE JUIZ FEDERAL SUBSTITUTO/GAJUS/4ª VARA/SJRR', 'ANALISTA JUDICIÁRIO/ JUDICIÁRIA', 215);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (59, NULL, NULL, 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 124);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (72, NULL, 'FC - 03 ASSISTENTE ADJUNTO III GABINETE DO JUIZ FEDERAL 1ªVARA/GABJU/1ª VARA/SJRR', 'REQUISITADO(A)', 112);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (60, NULL, 'FC - 03 ASSISTENTE ADJUNTO III GAB.JUIZ FEDERAL/GABJU/2ª VARA/SJRR', 'REQUISITADO(A)', 124);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (102, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE PROCESSAMENTO E PROCEDIMENTOS DIVERSOS/SEPOD/SECVA/4ª VARA/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 215);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (61, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE EXECUÇÕES/SEXEC/SECVA/2ª VARA/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 124);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (73, NULL, 'FC - 03 ASSISTENTE ADJUNTO III GAB. JUIZ FEDERAL SUBSTITUTO/GAJUS/1ª VARA/SJRR', 'REQUISITADO(A)', 112);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (90, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE MODERNIZAÇÃO ADMINISTRATIVA/SEMAD/SECAD/SJRR', 'TÉCNICO JUDICIÁRIO/ APOIO ESPECIALIZADO (SUPORTE TÉCNICO)', 77);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (25, NULL, NULL, 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 227);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (103, NULL, 'FC - 05 OFICIAL DE GABINETE GABINETE DE JUIZ FEDERAL/GABJU/4ª VARA/SJRR', 'ANALISTA JUDICIÁRIO/ JUDICIÁRIA', 215);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (42, NULL, NULL, 'ANALISTA JUDICIÁRIO/ JUDICIÁRIA (OFICIAL DE JUSTIÇA AVALIADOR FEDERAL)', 224);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (43, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE CLASSIFICAÇÃO E DISTRIBUIÇÃO/SECLA/NUCJU/SECAD/SJRR', 'ANALISTA JUDICIÁRIO/ ADMINISTRATIVA', 224);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (6, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE PROCESSAMENTO E PROCEDIMENTOS DIVERSOS/SEPOD/SECVA/3ª VARA/SJRR', 'REQUISITADO(A)', 136);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (44, NULL, 'FC - 03 ASSISTENTE ADJUNTO III SERVIÇO DE ATENDIMENTO/SERAT/SEATE/NUCJU/SECAD/SJRR', 'REQUISITADO(A)', 224);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (62, NULL, 'FC - 05 OFICIAL DE GABINETE GAB.JUIZ FEDERAL/GABJU/2ª VARA/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 124);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (35, NULL, 'FC - 03 ASSISTENTE ADJUNTO III SERVIÇO DE PAGAMENTO DE PESSOAL/SERPAG/SEPAG/NUCAD/SECAD/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 227);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (16, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE EXECUÇÃO ORÇAMENTÁRIA E FINANCEIRA/SEOFI/NUCAF/SECAD/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 253);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (81, NULL, 'CJ - 01 CHEFE DE GABINETE EXECUTIVO GABINETE EXECUTIVO DE APOIO AO CENTRO JUDICIÁRIO DE CONCILIAÇÃO/GABEX/CEJUC/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 226);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (104, NULL, NULL, 'ANALISTA JUDICIÁRIO/ ADMINISTRATIVA', 215);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (63, NULL, 'FC - 05 OFICIAL DE GABINETE GAB.JUIZ FEDERAL SUBSTITUTO/GAJUS/2ª VARA/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 124);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (64, NULL, 'CJ - 03 DIRETOR DE SECRETARIA DE VARA SECRETARIA DE VARA/SECVA/2ª VARA/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 124);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (26, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE COMPRAS E LICITAÇÕES/SELIT/NUCAD/SECAD/SJRR', 'ANALISTA JUDICIÁRIO/ ADMINISTRATIVA', 227);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (7, NULL, 'FC - 05 OFICIAL DE GABINETE GAB. JUIZ FEDERAL/GABJU/3ª VARA/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 136);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (46, NULL, NULL, 'ANALISTA JUDICIÁRIO/ JUDICIÁRIA (OFICIAL DE JUSTIÇA AVALIADOR FEDERAL)', 224);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (27, NULL, NULL, 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA (AGENTE DA POLÍCIA JUDICIAL)', 227);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (28, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE TECNOLOGIA DA INFORMAÇÃO/SEINF/NUCAD/SECAD/SJRR', 'REQUISITADO(A)', 227);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (47, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO CENTRAL DE MANDADOS/CEMAN/NUCJU/SECAD/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA (AGENTE DA POLÍCIA JUDICIAL)', 224);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (65, NULL, NULL, 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 124);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (74, NULL, 'CJ - 03 DIRETOR DE SECRETARIA DE VARA SECRETARIA DE VARA/SECVA/1ª VARA/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 112);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (105, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE EXECUÇÕES/SEXEC/SECVA/4ª VARA/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 215);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (48, NULL, NULL, 'ANALISTA JUDICIÁRIO/ JUDICIÁRIA (OFICIAL DE JUSTIÇA AVALIADOR FEDERAL)', 224);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (49, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE DEPÓSITO E ARQUIVOS JUDICIAL E ADMINISTRATIVO/SEDAJ/NUCJU/SECAD/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 224);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (29, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE BEM - ESTAR SOCIAL/SEBES/NUCAD/SECAD/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 227);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (34, NULL, 'CJ - 03 DIRETOR DE SECRETARIA ADMINISTRATIVA SECRETARIA ADMINISTRATIVA/SECAD/SJRR', 'ANALISTA JUDICIÁRIO/ ADMINISTRATIVA', 77);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (8, NULL, 'FC - 05 OFICIAL DE GABINETE GAB. JUIZ FEDERAL SUBSTITUTO/GAJUS/3ª VARA/SJRR', 'ANALISTA JUDICIÁRIO/ JUDICIÁRIA', 136);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (106, NULL, 'CJ - 03 DIRETOR DE SECRETARIA DE VARA SECRETARIA DA VARA/SECVA/4ª VARA/SJRR', 'REQUISITADO(A)', 215);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (17, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE MATERIAL E PATRIMÔNIO/SEMAP/NUCAF/SECAD/SJRR', 'ANALISTA JUDICIÁRIO/ ADMINISTRATIVA', 253);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (30, NULL, 'FC - 03 ASSISTENTE ADJUNTO III SERVIÇO DE SUPORTE TÉCNICO AOS USUÁRIOS/SERSUT/SEINF/NUCAD/SECAD/SJRR', 'TÉCNICO JUDICIÁRIO/ APOIO ESPECIALIZADO (TECNOLOGIA DA INFORMAÇÃO)', 227);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (84, NULL, 'FC - 05 OFICIAL DE GABINETE ASSESSORIA JURÍDICA E LEGISLAÇÃO DE PESSOAL/ASJUR/DIREF/SJRR', 'ANALISTA JUDICIÁRIO/ JUDICIÁRIA', 70);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (75, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE PROCESSAMENTO E PROCEDIMENTOS DIVERSOS/SEPOD/SECVA/1ª VARA/SJRR', 'ANALISTA JUDICIÁRIO/ JUDICIÁRIA', 112);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (9, NULL, 'FC - 05 OFICIAL DE GABINETE GAB. JUIZ FEDERAL/GABJU/3ª VARA/SJRR', 'ANALISTA JUDICIÁRIO/ JUDICIÁRIA', 136);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (31, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE POLÍCIA JUDICIAL/SEPOL/NUCAD/SECAD/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA (AGENTE DA POLÍCIA JUDICIAL)', 227);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (66, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE PROCESSAMENTO E PROCEDIMENTOS DIVERSOS/SEPOD/SECVA/2ª VARA/SJRR', 'ANALISTA JUDICIÁRIO/ JUDICIÁRIA', 124);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (107, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE PROTOCOLO E INFORMAÇÕES PROCESSUAIS/SEPIP/SECVA/4ª VARA/SJRR', 'ANALISTA JUDICIÁRIO/ JUDICIÁRIA', 215);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (32, NULL, NULL, 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA (AGENTE DA POLÍCIA JUDICIAL)', 227);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (108, NULL, NULL, 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 215);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (36, NULL, 'FC - 05 ASSESSOR ADJUNTO V SERVIÇO DE ATIVIDADES DESTACADAS/SAD/COJEF/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 224);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (76, NULL, 'FC - 05 OFICIAL DE GABINETE GAB. JUIZ FEDERAL SUBSTITUTO/GAJUS/1ª VARA/SJRR', 'ANALISTA JUDICIÁRIO/ JUDICIÁRIA', 112);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (92, NULL, 'FC - 05 ASSESSOR ADJUNTO V SERVIÇO DE ATIVIDADES DESTACADAS/SAD/SECAD/SJRR', 'REQUISITADO(A)', 77);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (33, NULL, NULL, 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA (AGENTE DA POLÍCIA JUDICIAL)', 227);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (10, NULL, 'FC - 05 OFICIAL DE GABINETE GAB. JUIZ FEDERAL SUBSTITUTO/GAJUS/3ª VARA/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 136);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (77, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE PROTOCOLO E INFORMAÇÕES PROCESSUAIS/SEPIP/SECVA/1ª VARA/SJRR', 'ANALISTA JUDICIÁRIO/ JUDICIÁRIA', 112);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (109, NULL, 'FC - 05 ASSESSOR ADJUNTO V SERVIÇO DE ATIVIDADES DESTACADAS/SAD/SECVA/4ª VARA/SJRR', 'ANALISTA JUDICIÁRIO/ JUDICIÁRIA', 215);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (50, NULL, NULL, 'ANALISTA JUDICIÁRIO/ JUDICIÁRIA (OFICIAL DE JUSTIÇA AVALIADOR FEDERAL)', 224);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (110, NULL, 'FC - 05 OFICIAL DE GABINETE GABINETE DE JUIZ FEDERAL/GABJU/4ª VARA/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 215);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (85, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE AUDITORIA INTERNA/SEAUD/DIREF/SJRR', 'ANALISTA JUDICIÁRIO/ APOIO ESPECIALIZADO (CONTABILIDADE)', 70);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (78, NULL, 'FC - 05 SUPERVISOR DE SEÇÃO SEÇÃO DE EXECUÇÕES/SEXEC/SECVA/1ª VARA/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 112);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (79, NULL, 'FC - 05 ASSESSOR ADJUNTO V SERVIÇO DE ATIVIDADES DESTACADAS/SAD/SECVA/1ª VARA/SJRR', 'TÉCNICO JUDICIÁRIO/ ADMINISTRATIVA', 112);
+INSERT INTO servidores (id, email, funcao, cargo, lotacao_id) VALUES (11, NULL, 'FC - 05 ASSESSOR ADJUNTO V SERVIÇO DE ATIVIDADES DESTACADAS/SAD/SECVA/3ª VARA/SJRR', 'ANALISTA JUDICIÁRIO/ JUDICIÁRIA', 136);
 
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(1, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(2, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(3, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(4, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(5, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(6, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(7, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(8, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(9, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(10, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(11, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(12, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(13, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(14, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(15, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(16, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(17, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(18, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(19, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(20, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(21, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(22, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(23, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(24, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(25, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(26, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(27, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(28, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(29, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(30, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(31, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(32, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(33, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(34, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(35, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(36, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(37, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(38, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(39, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(40, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(41, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(42, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(43, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(44, 'TÉCNICO JUDICIÁRIO/ APOIO ESPECIALIZADO (SUPORTE TÉCNICO)', 'SEÇÃO DE MODERNIZAÇÃO ADMINISTRATIVA - SEMAD/SECAD', 'rr20089@trf1.jus.br', 'SUPERVISOR DE SEÇÃO - FC-05', 'SEMAD');
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(45, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(46, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(47, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(48, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(49, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(50, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(51, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(52, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(53, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(54, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(55, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(56, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(57, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(58, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(59, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(60, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(61, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(62, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(63, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(64, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(65, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(66, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(67, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(68, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(69, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(70, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(71, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(72, 'TÉCNICO JUDICIÁRIO/ APOIO ESPECIALIZADO (TECNOLOGIA DA INFORMAÇÃO)', 'SERVIÇO DE SUPORTE TÉCNICO AOS USUÁRIOS - SERSUT/SEINF', 'rr20178@trf1.jus.br', 'ASSISTENTE ADJUNTO III - FC-03', 'SERSUT');
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(73, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(74, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(75, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(76, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(77, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(78, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(79, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(80, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(81, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(82, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(83, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(84, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(85, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(86, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(87, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(88, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(89, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(90, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(91, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(92, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(93, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(94, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(95, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(96, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(97, NULL, NULL, NULL, NULL, NULL);
-INSERT INTO sispontodb.servidores
-(id, cargo, descricao_lotacao, email, funcao, sigla_lotacao)
-VALUES(98, NULL, NULL, NULL, NULL, NULL);
+-- UPDATE gestor fields
+UPDATE servidores SET servidor_gestor_id = 64 WHERE id = 51;
+UPDATE servidores SET servidor_gestor_substituto_id = 58 WHERE id = 51;
+UPDATE servidores SET servidor_gestor_id = 89 WHERE id = 37;
+UPDATE servidores SET servidor_gestor_substituto_id = 38 WHERE id = 37;
+UPDATE servidores SET servidor_gestor_id = 74 WHERE id = 67;
+UPDATE servidores SET servidor_gestor_substituto_id = 75 WHERE id = 67;
+UPDATE servidores SET servidor_gestor_id = 87 WHERE id = 19;
+UPDATE servidores SET servidor_gestor_substituto_id = 17 WHERE id = 19;
+UPDATE servidores SET servidor_gestor_id = 106 WHERE id = 97;
+UPDATE servidores SET servidor_gestor_substituto_id = 103 WHERE id = 97;
+UPDATE servidores SET servidor_gestor_id = 34 WHERE id = 86;
+UPDATE servidores SET servidor_gestor_substituto_id = 87 WHERE id = 86;
+UPDATE servidores SET servidor_gestor_id = 64 WHERE id = 53;
+UPDATE servidores SET servidor_gestor_substituto_id = 58 WHERE id = 53;
+UPDATE servidores SET servidor_gestor_id = 1 WHERE id = 2;
+UPDATE servidores SET servidor_gestor_substituto_id = 7 WHERE id = 2;
+UPDATE servidores SET servidor_gestor_id = 34 WHERE id = 87;
+UPDATE servidores SET servidor_gestor_id = 34 WHERE id = 82;
+UPDATE servidores SET servidor_gestor_substituto_id = 87 WHERE id = 82;
+UPDATE servidores SET servidor_gestor_id = 87 WHERE id = 20;
+UPDATE servidores SET servidor_gestor_substituto_id = 17 WHERE id = 20;
+UPDATE servidores SET servidor_gestor_id = 89 WHERE id = 38;
+UPDATE servidores SET servidor_gestor_substituto_id = 34 WHERE id = 38;
+UPDATE servidores SET servidor_gestor_id = 106 WHERE id = 98;
+UPDATE servidores SET servidor_gestor_substituto_id = 103 WHERE id = 98;
+UPDATE servidores SET servidor_gestor_id = 89 WHERE id = 39;
+UPDATE servidores SET servidor_gestor_substituto_id = 38 WHERE id = 39;
+UPDATE servidores SET servidor_gestor_id = 106 WHERE id = 99;
+UPDATE servidores SET servidor_gestor_substituto_id = 103 WHERE id = 99;
+UPDATE servidores SET servidor_gestor_id = 87 WHERE id = 21;
+UPDATE servidores SET servidor_gestor_substituto_id = 17 WHERE id = 21;
+UPDATE servidores SET servidor_gestor_id = 89 WHERE id = 40;
+UPDATE servidores SET servidor_gestor_substituto_id = 38 WHERE id = 40;
+UPDATE servidores SET servidor_gestor_id = 64 WHERE id = 54;
+UPDATE servidores SET servidor_gestor_substituto_id = 58 WHERE id = 54;
+UPDATE servidores SET servidor_gestor_id = 74 WHERE id = 68;
+UPDATE servidores SET servidor_gestor_substituto_id = 75 WHERE id = 68;
+UPDATE servidores SET servidor_gestor_id = 1 WHERE id = 4;
+UPDATE servidores SET servidor_gestor_substituto_id = 7 WHERE id = 4;
+UPDATE servidores SET servidor_gestor_id = 87 WHERE id = 22;
+UPDATE servidores SET servidor_gestor_substituto_id = 17 WHERE id = 22;
+UPDATE servidores SET servidor_gestor_id = 1 WHERE id = 12;
+UPDATE servidores SET servidor_gestor_substituto_id = 7 WHERE id = 12;
+UPDATE servidores SET servidor_gestor_id = 34 WHERE id = 88;
+UPDATE servidores SET servidor_gestor_substituto_id = 87 WHERE id = 88;
+UPDATE servidores SET servidor_gestor_id = 64 WHERE id = 55;
+UPDATE servidores SET servidor_gestor_substituto_id = 58 WHERE id = 55;
+UPDATE servidores SET servidor_gestor_id = 87 WHERE id = 23;
+UPDATE servidores SET servidor_gestor_substituto_id = 17 WHERE id = 23;
+UPDATE servidores SET servidor_gestor_id = 34 WHERE id = 89;
+UPDATE servidores SET servidor_gestor_substituto_id = 87 WHERE id = 89;
+UPDATE servidores SET servidor_gestor_id = 64 WHERE id = 56;
+UPDATE servidores SET servidor_gestor_substituto_id = 58 WHERE id = 56;
+UPDATE servidores SET servidor_gestor_id = 89 WHERE id = 41;
+UPDATE servidores SET servidor_gestor_substituto_id = 38 WHERE id = 41;
+UPDATE servidores SET servidor_gestor_id = 1 WHERE id = 5;
+UPDATE servidores SET servidor_gestor_substituto_id = 7 WHERE id = 5;
+UPDATE servidores SET servidor_gestor_id = 64 WHERE id = 57;
+UPDATE servidores SET servidor_gestor_substituto_id = 58 WHERE id = 57;
+UPDATE servidores SET servidor_gestor_id = 74 WHERE id = 69;
+UPDATE servidores SET servidor_gestor_substituto_id = 75 WHERE id = 69;
+UPDATE servidores SET servidor_gestor_id = 106 WHERE id = 100;
+UPDATE servidores SET servidor_gestor_substituto_id = 103 WHERE id = 100;
+UPDATE servidores SET servidor_gestor_id = 64 WHERE id = 58;
+UPDATE servidores SET servidor_gestor_substituto_id = 58 WHERE id = 58;
+UPDATE servidores SET servidor_gestor_id = 74 WHERE id = 70;
+UPDATE servidores SET servidor_gestor_substituto_id = 75 WHERE id = 70;
+UPDATE servidores SET servidor_gestor_id = 87 WHERE id = 24;
+UPDATE servidores SET servidor_gestor_substituto_id = 17 WHERE id = 24;
+UPDATE servidores SET servidor_gestor_id = 106 WHERE id = 101;
+UPDATE servidores SET servidor_gestor_substituto_id = 103 WHERE id = 101;
+UPDATE servidores SET servidor_gestor_id = 64 WHERE id = 59;
+UPDATE servidores SET servidor_gestor_substituto_id = 58 WHERE id = 59;
+UPDATE servidores SET servidor_gestor_id = 74 WHERE id = 72;
+UPDATE servidores SET servidor_gestor_substituto_id = 75 WHERE id = 72;
+UPDATE servidores SET servidor_gestor_id = 64 WHERE id = 60;
+UPDATE servidores SET servidor_gestor_substituto_id = 58 WHERE id = 60;
+UPDATE servidores SET servidor_gestor_id = 106 WHERE id = 102;
+UPDATE servidores SET servidor_gestor_substituto_id = 103 WHERE id = 102;
+UPDATE servidores SET servidor_gestor_id = 64 WHERE id = 61;
+UPDATE servidores SET servidor_gestor_substituto_id = 58 WHERE id = 61;
+UPDATE servidores SET servidor_gestor_id = 74 WHERE id = 73;
+UPDATE servidores SET servidor_gestor_substituto_id = 75 WHERE id = 73;
+UPDATE servidores SET servidor_gestor_id = 34 WHERE id = 90;
+UPDATE servidores SET servidor_gestor_substituto_id = 87 WHERE id = 90;
+UPDATE servidores SET servidor_gestor_id = 87 WHERE id = 25;
+UPDATE servidores SET servidor_gestor_substituto_id = 17 WHERE id = 25;
+UPDATE servidores SET servidor_gestor_id = 106 WHERE id = 103;
+UPDATE servidores SET servidor_gestor_id = 89 WHERE id = 42;
+UPDATE servidores SET servidor_gestor_substituto_id = 38 WHERE id = 42;
+UPDATE servidores SET servidor_gestor_id = 89 WHERE id = 43;
+UPDATE servidores SET servidor_gestor_substituto_id = 38 WHERE id = 43;
+UPDATE servidores SET servidor_gestor_id = 1 WHERE id = 6;
+UPDATE servidores SET servidor_gestor_substituto_id = 7 WHERE id = 6;
+UPDATE servidores SET servidor_gestor_id = 89 WHERE id = 44;
+UPDATE servidores SET servidor_gestor_substituto_id = 38 WHERE id = 44;
+UPDATE servidores SET servidor_gestor_id = 64 WHERE id = 62;
+UPDATE servidores SET servidor_gestor_substituto_id = 58 WHERE id = 62;
+UPDATE servidores SET servidor_gestor_id = 87 WHERE id = 35;
+UPDATE servidores SET servidor_gestor_substituto_id = 17 WHERE id = 35;
+UPDATE servidores SET servidor_gestor_id = 86 WHERE id = 16;
+UPDATE servidores SET servidor_gestor_substituto_id = 34 WHERE id = 16;
+UPDATE servidores SET servidor_gestor_id = 34 WHERE id = 81;
+UPDATE servidores SET servidor_gestor_substituto_id = 87 WHERE id = 81;
+UPDATE servidores SET servidor_gestor_id = 106 WHERE id = 104;
+UPDATE servidores SET servidor_gestor_substituto_id = 103 WHERE id = 104;
+UPDATE servidores SET servidor_gestor_id = 64 WHERE id = 63;
+UPDATE servidores SET servidor_gestor_substituto_id = 58 WHERE id = 63;
+UPDATE servidores SET servidor_gestor_id = 87 WHERE id = 26;
+UPDATE servidores SET servidor_gestor_substituto_id = 17 WHERE id = 26;
+UPDATE servidores SET servidor_gestor_id = 1 WHERE id = 7;
+UPDATE servidores SET servidor_gestor_substituto_id = 7 WHERE id = 7;
+UPDATE servidores SET servidor_gestor_id = 89 WHERE id = 46;
+UPDATE servidores SET servidor_gestor_substituto_id = 38 WHERE id = 46;
+UPDATE servidores SET servidor_gestor_id = 87 WHERE id = 27;
+UPDATE servidores SET servidor_gestor_substituto_id = 17 WHERE id = 27;
+UPDATE servidores SET servidor_gestor_id = 87 WHERE id = 28;
+UPDATE servidores SET servidor_gestor_substituto_id = 17 WHERE id = 28;
+UPDATE servidores SET servidor_gestor_id = 89 WHERE id = 47;
+UPDATE servidores SET servidor_gestor_substituto_id = 38 WHERE id = 47;
+UPDATE servidores SET servidor_gestor_id = 64 WHERE id = 65;
+UPDATE servidores SET servidor_gestor_substituto_id = 58 WHERE id = 65;
+UPDATE servidores SET servidor_gestor_id = 106 WHERE id = 105;
+UPDATE servidores SET servidor_gestor_substituto_id = 103 WHERE id = 105;
+UPDATE servidores SET servidor_gestor_id = 89 WHERE id = 48;
+UPDATE servidores SET servidor_gestor_substituto_id = 38 WHERE id = 48;
+UPDATE servidores SET servidor_gestor_id = 89 WHERE id = 49;
+UPDATE servidores SET servidor_gestor_substituto_id = 38 WHERE id = 49;
+UPDATE servidores SET servidor_gestor_id = 87 WHERE id = 29;
+UPDATE servidores SET servidor_gestor_substituto_id = 17 WHERE id = 29;
+UPDATE servidores SET servidor_gestor_id = 1 WHERE id = 8;
+UPDATE servidores SET servidor_gestor_substituto_id = 7 WHERE id = 8;
+UPDATE servidores SET servidor_gestor_id = 86 WHERE id = 17;
+UPDATE servidores SET servidor_gestor_substituto_id = 16 WHERE id = 17;
+UPDATE servidores SET servidor_gestor_id = 87 WHERE id = 30;
+UPDATE servidores SET servidor_gestor_substituto_id = 17 WHERE id = 30;
+UPDATE servidores SET servidor_gestor_id = 34 WHERE id = 84;
+UPDATE servidores SET servidor_gestor_substituto_id = 87 WHERE id = 84;
+UPDATE servidores SET servidor_gestor_id = 74 WHERE id = 75;
+UPDATE servidores SET servidor_gestor_id = 1 WHERE id = 9;
+UPDATE servidores SET servidor_gestor_substituto_id = 7 WHERE id = 9;
+UPDATE servidores SET servidor_gestor_id = 87 WHERE id = 31;
+UPDATE servidores SET servidor_gestor_substituto_id = 17 WHERE id = 31;
+UPDATE servidores SET servidor_gestor_id = 64 WHERE id = 66;
+UPDATE servidores SET servidor_gestor_substituto_id = 58 WHERE id = 66;
+UPDATE servidores SET servidor_gestor_id = 106 WHERE id = 107;
+UPDATE servidores SET servidor_gestor_substituto_id = 103 WHERE id = 107;
+UPDATE servidores SET servidor_gestor_id = 87 WHERE id = 32;
+UPDATE servidores SET servidor_gestor_substituto_id = 17 WHERE id = 32;
+UPDATE servidores SET servidor_gestor_id = 106 WHERE id = 108;
+UPDATE servidores SET servidor_gestor_substituto_id = 103 WHERE id = 108;
+UPDATE servidores SET servidor_gestor_id = 89 WHERE id = 36;
+UPDATE servidores SET servidor_gestor_substituto_id = 38 WHERE id = 36;
+UPDATE servidores SET servidor_gestor_id = 74 WHERE id = 76;
+UPDATE servidores SET servidor_gestor_substituto_id = 75 WHERE id = 76;
+UPDATE servidores SET servidor_gestor_id = 34 WHERE id = 92;
+UPDATE servidores SET servidor_gestor_substituto_id = 87 WHERE id = 92;
+UPDATE servidores SET servidor_gestor_id = 87 WHERE id = 33;
+UPDATE servidores SET servidor_gestor_substituto_id = 17 WHERE id = 33;
+UPDATE servidores SET servidor_gestor_id = 1 WHERE id = 10;
+UPDATE servidores SET servidor_gestor_substituto_id = 7 WHERE id = 10;
+UPDATE servidores SET servidor_gestor_id = 74 WHERE id = 77;
+UPDATE servidores SET servidor_gestor_substituto_id = 75 WHERE id = 77;
+UPDATE servidores SET servidor_gestor_id = 106 WHERE id = 109;
+UPDATE servidores SET servidor_gestor_substituto_id = 103 WHERE id = 109;
+UPDATE servidores SET servidor_gestor_id = 89 WHERE id = 50;
+UPDATE servidores SET servidor_gestor_substituto_id = 38 WHERE id = 50;
+UPDATE servidores SET servidor_gestor_id = 106 WHERE id = 110;
+UPDATE servidores SET servidor_gestor_substituto_id = 103 WHERE id = 110;
+UPDATE servidores SET servidor_gestor_id = 34 WHERE id = 85;
+UPDATE servidores SET servidor_gestor_substituto_id = 87 WHERE id = 85;
+UPDATE servidores SET servidor_gestor_id = 74 WHERE id = 78;
+UPDATE servidores SET servidor_gestor_substituto_id = 75 WHERE id = 78;
+UPDATE servidores SET servidor_gestor_id = 74 WHERE id = 79;
+UPDATE servidores SET servidor_gestor_substituto_id = 75 WHERE id = 79;
+UPDATE servidores SET servidor_gestor_id = 1 WHERE id = 11;
+UPDATE servidores SET servidor_gestor_substituto_id = 7 WHERE id = 11;

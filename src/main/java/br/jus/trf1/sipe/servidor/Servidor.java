@@ -1,5 +1,6 @@
 package br.jus.trf1.sipe.servidor;
 
+import br.jus.trf1.sipe.lotacao.Lotacao;
 import br.jus.trf1.sipe.usuario.Usuario;
 import jakarta.persistence.*;
 import lombok.*;
@@ -18,17 +19,25 @@ public class Servidor extends Usuario {
 
     private String cargo;
 
-    private String siglaLotacao;
+    @ManyToOne
+    @JoinColumn(name = "servidor_gestor_id", referencedColumnName = "id", nullable = true, foreignKey = @ForeignKey(name = "fk_gestor_servidor"))
+    private Servidor gestor;
 
-    private String descricaoLotacao;
+    @ManyToOne
+    @JoinColumn(name = "servidor_gestor_substituto_id", referencedColumnName = "id", nullable = true, foreignKey = @ForeignKey(name = "fk_gestor_substituto_servidor"))
+    private Servidor gestorSubstituto;
 
-    public Servidor(Usuario usuario, String email, String funcao, String cargo, String siglaLotacao, String descricaoLotacao) {
+
+    @ManyToOne
+    @JoinColumn(name = "lotacao_id", referencedColumnName = "id", nullable = true, foreignKey = @ForeignKey(name = "fk_lotacao_servidor"))
+    private Lotacao lotacao;
+
+    public Servidor(Usuario usuario, String email, String funcao, String cargo, Lotacao lotacao) {
         super(usuario.getId(), usuario.getNome(), usuario.getMatricula(), usuario.getCracha(), usuario.getHoraDiaria());
         this.email = email;
         this.funcao = funcao;
         this.cargo = cargo;
-        this.siglaLotacao = siglaLotacao;
-        this.descricaoLotacao = descricaoLotacao;
+        this.lotacao = lotacao;
     }
 
     @Override
@@ -37,8 +46,6 @@ public class Servidor extends Usuario {
                 "'" + super.toString() + '\'' +
                 ", funcao='" + funcao + '\'' +
                 ", cargo='" + cargo + '\'' +
-                ", siglaLotacao='" + siglaLotacao + '\'' +
-                ", descricaoLotacao='" + descricaoLotacao + '\'' +
-                '}';
+                ", siglaLotacao='" + lotacao.getSigla() + "'}";
     }
 }

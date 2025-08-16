@@ -22,13 +22,12 @@ public record RegistroNovoRequest(@NotNull(message = "O campo 'hora' não pode s
                                   @JsonProperty(value = "codigo_acesso")
                                   Integer codigoAcesso) {
 
-    public Registro toModel(Servidor servidorCriador) {
+    public Registro toModel() {
         return Registro.builder()
                 .hora(hora)
                 .sentido(Sentido.toEnum(sentido).getCodigo())
                 .ativo(ativo)
                 .codigoAcesso(codigoAcesso)
-                .servidorCriador(servidorCriador)
                 .build();
     }
 }

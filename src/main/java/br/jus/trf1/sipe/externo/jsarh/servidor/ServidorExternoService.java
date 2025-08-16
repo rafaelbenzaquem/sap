@@ -1,26 +1,36 @@
 package br.jus.trf1.sipe.externo.jsarh.servidor;
 
-import br.jus.trf1.sipe.externo.jsarh.servidor.dto.ServidorExternoResponse;
+import br.jus.trf1.sipe.externo.jsarh.lotacao.LotacaoExternoClient;
+import br.jus.trf1.sipe.externo.jsarh.lotacao.exceptions.LotacaoExternaInexistenteException;
 import br.jus.trf1.sipe.externo.jsarh.servidor.exceptions.ServidorExternoInexistenteException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Slf4j
 @Service
 public class ServidorExternoService {
 
     private final ServidorExternoClient servidorExternoClient;
+    private final LotacaoExternoClient lotacaoExternoClient;
 
-    public ServidorExternoService(ServidorExternoClient servidorExternoClient) {
+    public ServidorExternoService(ServidorExternoClient servidorExternoClient, LotacaoExternoClient lotacaoExternoClient) {
         this.servidorExternoClient = servidorExternoClient;
+        this.lotacaoExternoClient = lotacaoExternoClient;
     }
 
-    public ServidorExternoResponse  buscaServidorExterno(String matricula) {
+    public ServidorExterno buscaServidorExterno(String matricula) {
         log.info("Buscando dados servidor no SARH: {}", matricula);
-        Optional<ServidorExternoResponse> opt = servidorExternoClient.buscaDadosServidor(matricula);
-        return opt.orElseThrow(()-> new ServidorExternoInexistenteException("Servidor '%s' inexistente".formatted(matricula)));
+        var optServidor = servidorExternoClient.buscaDadosServidor(matricula);
+        if (optServidor.isPresent()) {
+            var servidorExternoResponse = optServidor.get();
+            var idLotacao = servidorExternoResponse.getIdLotacao();
+            var optLotacaoExternaResponse = lotacaoExternoClient.buscaLotacao(idLotacao);
+            if (optLotacaoExternaResponse.isPresent()) {
+                return ServidorExterno.from(servidorExternoResponse, optLotacaoExternaResponse.get());
+            }
+            throw new LotacaoExternaInexistenteException("Lotacao id:" + idLotacao + " inexistente.");
+        }
+        throw new ServidorExternoInexistenteException("Servidor '%s' inexistente".formatted(matricula));
     }
 
 }

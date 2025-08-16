@@ -23,44 +23,34 @@ public class ServidorExternoResponse extends RepresentationModel<ServidorExterno
 
     private final String cargo;
 
-    @JsonProperty(value = "sigla_lotacao")
-    private final String siglaLotacao;
-
-    @JsonProperty(value = "descricao_lotacao")
-    private final String descricaoLotacao;
+    @JsonProperty(value = "id_lotacao")
+    private final Integer idLotacao;
 
 
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+    public final boolean equals(Object o) {
+        if (!(o instanceof ServidorExternoResponse that)) return false;
         if (!super.equals(o)) return false;
-        ServidorExternoResponse that = (ServidorExternoResponse) o;
-        return Objects.equals(matricula, that.matricula) && Objects.equals(nome, that.nome) && Objects.equals(email, that.email) && Objects.equals(funcao, that.funcao) && Objects.equals(cargo, that.cargo) && Objects.equals(siglaLotacao, that.siglaLotacao) && Objects.equals(descricaoLotacao, that.descricaoLotacao);
+
+        return Objects.equals(matricula, that.matricula);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), matricula, nome, email, funcao, cargo, siglaLotacao, descricaoLotacao);
+        int result = super.hashCode();
+        result = 31 * result + Objects.hashCode(matricula);
+        return result;
     }
 
     @Override
     public String toString() {
-        return """
-                {
-                    "matricula":%s,
-                    "nome": %s,
-                    "email": %s,
-                    "funcao": %s,
-                    "cargo": %s,
-                    "sigla_lotacao": %s,
-                    "descricao_lotacao" %s
-                }
-               """.formatted(matricula == null ? null : "\"" + matricula + "\"",
-                nome == null ? null : "\"" + nome + "\"",
-                email == null ? null : "\"" + email + "\"",
-                funcao == null ? null : "\"" + funcao + "\"",
-                cargo == null ? null : "\"" + cargo + "\"",
-                siglaLotacao == null ? null : "\"" + siglaLotacao + "\"",
-                descricaoLotacao == null ? null : "\"" + descricaoLotacao + "\"");
+        return "ServidorExternoResponse{" +
+                "matricula='" + matricula + '\'' +
+                ", nome='" + nome + '\'' +
+                ", email='" + email + '\'' +
+                ", funcao='" + funcao + '\'' +
+                ", cargo='" + cargo + '\'' +
+                ", idLotacao=" + idLotacao +
+                '}';
     }
 }

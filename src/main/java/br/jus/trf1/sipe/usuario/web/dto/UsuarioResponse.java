@@ -8,6 +8,6 @@ import org.springframework.hateoas.server.core.Relation;
 public record UsuarioResponse(@JsonProperty("id") Integer id,
                               @JsonProperty("nome") String nome,
                               @JsonProperty("matricula") String matricula,
-                              @JsonProperty("cracha") String cracha,
+                              @JsonProperty("cracha") Integer cracha,
                               @JsonProperty("hora_diaria") Integer horaDiaria) {
 }

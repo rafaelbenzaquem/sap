@@ -30,7 +30,7 @@ public class UsuarioUpdateController {
 
         var usuario = service.buscaPorId(id);
         usuario.setNome(request.nome());
-        usuario.setCracha(request.cracha());
+        usuario.setCracha(Integer.parseInt(request.cracha()));
         usuario.setMatricula(request.matricula());
         usuario.setHoraDiaria(request.horaDiaria());
 
