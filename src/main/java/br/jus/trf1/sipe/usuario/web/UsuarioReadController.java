@@ -1,5 +1,6 @@
 package br.jus.trf1.sipe.usuario.web;
 
+import br.jus.trf1.sipe.servidor.ServidorService;
 import br.jus.trf1.sipe.usuario.Usuario;
 import br.jus.trf1.sipe.usuario.UsuarioService;
 import br.jus.trf1.sipe.usuario.web.dto.UsuarioResponse;
@@ -21,16 +22,18 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping(value = "/v1/sipe/usuarios")
 public class UsuarioReadController {
 
-    private final UsuarioService service;
+    private final UsuarioService usuarioService;
+    private final ServidorService servidorService;
 
-    public UsuarioReadController(UsuarioService service) {
-        this.service = service;
+    public UsuarioReadController(UsuarioService usuarioService, ServidorService servidorService) {
+        this.usuarioService = usuarioService;
+        this.servidorService = servidorService;
     }
 
     @GetMapping(value = "/{matricula}")
     @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
     public ResponseEntity<EntityModel<UsuarioResponse>> buscaUsuario(@PathVariable("matricula") String matricula) {
-        var usuario = service.buscaPorMatricula(matricula);
+        var usuario = usuarioService.buscaPorMatricula(matricula);
         return ResponseEntity.ok(EntityModel.of(usuario.toResponse(),
                 linkTo(methodOn(UsuarioReadController.class).buscaUsuario(matricula)).withSelfRel(),
                 linkTo(methodOn(UsuarioDeleteController.class).apagaVinculo(usuario.getId())).withRel("delete")
@@ -50,19 +53,23 @@ public class UsuarioReadController {
                                                                                   @RequestParam(defaultValue = "5")
                                                                                   int size) {
         if (nome == null && cracha == null && matricula == null) {
-            var usuarioPag = service.listar(PageRequest.of(page, size));
+            log.info("Busca listaUsuarios All");
+            var usuarioPag = servidorService.listar(PageRequest.of(page, size));
             // Adiciona links HATEOAS
             var pagedModel = addLinksHATEOASCrud(usuarioPag);
             addLinksPaginacao(usuarioPag, pagedModel, page, size);
             return ResponseEntity.ok(pagedModel);
         }
-        var usuarioPag = service.buscaPorNomeOuCrachaOuMatricula(nome, cracha, matricula,
+
+
+        log.info("Busca listaUsuarios filtered");
+        var usuarioPag = servidorService.buscaPorNomeOuCrachaOuMatricula(nome, cracha, matricula,
                 PageRequest.of(page, size));
         var pagedModel = addLinksHATEOASCrud(usuarioPag);
         return ResponseEntity.ok(pagedModel);
     }
 
-    private void addLinksPaginacao(Page<Usuario> usuarioPag,
+    private void addLinksPaginacao(Page<? extends Usuario> usuarioPag,
                                    PagedModel<EntityModel<UsuarioResponse>> pagedModel,
                                    int page, int size) {
         // Links para paginação
@@ -80,7 +87,7 @@ public class UsuarioReadController {
         }
     }
 
-    private PagedModel<EntityModel<UsuarioResponse>> addLinksHATEOASCrud(Page<Usuario> usuarioPage) {
+    private PagedModel<EntityModel<UsuarioResponse>> addLinksHATEOASCrud(Page<? extends Usuario> usuarioPage) {
         return PagedModel.of(
                 usuarioPage.getContent().stream()
                         .map(usuario -> EntityModel.of(usuario.toResponse(),

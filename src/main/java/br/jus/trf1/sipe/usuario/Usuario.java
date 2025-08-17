@@ -30,9 +30,9 @@ public class Usuario {
     private Integer id;
     @Column(nullable = false, length = 50)
     private String nome;
-    @Column(unique = true, nullable = false, length = 15)
+    @Column(unique = true, length = 15)
     private String matricula;
-    @Column(unique = true, nullable = false, length = 20)
+    @Column(unique = true, length = 20)
     private Integer cracha;
     @Min(value = 4)
     @Max(value = 12)

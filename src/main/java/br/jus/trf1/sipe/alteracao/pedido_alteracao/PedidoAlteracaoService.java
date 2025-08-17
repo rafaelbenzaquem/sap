@@ -9,6 +9,7 @@ import br.jus.trf1.sipe.servidor.Servidor;
 import br.jus.trf1.sipe.usuario.Usuario;
 import br.jus.trf1.sipe.usuario.UsuarioService;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAprovadorException;
+import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAutorizadoException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -43,18 +44,22 @@ public class PedidoAlteracaoService {
     }
 
     public PedidoAlteracao atualizaPedidoAlteracao(PedidoAlteracao pedidoAlteracao) {
-        var ponto = pedidoAlteracao.getPonto();
-        usuarioService.permissaoRecurso(ponto);
+        Usuario usuarioAtual = usuarioService.getUsuarioAtual();
         if (pedidoAlteracao.getStatus() == StatusPedido.APROVADO) {
-            pedidoAlteracao.getAlteracaoRegistros().forEach(alteracaoRegistro -> {
-                var registroNovo = alteracaoRegistro.getRegistroNovo();
-                if (registroNovo != null) {
-                    aprovarRegistro(registroNovo.getId());
-                }
+            if (usuarioService.permissaoDiretor()) {
+                pedidoAlteracao.setUsuarioAprovador(usuarioAtual);
+                pedidoAlteracao.getAlteracaoRegistros().forEach(alteracaoRegistro -> {
+                    var registroNovo = alteracaoRegistro.getRegistroNovo();
+                    if (registroNovo != null) {
+                        aprovarRegistro(registroNovo.getId());
+                    }
 
-            });
-
+                });
+            } else {
+                throw new UsuarioNaoAutorizadoException("Usuário %s não autorizado para aprovar um pedido!");
+            }
         }
+        pedidoAlteracao.setDataAprovacao(LocalDateTime.now());
         return pedidoAlteracaoRepository.save(pedidoAlteracao);
     }
 

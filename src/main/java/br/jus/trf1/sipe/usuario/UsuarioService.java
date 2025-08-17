@@ -75,4 +75,8 @@ public class UsuarioService {
         }
         throw new CamposUnicosExistentesException(mapCampoMensagem);
     }
+
+    public boolean permissaoDiretor() {
+        return usuarioAtualService.ehDiretor();
+    }
 }
