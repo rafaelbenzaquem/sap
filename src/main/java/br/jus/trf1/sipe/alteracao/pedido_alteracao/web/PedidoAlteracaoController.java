@@ -46,7 +46,7 @@ public class PedidoAlteracaoController {
         var justificativaAprovador = pedidoAlteracaoRequest.justificativaAprovador();
         var status = StatusPedido.valueOf(pedidoAlteracaoRequest.status());
         var pedidoAlteracaoOpt = pedidoAlteracaoService.buscaPedidoAlteracao(matriculaPonto, diaPonto);
-        log.info("Atualizando realizando Pedido de Alteracao de Ponto - {} - {}", matriculaPonto, diaPonto);
+        log.info("Atualizando Pedido de Alteracao de Ponto - {} - {}", matriculaPonto, diaPonto);
 
         if (pedidoAlteracaoOpt.isPresent()) {
             var pedidoAlteracao = pedidoAlteracaoOpt.get();

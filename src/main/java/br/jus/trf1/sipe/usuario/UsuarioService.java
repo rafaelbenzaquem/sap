@@ -79,4 +79,9 @@ public class UsuarioService {
     public boolean permissaoDiretor() {
         return usuarioAtualService.ehDiretor();
     }
+
+    public boolean permissaoAdministrador() {
+        return usuarioAtualService.ehAdmin();
+    }
+
 }

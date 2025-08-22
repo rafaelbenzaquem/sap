@@ -46,7 +46,7 @@ public class PedidoAlteracaoService {
     public PedidoAlteracao atualizaPedidoAlteracao(PedidoAlteracao pedidoAlteracao) {
         Usuario usuarioAtual = usuarioService.getUsuarioAtual();
         if (pedidoAlteracao.getStatus() == StatusPedido.APROVADO) {
-            if (usuarioService.permissaoDiretor()) {
+            if (usuarioService.permissaoDiretor() || usuarioService.permissaoAdministrador()) {
                 pedidoAlteracao.setUsuarioAprovador(usuarioAtual);
                 pedidoAlteracao.getAlteracaoRegistros().forEach(alteracaoRegistro -> {
                     var registroNovo = alteracaoRegistro.getRegistroNovo();
