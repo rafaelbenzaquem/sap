@@ -1,6 +1,7 @@
 package br.jus.trf1.sipe.ponto;
 
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracao;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.StatusPedido;
 import br.jus.trf1.sipe.folha.Folha;
 import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.registro.Sentido;
@@ -88,7 +89,7 @@ public class Ponto {
         }
         var i = pedidos.stream().filter(pedidoAlteracao ->
                 (pedidoAlteracao.getDataAprovacao() == null &&
-                        !(pedidoAlteracao.getAlteracaoRegistros() == null || pedidoAlteracao.getAlteracaoRegistros().isEmpty())
+                        !(pedidoAlteracao.getAlteracaoRegistros() == null || pedidoAlteracao.getAlteracaoRegistros().isEmpty()) && pedidoAlteracao.getStatus().equals(StatusPedido.PENDENTE)
                 )).count();
         log.info("Pedido alteraço de pendente: {}", i);
         return i > 0;
