@@ -11,10 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @Builder
@@ -81,6 +78,37 @@ public class Ponto {
             log.info("horas {}", horasPermanencia.toString());
         }
         return horasPermanencia;
+    }
+
+    public boolean ultimoPedidoAlteracaoFoiAvaliado() {
+        log.info("ultimoPedidoAlteracaoFoiAvaliado");
+        log.info("Teste ",pedidos);
+        if (pedidos == null||pedidos.isEmpty()) {
+            log.info("pedidos == null||pedidos.isEmpty()");
+
+            return false;
+        }
+
+        var pedidosClone = new ArrayList<PedidoAlteracao>(pedidos);
+
+
+        Collections.sort(pedidosClone,(o1,o2)->{
+                if (o1 == null && o2 == null) {
+                    return 0;
+                } else if (o1 == null && o2 != null) {
+                    return -1;
+                } else if (o1 != null && o2 == null) {
+                    return 1;
+                }
+                return o1.getDataSolicitacao().compareTo(o2.getDataSolicitacao());
+            }
+        );
+       var primeiro = pedidosClone.getFirst();
+       log.info("primeiro ultimoPedidoAlteracaoFoiAvaliado {}", primeiro);
+        if(primeiro==null){
+            return false;
+        }
+        return primeiro.getStatus().equals(StatusPedido.APROVADO)||primeiro.getStatus().equals(StatusPedido.REJEITADO);
     }
 
     public boolean pedidoAlteracaoPendente() {

@@ -18,9 +18,12 @@ public record PontoAtualizadoResponse(String matricula,
                                       @JsonProperty("total_segundos")
                                       Long totalSegundos,
                                       @JsonProperty("pedido_alteracao_pendente")
-                                      Boolean pedidoAlteracaoPendente) {
+                                      Boolean pedidoAlteracaoPendente,
+                                      @JsonProperty("pedido_alteracao_atual_avaliado")
+                                      Boolean pedidoAlteracaoAtualAvaliado) {
     public static PontoAtualizadoResponse of(Ponto ponto) {
         return new PontoAtualizadoResponse(ponto.getId().getMatricula(), ponto.getId().getDia(),
-                ponto.getDescricao(), ponto.getIndice().getValor(), ponto.getHorasPermanencia().toSeconds(), ponto.pedidoAlteracaoPendente());
+                ponto.getDescricao(), ponto.getIndice().getValor(), ponto.getHorasPermanencia().toSeconds(),
+                ponto.pedidoAlteracaoPendente(), ponto.ultimoPedidoAlteracaoFoiAvaliado());
     }
 }
