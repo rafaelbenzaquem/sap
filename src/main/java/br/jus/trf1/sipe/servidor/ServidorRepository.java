@@ -18,22 +18,22 @@ public interface ServidorRepository extends JpaRepository<Servidor, Integer> {
 
     @Query(value ="""
             SELECT s FROM Servidor s
-            WHERE s.lotacao.id = :idLotacao
+            WHERE s.lotacao.id = :idLotacao order by s.nome asc
             """,
             countQuery = """
                     SELECT COUNT(s) FROM Servidor s
-                                WHERE s.lotacao.id = :idLotacao
+                                WHERE s.lotacao.id = :idLotacao order by s.nome asc
                     """)
     Page<Servidor> buscarPorLotacao(@Param("idLotacao") Integer idLotacao, Pageable pageable);
 
 
     @Query(value = """
         SELECT s FROM Servidor s
-        WHERE s.lotacao.id IN :idsLotacoes
+        WHERE s.lotacao.id IN :idsLotacoes order by s.nome asc
         """,
             countQuery = """
         SELECT COUNT(s) FROM Servidor s
-        WHERE s.lotacao.id IN :idsLotacoes
+        WHERE s.lotacao.id IN :idsLotacoes order by s.nome asc
         """)
     Page<Servidor> buscarPorLotacoes(@Param("idsLotacoes") Set<Integer> idsLotacoes, Pageable pageable);
 
@@ -41,13 +41,13 @@ public interface ServidorRepository extends JpaRepository<Servidor, Integer> {
             SELECT s FROM Servidor s
             WHERE LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%'))
             OR s.cracha=  :cracha
-            OR s.matricula = :matricula
+            OR s.matricula = :matricula order by s.nome asc
             """,
             countQuery = """
                     SELECT COUNT(s) FROM Servidor s
                     WHERE LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%'))
                     OR s.cracha=  :cracha
-                    OR s.matricula = :matricula
+                    OR s.matricula = :matricula order by s.nome asc
                     """)
     Page<Servidor> findAllByNomeOrCrachaOrMatricula(@Param("nome") String nome,
                                                     @Param("cracha") Integer cracha,
@@ -61,7 +61,7 @@ public interface ServidorRepository extends JpaRepository<Servidor, Integer> {
                     OR s.cracha=  :cracha
                     OR s.matricula = :matricula
                   )
-            AND s.lotacao.id = :idLotacao
+            AND s.lotacao.id = :idLotacao order by s.nome asc
             """,
             countQuery = """
                     SELECT COUNT(s) FROM Servidor s
@@ -70,7 +70,7 @@ public interface ServidorRepository extends JpaRepository<Servidor, Integer> {
                             OR s.cracha=  :cracha
                             OR s.matricula = :matricula
                           )
-                    AND (s.lotacao.id = :idLotacao)
+                    AND (s.lotacao.id = :idLotacao) order by s.nome asc
                     """)
     Page<Servidor> findAllByNomeOrCrachaOrMatriculaAndIdLotacao(@Param("nome") String nome,
                                                                 @Param("cracha") Integer cracha,

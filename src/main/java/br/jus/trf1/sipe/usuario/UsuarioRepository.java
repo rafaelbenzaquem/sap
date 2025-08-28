@@ -15,13 +15,13 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
             SELECT u FROM Usuario u
             WHERE LOWER(u.nome) LIKE LOWER(CONCAT('%', :nome, '%'))
             OR u.cracha=  :cracha
-            OR u.matricula = :matricula
+            OR u.matricula = :matricula ORDER BY u.nome ASC
             """,
             countQuery = """
                     SELECT COUNT(u) FROM Usuario u
                     WHERE LOWER(u.nome) LIKE LOWER(CONCAT('%', :nome, '%'))
                     OR u.cracha=  :cracha
-                    OR u.matricula = :matricula
+                    OR u.matricula = :matricula order by u.nome ASC
                     """)
     Page<Usuario> findAllByNomeOrCrachaOrMatricula(@Param("nome") String nome,
                                                    @Param("cracha") Integer cracha,
