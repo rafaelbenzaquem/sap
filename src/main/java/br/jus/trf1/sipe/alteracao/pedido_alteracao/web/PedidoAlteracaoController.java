@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 
 import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_ENTRADA_DATA;
+import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_SAIDA_DATA;
 
 @Slf4j
 @RestController
@@ -45,7 +46,7 @@ public class PedidoAlteracaoController {
         var justificativa = pedidoAlteracaoRequest.justificativa();
         var justificativaAprovador = pedidoAlteracaoRequest.justificativaAprovador();
         var status = StatusPedido.valueOf(pedidoAlteracaoRequest.status());
-        var pedidoAlteracaoOpt = pedidoAlteracaoService.buscaPedidoAlteracao(matriculaPonto, diaPonto);
+        var pedidoAlteracaoOpt = pedidoAlteracaoService.buscaPedidoAlteracaoEmAprovacao(matriculaPonto, diaPonto);
         log.info("Atualizando Pedido de Alteracao de Ponto - {} - {}", matriculaPonto, diaPonto);
 
         if (pedidoAlteracaoOpt.isPresent()) {
@@ -111,11 +112,9 @@ public class PedidoAlteracaoController {
                                                                    @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
                                                                    @PathVariable("dia") LocalDate dia) {
 
-        log.info("Buscando Pedido de Alteracao por Ponto - {} - {}", matricula, DataTempoUtil.paraString(dia));
+        log.info("Buscando Pedido de Alteracao por Ponto - {} - {}", matricula, DataTempoUtil.paraString(dia, PADRAO_SAIDA_DATA));
 
-        var pedidoAlteracao = pedidoAlteracaoService.buscaPedidoAlteracao(matricula, dia).orElseThrow(() ->
-                new PedidoAlteracaoInexistenteException("Não existe pedido de alteração para o ponto matricula: " + matricula + " dia: " + DataTempoUtil.paraString(dia)));
-        ;
+        var pedidoAlteracao = pedidoAlteracaoService.buscaPedidoAlteracao(matricula, dia);
 
         return ResponseEntity.ok(PedidoAlteracaoResponse.from(pedidoAlteracao));
     }

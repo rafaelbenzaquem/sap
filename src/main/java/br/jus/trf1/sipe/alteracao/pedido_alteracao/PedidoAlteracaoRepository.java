@@ -20,7 +20,7 @@ public interface PedidoAlteracaoRepository extends JpaRepository<PedidoAlteracao
     @Query(value = """
                select p from PedidoAlteracao p where p.ponto.id.matricula =LOWER(:matricula) and p.ponto.id.dia =:dia and p.dataAprovacao IS NULL
             """)
-    Optional<PedidoAlteracao> buscaPorPontoEmAprovacao(@Param("matricula") String matricula, @Param("dia") LocalDate dia);
+    Optional<PedidoAlteracao> buscaEmAprovacaoPorPonto(@Param("matricula") String matricula, @Param("dia") LocalDate dia);
 
 
     @Transactional

@@ -78,8 +78,14 @@ public class PedidoAlteracaoService {
         return pedidoAlteracaoRepository.findById(idPedidoAlteracao).orElseThrow(() -> new PedidoAlteracaoInexistenteException(idPedidoAlteracao));
     }
 
-    public Optional<PedidoAlteracao> buscaPedidoAlteracao(String matricula, LocalDate dia) {
-        return pedidoAlteracaoRepository.buscaPorPontoEmAprovacao(matricula, dia);
+    public PedidoAlteracao buscaPedidoAlteracao(String matricula, LocalDate dia) {
+        return pedidoAlteracaoRepository.buscaPorPonto(matricula, dia)
+                .orElseThrow(() -> new PedidoAlteracaoInexistenteException("Não existe pedido de alteração para o ponto "
+                        + matricula + ", " + dia));
+    }
+
+    public Optional<PedidoAlteracao> buscaPedidoAlteracaoEmAprovacao(String matricula, LocalDate dia) {
+        return pedidoAlteracaoRepository.buscaEmAprovacaoPorPonto(matricula, dia);
     }
 
     public PedidoAlteracao apagar(long idPedidoAlteracao) {
