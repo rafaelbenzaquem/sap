@@ -5,6 +5,7 @@ import br.jus.trf1.sipe.externo.jsarh.ausencias.AusenciaExternaService;
 import br.jus.trf1.sipe.externo.jsarh.servidor.ServidorExternoService;
 import br.jus.trf1.sipe.lotacao.LotacaoService;
 import br.jus.trf1.sipe.servidor.exceptions.ServidorInexistenteException;
+import br.jus.trf1.sipe.usuario.Usuario;
 import br.jus.trf1.sipe.usuario.UsuarioService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -40,9 +41,18 @@ public class ServidorService {
     }
 
     public Servidor vinculaUsuarioServidor(String matricula) {
-        log.info("Buscando usuário com matricula: {}", matricula);
+        log.info("Buscando servidor com matricula: {}", matricula);
         var usuario = usuarioService.buscaPorMatricula(matricula);
         var servidorExterno = servidorExternoService.buscaServidorExterno(matricula);
+
+        var servidor = toModel(usuario, servidorExterno);
+
+        return servidorRepository.save(servidor);
+    }
+
+    public Servidor vinculaUsuarioServidor(Usuario usuario) {
+        log.info("Buscando servidor com matricula: {}", usuario.getMatricula());
+        var servidorExterno = servidorExternoService.buscaServidorExterno( usuario.getMatricula());
 
         var servidor = toModel(usuario, servidorExterno);
 

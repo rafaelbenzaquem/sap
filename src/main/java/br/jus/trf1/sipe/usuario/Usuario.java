@@ -1,6 +1,7 @@
 package br.jus.trf1.sipe.usuario;
 
 import br.jus.trf1.sipe.ausencia.Ausencia;
+import br.jus.trf1.sipe.notificacao.Notificacao;
 import br.jus.trf1.sipe.usuario.web.dto.UsuarioResponse;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
@@ -42,6 +43,9 @@ public class Usuario {
 
     @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Ausencia> ausencias;
+
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Notificacao> notificacoes;
 
     public Usuario(Integer id, String nome, String matricula, Integer cracha, Integer horaDiaria) {
         this.id = id;

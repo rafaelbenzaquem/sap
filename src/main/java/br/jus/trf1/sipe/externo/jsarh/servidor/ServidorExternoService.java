@@ -28,9 +28,13 @@ public class ServidorExternoService {
             if (optLotacaoExternaResponse.isPresent()) {
                 return ServidorExterno.from(servidorExternoResponse, optLotacaoExternaResponse.get());
             }
-            throw new LotacaoExternaInexistenteException("Lotacao id:" + idLotacao + " inexistente.");
+            var msg_warning = "Lotacao id:" + idLotacao + " inexistente.";
+            log.warn(msg_warning);
+            throw new LotacaoExternaInexistenteException(msg_warning);
         }
-        throw new ServidorExternoInexistenteException("Servidor '%s' inexistente".formatted(matricula));
+        var msg_warning = "Servidor '%s' inexistente".formatted(matricula);
+        log.warn(msg_warning);
+        throw new ServidorExternoInexistenteException(msg_warning);
     }
 
 }
