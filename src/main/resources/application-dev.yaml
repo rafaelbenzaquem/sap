@@ -1,17 +1,21 @@
 server:
   port: ${SERVER_PORT:8000}
+
 logging:
   level:
     root: info
+
 spring:
+  application:
+    name: SIPE
+  websocket:
+    allowed-origins: *
   cloud:
     openfeign:
       circuitbreaker:
         enabled: true
         alphanumeric-ids:
           enabled: true
-  application:
-    name: SIPE
   jpa:
     properties:
       hibernate:
@@ -26,6 +30,7 @@ spring:
       resourceserver:
         jwt:
           jwk-set-uri: ${JWK_SET_URI:http://localhost:9001/oauth2/jwks}
+          issuer-uri: ${OAUTH2_ISSUER_URI:http://localhost:9001/.well-known/openid-configuration}
 
 resilience4j:
   circuitbreaker:
