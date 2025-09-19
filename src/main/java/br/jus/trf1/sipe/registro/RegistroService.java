@@ -59,7 +59,7 @@ public class RegistroService {
 
     public List<Registro> atualizaRegistrosSistemaDeAcesso(Ponto ponto) {
 
-        var matricula = ponto.getId().getMatricula();
+        var matricula = ponto.getId().getUsuario().getMatricula();
         var dia = ponto.getId().getDia();
 
         var registrosAtuais = registroRepository.listarRegistrosHistoricosDoPonto(matricula, dia);
@@ -75,7 +75,7 @@ public class RegistroService {
     }
 
     private List<Registro> filtraNovosRegistros(Ponto ponto, List<Registro> registrosAtuais) {
-        var matricula = ponto.getId().getMatricula();
+        var matricula = ponto.getId().getUsuario().getMatricula();
         var dia = ponto.getId().getDia();
 
         var vinculo = usuarioService.buscaPorMatricula(matricula);

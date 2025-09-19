@@ -13,14 +13,14 @@ import java.util.Optional;
 public interface RegistroRepository extends JpaRepository<Registro, Long> {
 
     @Query("""
-            SELECT r FROM Registro r WHERE r.ponto.id.matricula =:matricula AND r.ponto.id.dia =:dia
+            SELECT r FROM Registro r WHERE r.ponto.id.usuario.matricula =:matricula AND r.ponto.id.dia =:dia
             AND r.registroNovo IS NULL AND r.ativo IS TRUE ORDER BY r.hora ASC
             """)
     List<Registro> listarRegistrosAtuaisAtivosDoPonto(@Param("matricula") String matricula,
                                                       @Param("dia") LocalDate dia);
 
     @Query("""
-            SELECT r FROM Registro r WHERE r.ponto.id.matricula =:matricula AND r.ponto.id.dia =:dia
+            SELECT r FROM Registro r WHERE r.ponto.id.usuario.matricula =:matricula AND r.ponto.id.dia =:dia
             AND r.registroNovo IS NULL ORDER BY r.hora ASC
             """)
     List<Registro> listarRegistrosAtuaisDoPonto(@Param("matricula") String matricula,
@@ -28,7 +28,7 @@ public interface RegistroRepository extends JpaRepository<Registro, Long> {
 
 
     @Query("""
-            SELECT r FROM Registro r WHERE r.ponto.id.matricula =:matricula AND r.ponto.id.dia =:dia
+            SELECT r FROM Registro r WHERE r.ponto.id.usuario.matricula =:matricula AND r.ponto.id.dia =:dia
             AND r.codigoAcesso IS NOT NULL ORDER BY r.hora ASC
             """)
     List<Registro> listarRegistrosHistoricosDoPonto(@Param("matricula") String matricula,

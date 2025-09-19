@@ -3,6 +3,7 @@ package br.jus.trf1.sipe.ponto.db;
 import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.ponto.PontoId;
 import br.jus.trf1.sipe.ponto.PontoRepository;
+import br.jus.trf1.sipe.usuario.Usuario;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -29,8 +30,12 @@ class PontoRepositoryTest {
         var fim = LocalDate.of(2023, 1, 2);
         List<Ponto> list = repository.buscaPontosPorPeriodo("M1", inicio, fim);
         assertEquals(2, list.size());
-        assertTrue(list.stream().anyMatch(p -> p.getId().equals(PontoId.builder().matricula("M1").dia(inicio).build())));
-        assertTrue(list.stream().anyMatch(p -> p.getId().equals(PontoId.builder().matricula("M1").dia(fim).build())));
+        assertTrue(list.stream().anyMatch(p -> p.getId().equals(PontoId.builder().usuario(Usuario.builder()
+                .matricula("M1")
+                .build()).dia(inicio).build())));
+        assertTrue(list.stream().anyMatch(p -> p.getId().equals(PontoId.builder().usuario(Usuario.builder()
+                .matricula("M1")
+                .build()).dia(fim).build())));
     }
 
     @Test
@@ -39,7 +44,7 @@ class PontoRepositoryTest {
         Optional<Ponto> opt = repository.buscaPonto("M1", dia);
         assertTrue(opt.isPresent());
         Ponto p = opt.get();
-        assertEquals("M1", p.getId().getMatricula());
+        assertEquals("M1", p.getId().getUsuario().getMatricula());
         assertEquals(dia, p.getId().getDia());
     }
 

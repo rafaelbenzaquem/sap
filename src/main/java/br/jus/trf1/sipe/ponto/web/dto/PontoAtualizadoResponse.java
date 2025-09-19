@@ -20,7 +20,7 @@ public record PontoAtualizadoResponse(String matricula,
                                       @JsonProperty("pedido_alteracao_pendente")
                                       Boolean pedidoAlteracaoPendente) {
     public static PontoAtualizadoResponse of(Ponto ponto) {
-        return new PontoAtualizadoResponse(ponto.getId().getMatricula(), ponto.getId().getDia(),
+        return new PontoAtualizadoResponse(ponto.getId().getUsuario().getMatricula(), ponto.getId().getDia(),
                 ponto.getDescricao(), ponto.getIndice().getValor(), ponto.getHorasPermanencia().toSeconds(), ponto.pedidoAlteracaoPendente());
     }
 }

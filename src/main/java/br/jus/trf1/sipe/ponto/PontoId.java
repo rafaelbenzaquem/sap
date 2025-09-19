@@ -1,6 +1,7 @@
 package br.jus.trf1.sipe.ponto;
 
-import jakarta.persistence.Embeddable;
+import br.jus.trf1.sipe.usuario.Usuario;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -17,7 +18,12 @@ import static br.jus.trf1.sipe.comum.util.DataTempoUtil.paraString;
 @Embeddable
 public class PontoId {
 
-    private String matricula;
+
+    @OneToOne
+    @JoinColumns(value = {
+            @JoinColumn(name = "matricula", referencedColumnName = "matricula")
+    }, foreignKey = @ForeignKey(name = "fk_servidor_ponto"))
+    private Usuario usuario;
 
     private LocalDate dia;
 
@@ -25,12 +31,12 @@ public class PontoId {
     public final boolean equals(Object o) {
         if (!(o instanceof PontoId pontoId)) return false;
 
-        return Objects.equals(matricula, pontoId.matricula) && Objects.equals(dia, pontoId.dia);
+        return Objects.equals(usuario.getMatricula(), pontoId.getUsuario().getMatricula()) && Objects.equals(dia, pontoId.dia);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hashCode(matricula);
+        int result = Objects.hashCode(this.usuario.getMatricula());
         result = 31 * result + Objects.hashCode(dia);
         return result;
     }
@@ -38,7 +44,7 @@ public class PontoId {
     @Override
     public String toString() {
         return "{" +
-                "matricula=" + matricula +
+                "matricula=" + usuario.getMatricula() +
                 ", dia=" + paraString(dia, PADRAO_SAIDA_DATA) +
                 '}';
     }

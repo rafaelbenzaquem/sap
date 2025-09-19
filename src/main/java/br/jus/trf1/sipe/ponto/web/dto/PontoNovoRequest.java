@@ -2,6 +2,7 @@ package br.jus.trf1.sipe.ponto.web.dto;
 
 import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.ponto.PontoId;
+import br.jus.trf1.sipe.usuario.Usuario;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -18,7 +19,9 @@ public record PontoNovoRequest(@NotBlank(message = "O campo 'matricula' não pod
                                String descricao) {
     public Ponto toModel() {
         var id = PontoId.builder()
-                .matricula(this.matricula)
+                .usuario(Usuario.builder()
+                        .matricula(this.matricula)
+                        .build())
                 .dia(this.dia)
                 .build();
         return Ponto.builder()

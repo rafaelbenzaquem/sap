@@ -36,8 +36,8 @@ public class UsuarioService {
     public void permissaoRecurso(Ponto ponto) {
         Objects.requireNonNull(ponto);
         Objects.requireNonNull(ponto.getId());
-        Objects.requireNonNull(ponto.getId().getMatricula());
-        usuarioAtualService.permissoesNivelUsuario(ponto.getId().getMatricula());
+        Objects.requireNonNull(ponto.getId().getUsuario().getMatricula());
+        usuarioAtualService.permissoesNivelUsuario(ponto.getId().getUsuario().getMatricula());
     }
 
     public Page<Usuario> listar(Pageable pageable) {

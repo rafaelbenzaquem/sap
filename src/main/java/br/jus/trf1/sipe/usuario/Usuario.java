@@ -5,14 +5,12 @@ import br.jus.trf1.sipe.usuario.web.dto.UsuarioResponse;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 import java.util.Objects;
 
+@Builder
 @Getter
 @Setter
 @NoArgsConstructor
