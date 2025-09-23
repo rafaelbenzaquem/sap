@@ -48,6 +48,10 @@ public class PontoService {
         this.usuarioAtualService = usuarioAtualService;
     }
 
+    public  Boolean existePontoComPedidoAlteracaoPendenteNoPeriodo(String matricula, LocalDate inicio, LocalDate fim) {
+        return pontoRepository.existePontosComAlteracaoRegistroPendentePorData(matricula, inicio, fim);
+    }
+
     /**
      * Verifica a existência de um ponto para a matrícula e dia informados.
      *

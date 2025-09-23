@@ -36,4 +36,20 @@ public interface PontoRepository extends JpaRepository<Ponto, PontoId> {
             @Param("matricula") String matricula,
             @Param("dia") LocalDate dia
     );
+
+    @Query("""
+            SELECT
+            CASE WHEN (COUNT(pa) > 0) THEN TRUE ELSE FALSE END
+            FROM
+                 Ponto p
+                 JOIN p.pedidos pa
+             WHERE
+                 p.id.usuario.matricula = :matricula
+                 AND p.id.dia BETWEEN :dataInicio AND :dataFim
+                 AND pa.dataAprovacao IS NULL
+                 AND pa.alteracaoRegistros IS NOT EMPTY
+            """)
+    boolean existePontosComAlteracaoRegistroPendentePorData(@Param("matricula")String matricula,
+                                                            @Param("dataInicio") LocalDate dataInicio,
+                                                            @Param("dataFim") LocalDate dataFim);
 }

@@ -42,7 +42,7 @@ public class RegistroService {
     }
 
     public Registro buscaRegistroPorId(Long id) {
-        return registroRepository.findById(id).orElseThrow(() -> new RegistroInexistenteException(id));
+        return registroRepository.buscaRegistroPorId(id).orElseThrow(() -> new RegistroInexistenteException(id));
     }
 
     public Boolean existe(Long id) {

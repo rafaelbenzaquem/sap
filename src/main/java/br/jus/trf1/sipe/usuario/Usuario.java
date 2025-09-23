@@ -1,6 +1,7 @@
 package br.jus.trf1.sipe.usuario;
 
 import br.jus.trf1.sipe.ausencia.Ausencia;
+import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.usuario.web.dto.UsuarioResponse;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
@@ -37,6 +38,9 @@ public class Usuario {
     @Column(name = "hora_diaria", nullable = false)
     private Integer horaDiaria;
 
+
+    @OneToMany(mappedBy = "id.usuario", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Ponto> pontos;
 
     @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Ausencia> ausencias;

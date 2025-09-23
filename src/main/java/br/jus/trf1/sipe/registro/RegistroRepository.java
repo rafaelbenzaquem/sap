@@ -20,6 +20,11 @@ public interface RegistroRepository extends JpaRepository<Registro, Long> {
                                                       @Param("dia") LocalDate dia);
 
     @Query("""
+            SELECT r FROM Registro r WHERE r.id =:id
+            """)
+    Optional<Registro> buscaRegistroPorId(@Param("id") Long id);
+
+    @Query("""
             SELECT r FROM Registro r WHERE r.ponto.id.usuario.matricula =:matricula AND r.ponto.id.dia =:dia
             AND r.registroNovo IS NULL ORDER BY r.hora ASC
             """)

@@ -91,7 +91,7 @@ public class PontoUpdateController {
             throw new IllegalArgumentException("Data de início não pode ser posterior à data de fim.");
         }
         List<Ponto> pontos = pontoService.carregaPontos(matricula, inicio, fim);
-        return ResponseEntity.status(HttpStatus.CREATED).body(addLinksHATEOAS(inicio, fim, pontos));
+        return ResponseEntity.status(HttpStatus.CREATED).body(addLinksHATEOAS(inicio, fim, false, pontos));
     }
 
 }

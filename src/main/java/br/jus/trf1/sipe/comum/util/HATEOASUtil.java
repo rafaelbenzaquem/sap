@@ -37,11 +37,11 @@ public class HATEOASUtil {
         ).toList();
 
         return CollectionModel.of(registrosEntityModelList,
-                linkTo(methodOn(RegistroReadController.class).listarRegistrosDoPonto(matricula, dia,false)).withSelfRel()
+                linkTo(methodOn(RegistroReadController.class).listarRegistrosDoPonto(matricula, dia, false)).withSelfRel()
         );
     }
 
-    public static CollectionModel<EntityModel<PontoNovoResponse>> addLinksHATEOAS(LocalDate inicio, LocalDate fim, List<Ponto> pontos) {
+    public static CollectionModel<EntityModel<PontoNovoResponse>> addLinksHATEOAS(LocalDate inicio, LocalDate fim, boolean pendente, List<Ponto> pontos) {
         Objects.requireNonNull(pontos);
         if (pontos.isEmpty()) {
             return CollectionModel.empty();
@@ -57,7 +57,7 @@ public class HATEOASUtil {
         ).toList();
 
         return CollectionModel.of(registrosEntityModelList,
-                linkTo(methodOn(PontoReadController.class).buscaPontosPorIntervalosDatas(matricula, inicio, fim)).withSelfRel()
+                linkTo(methodOn(PontoReadController.class).buscaPontosPorIntervalosDatas(matricula, inicio, fim, pendente)).withSelfRel()
         );
     }
 
