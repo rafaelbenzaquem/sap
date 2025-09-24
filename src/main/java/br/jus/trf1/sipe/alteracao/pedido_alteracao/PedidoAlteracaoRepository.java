@@ -1,5 +1,6 @@
 package br.jus.trf1.sipe.alteracao.pedido_alteracao;
 
+import br.jus.trf1.sipe.registro.Registro;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -22,6 +23,11 @@ public interface PedidoAlteracaoRepository extends JpaRepository<PedidoAlteracao
             """)
     Optional<PedidoAlteracao> buscaPorPontoEmAprovacao(@Param("matricula") String matricula, @Param("dia") LocalDate dia);
 
+
+    @Query("""
+            SELECT pa FROM PedidoAlteracao pa WHERE pa.id =:id
+            """)
+    Optional<PedidoAlteracao> buscaPedidoAlteracaoPorId(@Param("id") Long id);
 
     @Transactional
     @Modifying

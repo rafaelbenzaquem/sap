@@ -83,7 +83,9 @@ public final class Registro implements Comparable<Registro> {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Registro registro)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Registro registro = (Registro) o;
         return Objects.equals(id, registro.id);
     }
 

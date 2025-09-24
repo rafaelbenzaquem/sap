@@ -70,7 +70,7 @@ public class PedidoAlteracaoService {
     }
 
     public PedidoAlteracao buscaPedidoAlteracao(Long idPedidoAlteracao) {
-        return pedidoAlteracaoRepository.findById(idPedidoAlteracao).orElseThrow(() -> new PedidoAlteracaoInexistenteException(idPedidoAlteracao));
+        return pedidoAlteracaoRepository.buscaPedidoAlteracaoPorId(idPedidoAlteracao).orElseThrow(() -> new PedidoAlteracaoInexistenteException(idPedidoAlteracao));
     }
 
     public Optional<PedidoAlteracao> buscaPedidoAlteracao(String matricula, LocalDate dia) {
