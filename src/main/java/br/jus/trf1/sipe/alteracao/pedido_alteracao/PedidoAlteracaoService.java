@@ -46,6 +46,7 @@ public class PedidoAlteracaoService {
         var ponto = pedidoAlteracao.getPonto();
         usuarioService.permissaoRecurso(ponto);
         if (pedidoAlteracao.getStatus() == StatusPedido.APROVADO) {
+            pedidoAlteracao.setDataAprovacao(LocalDateTime.now());
             pedidoAlteracao.getAlteracaoRegistros().forEach(alteracaoRegistro -> {
                 var registroNovo = alteracaoRegistro.getRegistroNovo();
                 if (registroNovo != null) {
