@@ -10,6 +10,7 @@ public class LotacaoMapping {
     public static Lotacao toModel(LotacaoExterna externa) {
         return Lotacao.builder()
                 .id(externa.id())
+                .sigla(externa.sigla())
                 .descricao(externa.descricao())
                 .lotacaoPai(externa.lotacaoPai() == null ? null : Lotacao.builder()
                         .id(externa.lotacaoPai().id())

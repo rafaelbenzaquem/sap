@@ -13,7 +13,7 @@ public record LotacaoExterna(Integer id, String sigla, String descricao, Lotacao
                 .sigla(lotacaoExternaResponse.getSigla())
                 .descricao(lotacaoExternaResponse.getDescricao())
                 .lotacaoPai(LotacaoExterna.builder()
-                        .id(lotacaoExternaResponse.getId())
+                        .id(lotacaoExternaResponse.getLotacaoPai())
                         .build())
                 .build();
     }
