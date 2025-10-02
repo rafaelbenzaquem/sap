@@ -75,4 +75,13 @@ public class UsuarioService {
         }
         throw new CamposUnicosExistentesException(mapCampoMensagem);
     }
+
+    public boolean permissaoDiretor() {
+        return usuarioAtualService.ehDiretor();
+    }
+
+    public boolean permissaoAdministrador() {
+        return usuarioAtualService.ehAdmin();
+    }
+
 }
