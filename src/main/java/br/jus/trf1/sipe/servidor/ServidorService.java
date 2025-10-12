@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static br.jus.trf1.sipe.servidor.ServidorMapping.toModel;
@@ -44,18 +45,18 @@ public class ServidorService {
     @Transactional
     public Servidor vinculaUsuarioServidor(String matricula) {
         log.info("Buscando usuário com matricula: {}", matricula);
-        var servidor =(Servidor) usuarioService.buscaPorMatricula(matricula);
+        var servidor = (Servidor) usuarioService.buscaPorMatricula(matricula);
         var servidorExterno = servidorExternoService.buscaServidorExterno(matricula);
         var lotacaoExterna = servidorExterno.getLotacao();
 
-        lotacaoService.atualizarLotacao(servidor.getLotacao(),servidorExterno.getLotacao());
+        lotacaoService.atualizarLotacao(servidor.getLotacao(), servidorExterno.getLotacao());
         servidor = toModel(servidor, servidorExterno);
         return servidorRepository.save(servidor);
     }
 
     public Servidor vinculaUsuarioServidor(Usuario usuario) {
         log.info("Buscando servidor com matricula: {}", usuario.getMatricula());
-        var servidorExterno = servidorExternoService.buscaServidorExterno( usuario.getMatricula());
+        var servidorExterno = servidorExternoService.buscaServidorExterno(usuario.getMatricula());
 
         var servidor = toModel(usuario, servidorExterno);
 
@@ -74,7 +75,7 @@ public class ServidorService {
 
     public Page<Servidor> listar(Pageable pageable) {
         if (usuarioService.permissaoDiretor()) {
-            log.info("listarAll: Diretor");
+            log.info("listar por lotação do Diretor");
             var servidorAtual = servidorAtual();
             var idsLotacoes = lotacaoService.getLotacaos(servidorAtual.getLotacao().getId());
             return servidorRepository.buscarPorLotacoes(idsLotacoes, pageable);
@@ -83,6 +84,22 @@ public class ServidorService {
         return servidorRepository.findAll(pageable);
     }
 
+    public List<Servidor> listar() {
+        if (usuarioService.permissaoDiretor()) {
+            log.info("listar por lotação do Diretor");
+            var servidorAtual = servidorAtual();
+            var idsLotacoes = lotacaoService.getLotacaos(servidorAtual.getLotacao().getId());
+            return servidorRepository.buscarPorLotacoes(idsLotacoes);
+        }
+        log.info("listarAll: Outros");
+        return servidorRepository.findAll();
+    }
+
+    public List<Servidor> listar(Integer idLotacaoPai) {
+        log.info("listar Por Lotação id: {}", idLotacaoPai);
+        var idsLotacoes = lotacaoService.getLotacaos(idLotacaoPai);
+        return servidorRepository.buscarPorLotacoes(idsLotacoes);
+    }
 
 
     public Page<Servidor> buscaPorNomeOuCrachaOuMatricula(String nome,
@@ -92,7 +109,7 @@ public class ServidorService {
         if (usuarioService.permissaoDiretor()) {
             log.info("listar filtrado: Diretor");
             var servidorAtual = servidorAtual();
-            return servidorRepository.findAllByNomeOrCrachaOrMatriculaAndIdLotacao(nome, cracha, matricula,servidorAtual.getLotacao().getId(), pageable);
+            return servidorRepository.findAllByNomeOrCrachaOrMatriculaAndIdLotacao(nome, cracha, matricula, servidorAtual.getLotacao().getId(), pageable);
         }
         log.info("listar filtrado: Outros");
         return servidorRepository.findAllByNomeOrCrachaOrMatricula(nome, cracha, matricula, pageable);

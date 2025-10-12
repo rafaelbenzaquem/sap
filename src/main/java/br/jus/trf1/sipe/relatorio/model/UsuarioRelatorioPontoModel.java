@@ -18,11 +18,11 @@ import java.util.Objects;
  * @param ausencias  Lista de ausências encontradas para o usuário
  */
 @Builder
-public record UsuarioModel(String nome, String cargo,
-                           String funcao, String matricula,
-                           String lotacao, Integer horasDiaria,
-                           List<Ausencia> ausencias) {
-    public UsuarioModel {
+public record UsuarioRelatorioPontoModel(String nome, String cargo,
+                                         String funcao, String matricula,
+                                         String lotacao, Integer horasDiaria,
+                                         List<Ausencia> ausencias) {
+    public UsuarioRelatorioPontoModel {
         Objects.requireNonNull(nome, "Nome não pode ser nulo");
         Objects.requireNonNull(cargo, "Cargo não pode ser nulo");
         Objects.requireNonNull(funcao, "Função não pode ser nulo");

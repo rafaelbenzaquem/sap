@@ -30,7 +30,7 @@ public class RelatorioController {
 
     @GetMapping("/{matricula}")
     @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
-    public ResponseEntity<Resource> downloadRelatorio(@PathVariable("matricula") String matricula,
+    public ResponseEntity<Resource> downloadRelatorioPonto(@PathVariable("matricula") String matricula,
                                                       @RequestParam("inicio")
                                                       @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
                                                       LocalDate inicio,
@@ -42,7 +42,39 @@ public class RelatorioController {
         log.info("Periodo: {} a {}", inicio, fim);
 
 
-        byte[] bytes = relatorioService.gerarRelatorio(matricula, inicio, fim);
+        byte[] bytes = relatorioService.gerarRelatorioPorMatriculaUsuario(matricula, inicio, fim);
+
+        InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(bytes));
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + matricula + ".pdf");
+        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        headers.add("Pragma", "no-cache");
+        headers.add("Expires", "0");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentLength(bytes.length)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+    }
+
+
+    @GetMapping("/lotacao/{matricula}")
+    @PreAuthorize("hasAuthority('GRP_SIPE_ADMIN')")
+    public ResponseEntity<Resource> downloadRelatorioLotacao(@PathVariable("matricula") String matricula,
+                                                      @RequestParam("inicio")
+                                                      @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
+                                                      LocalDate inicio,
+                                                      @RequestParam("fim")
+                                                      @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
+                                                      LocalDate fim) throws JRException {
+        log.info("Relatorio gerado com sucesso");
+        log.info("Matricula: {}", matricula);
+        log.info("Periodo: {} a {}", inicio, fim);
+
+
+        byte[] bytes = relatorioService.gerarRelatorioPorLotacao(matricula, inicio, fim);
 
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(bytes));
 

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -13,18 +14,6 @@ public interface ServidorRepository extends JpaRepository<Servidor, Integer> {
 
 
     Optional<Servidor> findByMatricula(String matricula);
-
-
-
-    @Query(value ="""
-            SELECT s FROM Servidor s
-            WHERE s.lotacao.id = :idLotacao order by s.nome asc
-            """,
-            countQuery = """
-                    SELECT COUNT(s) FROM Servidor s
-                                WHERE s.lotacao.id = :idLotacao order by s.nome asc
-                    """)
-    Page<Servidor> buscarPorLotacao(@Param("idLotacao") Integer idLotacao, Pageable pageable);
 
 
     @Query(value = """
@@ -36,6 +25,17 @@ public interface ServidorRepository extends JpaRepository<Servidor, Integer> {
         WHERE s.lotacao.id IN :idsLotacoes order by s.nome asc
         """)
     Page<Servidor> buscarPorLotacoes(@Param("idsLotacoes") Set<Integer> idsLotacoes, Pageable pageable);
+
+
+    @Query(value = """
+        SELECT s FROM Servidor s
+        WHERE s.lotacao.id IN :idsLotacoes order by s.nome asc
+        """,
+            countQuery = """
+        SELECT COUNT(s) FROM Servidor s
+        WHERE s.lotacao.id IN :idsLotacoes order by s.nome asc
+        """)
+    List<Servidor> buscarPorLotacoes(@Param("idsLotacoes") Set<Integer> idsLotacoes);
 
     @Query(value = """
             SELECT s FROM Servidor s

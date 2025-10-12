@@ -19,10 +19,10 @@ import static br.jus.trf1.sipe.relatorio.model.util.FomatadorTextoUtil.*;
  */
 @Slf4j
 @Getter
-public class RelatorioModel {
+public class RelatorioPontoData {
 
 
-    private final UsuarioModel usuario;
+    private final UsuarioRelatorioPontoModel usuario;
     private final List<Ponto> pontos;
     private final Long diasUteis;
     private final Duration permanenciaTotal;
@@ -37,7 +37,7 @@ public class RelatorioModel {
      * @param usuario Modelo do usuário.
      * @param pontos  Lista de pontos registrados.
      */
-    public RelatorioModel(UsuarioModel usuario, List<Ponto> pontos, List<FeriadoExternal> feriados) {
+    public RelatorioPontoData(UsuarioRelatorioPontoModel usuario, List<Ponto> pontos, List<FeriadoExternal> feriados) {
         log.debug("Contruindo RelatorioModel...");
         this.usuario = Objects.requireNonNull(usuario, "Usuário não pode ser nulo");
         this.pontos = Objects.requireNonNull(pontos, "Lista de pontos não pode ser nula");
