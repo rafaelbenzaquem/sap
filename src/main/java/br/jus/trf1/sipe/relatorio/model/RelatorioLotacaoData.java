@@ -22,7 +22,7 @@ import static br.jus.trf1.sipe.relatorio.model.util.FomatadorTextoUtil.*;
 public class RelatorioLotacaoData {
 
 
-    private final UsuarioRelatorioPontoModel usuario;
+    private final UsuarioRelatorioLotacaoModel usuario;
     private final List<Ponto> pontos;
     private final Long diasUteis;
     private final Duration permanenciaTotal;
@@ -37,22 +37,22 @@ public class RelatorioLotacaoData {
      * @param usuario Modelo do usuário.
      * @param pontos  Lista de pontos registrados.
      */
-    public RelatorioLotacaoData(UsuarioRelatorioPontoModel usuario, List<Ponto> pontos, List<FeriadoExternal> feriados) {
+    public RelatorioLotacaoData(UsuarioRelatorioLotacaoModel usuario, List<Ponto> pontos, List<FeriadoExternal> feriados) {
         log.debug("Contruindo RelatorioModel...");
         this.usuario = Objects.requireNonNull(usuario, "Usuário não pode ser nulo");
         this.pontos = Objects.requireNonNull(pontos, "Lista de pontos não pode ser nula");
-        var datas = gerarDiasAusentes(usuario.ausencias());
+        var datas = gerarDiasAusentes(usuario.getAusencias());
          feriados.forEach(feriado -> datas.add(feriado.getData()));
         this.diasUteis = calculaDiasUteis(pontos, datas);
         this.permanenciaTotal = calculaPermanenciaTotal(pontos);
-        this.horasCreditoOuDebito = calculaHorasDebitoOuCredito(permanenciaTotal, diasUteis, usuario.horasDiaria());
-        this.pontoModels = carregarDadosPontos(pontos, feriados, usuario.ausencias());
+        this.horasCreditoOuDebito = calculaHorasDebitoOuCredito(permanenciaTotal, diasUteis, usuario.getHorasDiaria());
+        this.pontoModels = carregarDadosPontos(pontos, feriados, usuario.getAusencias());
         this.pontosDataSource = new JRBeanCollectionDataSource(pontoModels, false);
     }
 
 
     public String getTextoHorasUteis() {
-        return formataTextoHorasUteis(diasUteis, usuario.horasDiaria());
+        return formataTextoHorasUteis(diasUteis, usuario.getHorasDiaria());
     }
 
     public String getTextoPermanenciaTotal() {

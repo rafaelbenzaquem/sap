@@ -1,23 +1,34 @@
 package br.jus.trf1.sipe.relatorio.model;
 
+import br.jus.trf1.sipe.ausencia.Ausencia;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
-public class UsuarioRelatorioLotacaoModel{
+@AllArgsConstructor
+@NoArgsConstructor
+public class UsuarioRelatorioLotacaoModel {
 
-    private String nome_1;
-    private String matricula_1;
+    private String nome;
+    private String matricula;
+    private String lotacao;
     private String descricao;
+    private Integer horasDiaria;
+    private List<Ausencia> ausencias;
 
 
-    public UsuarioRelatorioLotacaoModel() {
-    }
-
-    public UsuarioRelatorioLotacaoModel(String nome_1, String matricula_1, String descricao) {
-        this.nome_1 = nome_1;
-        this.matricula_1 = matricula_1;
+    public UsuarioRelatorioLotacaoModel(String nome, String matricula, String lotacao, String descricao) {
+        this.nome = nome;
+        this.matricula = matricula;
+        this.lotacao = lotacao;
         this.descricao = descricao;
+        this.horasDiaria = 0;
+        this.ausencias = new ArrayList<>();
     }
 }

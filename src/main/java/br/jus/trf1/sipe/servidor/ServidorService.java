@@ -133,9 +133,13 @@ public class ServidorService {
         var ausenciasParaDelete = ausenciasExistentes.stream().filter(ae -> !novasAusencias.contains(ae)).toList();
         var ausenciasParaSalve = novasAusencias.stream().filter(ae -> !ausenciasExistentes.contains(ae)).toList();
 
-        ausenciaRepository.deleteAll(ausenciasParaDelete);
+        if(ausenciasParaDelete.isEmpty()) {
+            ausenciaRepository.deleteAll(ausenciasParaDelete);
+        }
 
-        ausenciaRepository.saveAll(ausenciasParaSalve);
+        if(ausenciasParaSalve.isEmpty()) {
+            ausenciaRepository.saveAll(ausenciasParaSalve);
+        }
 
         var todasAusenciasDoPeriodo = ausenciaRepository.listaAusenciasPorServidorMaisPeriodo(servidor, dataInicio, dataFim);
         servidor.setAusencias(new ArrayList<>(todasAusenciasDoPeriodo));
