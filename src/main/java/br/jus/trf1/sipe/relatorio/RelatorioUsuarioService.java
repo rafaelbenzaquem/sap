@@ -97,7 +97,8 @@ public class RelatorioUsuarioService implements RelatorioService {
         var parametrosRelatorio = mapeandoParametrosRelatorio(relatorioModel,
                 arquivoLogoImagemEsquerdaSuperior,
                 arquivoLogoImagemDireitaSuperior,
-                inicio, fim);
+                inicio, fim,
+                relatorioModel.getPontosDataSource());
 
 
         var streamRelatorioPonto = new ByteArrayInputStream(arquivoRelatorioPonto.getBytes());

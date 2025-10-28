@@ -1,6 +1,5 @@
 package br.jus.trf1.sipe.relatorio.model;
 
-import br.jus.trf1.sipe.ausencia.Ausencia;
 import br.jus.trf1.sipe.externo.jsarh.feriado.FeriadoExternal;
 import br.jus.trf1.sipe.ponto.Ponto;
 import lombok.Getter;
@@ -13,16 +12,17 @@ import java.util.Objects;
 
 import static br.jus.trf1.sipe.relatorio.model.util.CalculadoraPeriodosUtil.*;
 import static br.jus.trf1.sipe.relatorio.model.util.FomatadorTextoUtil.*;
+import static br.jus.trf1.sipe.relatorio.RelatorioUtil.*;
 
 /**
  * Representa o modelo de um relatório, contendo os dados necessários para geração.
  */
 @Slf4j
 @Getter
-public class RelatorioLotacaoData {
+public class RelatorioModel {
 
 
-    private final UsuarioRelatorioLotacaoModel usuario;
+    private final UsuarioModel usuario;
     private final List<Ponto> pontos;
     private final Long diasUteis;
     private final Duration permanenciaTotal;
@@ -37,7 +37,7 @@ public class RelatorioLotacaoData {
      * @param usuario Modelo do usuário.
      * @param pontos  Lista de pontos registrados.
      */
-    public RelatorioLotacaoData(UsuarioRelatorioLotacaoModel usuario, List<Ponto> pontos, List<FeriadoExternal> feriados) {
+    public RelatorioModel(UsuarioModel usuario, List<Ponto> pontos, List<FeriadoExternal> feriados) {
         log.debug("Contruindo RelatorioModel...");
         this.usuario = Objects.requireNonNull(usuario, "Usuário não pode ser nulo");
         this.pontos = Objects.requireNonNull(pontos, "Lista de pontos não pode ser nula");
@@ -67,27 +67,5 @@ public class RelatorioLotacaoData {
         return formataTextoDuracao(horasCreditoOuDebito);
     }
 
-    private List<PontoModel> carregarDadosPontos(List<Ponto> pontos, List<FeriadoExternal> feriados, List<Ausencia> ausencia) {
-        return pontos.stream()
-                .map(ponto -> {
 
-                    // Verifica se a data do ponto está dentro de um período de ausência
-                    Ausencia ausenciaCorrespondente = ausencia.stream()
-                            .filter(a -> !ponto.getId().getDia().isBefore(a.getInicio()) &&
-                                    !ponto.getId().getDia().isAfter(a.getFim()))
-                            .findFirst()
-                            .orElse(null);
-                    // Verifica se a data do ponto é um feriado
-                    FeriadoExternal feriadoCorrespondente = feriados.stream()
-                            .filter(feriado -> feriado.getData().equals(ponto.getId().getDia()))
-                            .findFirst()
-                            .orElse(null);
-
-                    var descricao = feriadoCorrespondente == null ? null : feriadoCorrespondente.getDescricao();
-                    descricao = ausenciaCorrespondente == null ? descricao : ausenciaCorrespondente.getDescricao();
-
-                    return descricao == null ? new PontoModel(ponto) :
-                            new PontoModel(ponto, descricao);
-                }).toList();
-    }
 }
