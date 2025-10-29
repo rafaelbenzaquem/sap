@@ -48,8 +48,7 @@ public class ServidorService {
         var servidor = (Servidor) usuarioService.buscaPorMatricula(matricula);
         var servidorExterno = servidorExternoService.buscaServidorExterno(matricula);
         var lotacaoExterna = servidorExterno.getLotacao();
-
-        lotacaoService.atualizarLotacao(servidor.getLotacao(), servidorExterno.getLotacao());
+        lotacaoService.atualizarLotacao(servidor.getLotacao(), lotacaoExterna);
         servidor = toModel(servidor, servidorExterno);
         return servidorRepository.save(servidor);
     }
@@ -57,9 +56,7 @@ public class ServidorService {
     public Servidor vinculaUsuarioServidor(Usuario usuario) {
         log.info("Buscando servidor com matricula: {}", usuario.getMatricula());
         var servidorExterno = servidorExternoService.buscaServidorExterno(usuario.getMatricula());
-
         var servidor = toModel(usuario, servidorExterno);
-
         return servidorRepository.save(servidor);
     }
 

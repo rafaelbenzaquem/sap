@@ -4,6 +4,7 @@ import br.jus.trf1.sipe.arquivo.db.ArquivoRepository;
 import br.jus.trf1.sipe.externo.jsarh.feriado.FeriadoExternalClient;
 import br.jus.trf1.sipe.externo.jsarh.feriado.dto.FeriadoExternalResponse;
 import br.jus.trf1.sipe.ponto.PontoRepository;
+import br.jus.trf1.sipe.ponto.PontoService;
 import br.jus.trf1.sipe.servidor.ServidorService;
 import br.jus.trf1.sipe.usuario.UsuarioAtualService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,7 @@ public class RelatorioUsuarioService implements RelatorioService {
 
 
     private final FeriadoExternalClient feriadoExternalClient;
-    private final PontoRepository pontoRepository;
+    private final PontoService pontoService;
     private final ArquivoRepository arquivoRepository;
     private final ServidorService servidorService;
     private final UsuarioAtualService usuarioAtualService;
@@ -38,15 +39,15 @@ public class RelatorioUsuarioService implements RelatorioService {
      * Constrói o serviço de relatório com as dependências necessárias.
      *
      * @param feriadoExternalClient Repositório de vínculos.
-     * @param pontoRepository       Repositório de pontos.
+     * @param pontoService          Serviço que controla pontos.
      * @param arquivoRepository     Repositório de arquivos.
      * @param servidorService       Serviço de acesso a dados do Servidor no Sarh
      */
-    public RelatorioUsuarioService(FeriadoExternalClient feriadoExternalClient, PontoRepository pontoRepository,
+    public RelatorioUsuarioService(FeriadoExternalClient feriadoExternalClient, PontoService pontoService,
                                    ArquivoRepository arquivoRepository, ServidorService servidorService,
                                    UsuarioAtualService usuarioAtualService) {
         this.feriadoExternalClient = feriadoExternalClient;
-        this.pontoRepository = pontoRepository;
+        this.pontoService = pontoService;
         this.arquivoRepository = arquivoRepository;
         this.servidorService = servidorService;
         this.usuarioAtualService = usuarioAtualService;
@@ -80,7 +81,7 @@ public class RelatorioUsuarioService implements RelatorioService {
 
 
         log.info("Carregando pontos para o período especificado...");
-        var pontos = pontoRepository.buscaPontosPorPeriodo(matricula, inicio, fim);
+        var pontos = pontoService.carregaPontos(matricula, inicio, fim);
         log.info("Total de pontos recuperados: {}", pontos.size());
 
         var relatorioModel = processaDadosServidorParaRelatorio(servidor, pontos, feriados);

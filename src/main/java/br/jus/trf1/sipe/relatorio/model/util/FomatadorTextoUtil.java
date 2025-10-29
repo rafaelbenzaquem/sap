@@ -7,8 +7,7 @@ import java.util.Locale;
 
 import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_SAIDA_DATA;
 import static br.jus.trf1.sipe.comum.util.DataTempoUtil.paraString;
-import static br.jus.trf1.sipe.relatorio.model.util.ConstatesRelatorioUtil.PADRAO_TEXTO_TEMPO_DIARIO;
-import static br.jus.trf1.sipe.relatorio.model.util.ConstatesRelatorioUtil.PADRAO_TEXTO_TEMPO_TOTAL;
+import static br.jus.trf1.sipe.relatorio.model.util.ConstatesRelatorioUtil.*;
 
 /**
  * Utilitário para formatação de textos no relatório.
@@ -54,7 +53,7 @@ public class FomatadorTextoUtil {
      * @return Texto formatado.
      */
     public static String formataTextoHorasUteis(long diasUteis, int horasDiaria) {
-        return PADRAO_TEXTO_TEMPO_TOTAL.formatted(diasUteis * horasDiaria, 0, 0);
+        return PADRAO_TEXTO_TEMPO_TOTAL_HORA.formatted(diasUteis * horasDiaria);
     }
 
     /**

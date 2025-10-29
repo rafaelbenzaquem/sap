@@ -3,7 +3,7 @@ package br.jus.trf1.sipe.relatorio;
 import br.jus.trf1.sipe.arquivo.db.ArquivoRepository;
 import br.jus.trf1.sipe.externo.jsarh.feriado.FeriadoExternalClient;
 import br.jus.trf1.sipe.externo.jsarh.feriado.dto.FeriadoExternalResponse;
-import br.jus.trf1.sipe.ponto.PontoRepository;
+import br.jus.trf1.sipe.ponto.PontoService;
 import br.jus.trf1.sipe.relatorio.model.UsuarioModel;
 import br.jus.trf1.sipe.servidor.ServidorService;
 import br.jus.trf1.sipe.usuario.UsuarioAtualService;
@@ -33,7 +33,7 @@ public class RelatorioLotacaoService implements RelatorioService {
 
 
     private final FeriadoExternalClient feriadoExternalClient;
-    private final PontoRepository pontoRepository;
+    private final PontoService pontoService;
     private final ArquivoRepository arquivoRepository;
     private final ServidorService servidorService;
     private final UsuarioAtualService usuarioAtualService;
@@ -43,15 +43,15 @@ public class RelatorioLotacaoService implements RelatorioService {
      * Constrói o serviço de relatório com as dependências necessárias.
      *
      * @param feriadoExternalClient Repositório de vínculos.
-     * @param pontoRepository       Repositório de pontos.
+     * @param pontoService       Serviço que contrala pontos.
      * @param arquivoRepository     Repositório de arquivos.
      * @param servidorService       Serviço de acesso a dados do Servidor no Sarh
      */
-    public RelatorioLotacaoService(FeriadoExternalClient feriadoExternalClient, PontoRepository pontoRepository,
+    public RelatorioLotacaoService(FeriadoExternalClient feriadoExternalClient, PontoService pontoService,
                                    ArquivoRepository arquivoRepository, ServidorService servidorService,
                                    UsuarioAtualService usuarioAtualService) {
         this.feriadoExternalClient = feriadoExternalClient;
-        this.pontoRepository = pontoRepository;
+        this.pontoService = pontoService;
         this.arquivoRepository = arquivoRepository;
         this.servidorService = servidorService;
         this.usuarioAtualService = usuarioAtualService;
@@ -95,7 +95,7 @@ public class RelatorioLotacaoService implements RelatorioService {
             log.info("Ausencias: {}", subordinado.getAusencias().size());
 
             log.info("Carregando pontos para o período especificado...");
-            var pontos = pontoRepository.buscaPontosPorPeriodo(matriculaSubordinado, inicio, fim);
+            var pontos = pontoService.carregaPontos(matriculaSubordinado, inicio, fim);
             log.info("Total de pontos recuperados: {}", pontos.size());
 
             var relatorioModel = processaDadosServidorParaRelatorio(subordinado, pontos, feriados);
@@ -103,8 +103,8 @@ public class RelatorioLotacaoService implements RelatorioService {
             var subordinadoModel = relatorioModel.getUsuario();
 
             subordinadoModel.setDescricao(
-                    "Horas a serem cumpridas: " + relatorioModel.getTextoHorasUteis() + "\t" +
-                            "Total de horas trabalhadas: " + relatorioModel.getTextoPermanenciaTotal() + "\t" +
+                    "Horas a serem cumpridas: " + relatorioModel.getTextoHorasUteis() + "\n" +
+                            "Total de horas trabalhadas: " + relatorioModel.getTextoPermanenciaTotal() + "\n" +
                             relatorioModel.getRotuloHorasCreditoOuDebito() + ":" +
                             relatorioModel.getTextoHorasCreditoOuDebito());
 
@@ -112,7 +112,7 @@ public class RelatorioLotacaoService implements RelatorioService {
         }
 
         log.info("Carregando pontos para o período especificado...");
-        var pontos = pontoRepository.buscaPontosPorPeriodo(matricula, inicio, fim);
+        var pontos = pontoService.carregaPontos(matricula, inicio, fim);
         log.info("Total de pontos recuperados: {}", pontos.size());
 
         var relatorioModel = processaDadosServidorParaRelatorio(servidorPrincipal, pontos, feriados);
