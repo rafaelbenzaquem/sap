@@ -5,7 +5,6 @@ import br.jus.trf1.sipe.externo.jsarh.ausencias.AusenciaExternaService;
 import br.jus.trf1.sipe.externo.jsarh.servidor.ServidorExternoService;
 import br.jus.trf1.sipe.lotacao.LotacaoService;
 import br.jus.trf1.sipe.servidor.exceptions.ServidorInexistenteException;
-import br.jus.trf1.sipe.usuario.Usuario;
 import br.jus.trf1.sipe.usuario.UsuarioService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -43,22 +42,21 @@ public class ServidorService {
     }
 
     @Transactional
-    public Servidor vinculaUsuarioServidor(String matricula) {
+    public Servidor atualizaDadosNoSarh(String matricula) {
         log.info("Buscando usuário com matricula: {}", matricula);
         var servidor = (Servidor) usuarioService.buscaPorMatricula(matricula);
-        var servidorExterno = servidorExternoService.buscaServidorExterno(matricula);
-        var lotacaoExterna = servidorExterno.getLotacao();
-        lotacaoService.atualizarLotacao(servidor.getLotacao(), lotacaoExterna);
-        servidor = toModel(servidor, servidorExterno);
-        return servidorRepository.save(servidor);
+        var servidorExternoOpt = servidorExternoService.buscaServidorExterno(matricula);
+        if (servidorExternoOpt.isPresent()) {
+            var servidorExterno = servidorExternoOpt.get();
+            var lotacaoExterna = servidorExterno.getLotacao();
+            lotacaoService.atualizarLotacao(servidor.getLotacao(), lotacaoExterna);
+            servidor = toModel(servidor, servidorExterno);
+            return servidorRepository.save(servidor);
+        }
+        log.info("Não foi possível atualizar os dados do servidor : {}", matricula);
+        return servidor;
     }
 
-    public Servidor vinculaUsuarioServidor(Usuario usuario) {
-        log.info("Buscando servidor com matricula: {}", usuario.getMatricula());
-        var servidorExterno = servidorExternoService.buscaServidorExterno(usuario.getMatricula());
-        var servidor = toModel(usuario, servidorExterno);
-        return servidorRepository.save(servidor);
-    }
 
     public Servidor servidorAtual() {
         var usuarioAtual = usuarioService.getUsuarioAtual();
@@ -69,52 +67,67 @@ public class ServidorService {
         throw new ServidorInexistenteException(usuarioAtual.getId());
     }
 
-
-    public Page<Servidor> listar(Pageable pageable) {
-        if (usuarioService.permissaoDiretor()) {
-            log.info("listar por lotação do Diretor");
-            var servidorAtual = servidorAtual();
-            var idsLotacoes = lotacaoService.getLotacaos(servidorAtual.getLotacao().getId());
-            return servidorRepository.buscarPorLotacoes(idsLotacoes, pageable);
-        }
-        log.info("listarAll: Outros");
-        return servidorRepository.findAll(pageable);
+    public Servidor buscaPorMatricula(String matricula) {
+        Optional<Servidor> optServidor = servidorRepository.findByMatricula(matricula);
+        return optServidor.orElseGet(() -> atualizaDadosNoSarh(matricula));
     }
+
 
     public List<Servidor> listar() {
         if (usuarioService.permissaoDiretor()) {
             log.info("listar por lotação do Diretor");
             var servidorAtual = servidorAtual();
             var idsLotacoes = lotacaoService.getLotacaos(servidorAtual.getLotacao().getId());
-            return servidorRepository.buscarPorLotacoes(idsLotacoes);
+            return servidorRepository.listarPorLotacoes(idsLotacoes);
         }
         log.info("listarAll: Outros");
-        return servidorRepository.findAll();
+        return servidorRepository.listarTodos();
     }
 
     public List<Servidor> listar(Integer idLotacaoPai) {
         log.info("listar Por Lotação id: {}", idLotacaoPai);
         var idsLotacoes = lotacaoService.getLotacaos(idLotacaoPai);
-        return servidorRepository.buscarPorLotacoes(idsLotacoes);
+        return servidorRepository.listarPorLotacoes(idsLotacoes);
     }
 
-
-    public Page<Servidor> buscaPorNomeOuCrachaOuMatricula(String nome,
-                                                          Integer cracha,
-                                                          String matricula,
-                                                          Pageable pageable) {
+    public List<Servidor> listar(String nome,
+                                 Integer cracha,
+                                 String matricula,
+                                 Integer idLotacao) {
         if (usuarioService.permissaoDiretor()) {
-            log.info("listar filtrado: Diretor");
+            log.info("Paginar filtrado: Diretor");
             var servidorAtual = servidorAtual();
-            return servidorRepository.findAllByNomeOrCrachaOrMatriculaAndIdLotacao(nome, cracha, matricula, servidorAtual.getLotacao().getId(), pageable);
+            var idsLotacoes = lotacaoService.getLotacaos(servidorAtual.getLotacao().getId());
+            return servidorRepository.listarPorNomeOuCrachaOuMatriculaEeLotacoes(nome, cracha, matricula, idsLotacoes);
         }
-        log.info("listar filtrado: Outros");
-        return servidorRepository.findAllByNomeOrCrachaOrMatricula(nome, cracha, matricula, pageable);
+        log.info("Paginar filtrado: Outros");
+        var idsLotacoes = lotacaoService.getLotacaos(idLotacao);
+        return servidorRepository.listarPorNomeOuCrachaOuMatriculaEeLotacoes(nome, cracha, matricula, idsLotacoes);
     }
 
-    public Servidor buscaPorMatricula(String matricula) {
-        Optional<Servidor> optServidor = servidorRepository.findByMatricula(matricula);
-        return optServidor.orElseGet(() -> vinculaUsuarioServidor(matricula));
+
+    public Page<Servidor> paginar(Pageable pageable) {
+        if (usuarioService.permissaoDiretor()) {
+            log.info("listar por lotação do Diretor");
+            var servidorAtual = servidorAtual();
+            var idsLotacoes = lotacaoService.getLotacaos(servidorAtual.getLotacao().getId());
+            return servidorRepository.paginarPorLotacoes(idsLotacoes, pageable);
+        }
+        log.info("listarAll: Outros");
+        return servidorRepository.findAll(pageable);
+    }
+
+    public Page<Servidor> paginar(String nome,
+                                  Integer cracha,
+                                  String matricula,
+                                  Pageable pageable) {
+        if (usuarioService.permissaoDiretor()) {
+            log.info("Paginar filtrado: Diretor");
+            var servidorAtual = servidorAtual();
+            return servidorRepository.paginarPorNomeOuCrachaOuMatriculaEeIdLotacao(nome, cracha, matricula, servidorAtual.getLotacao().getId(), pageable);
+        }
+        log.info("Paginar filtrado: Outros");
+        return servidorRepository.paginarPorNomeOuCrachaOuMatricula(nome, cracha, matricula, pageable);
     }
 
     public Servidor vinculaAusenciasServidorNoPeriodo(Servidor servidor, LocalDate dataInicio, LocalDate dataFim) {
@@ -130,11 +143,11 @@ public class ServidorService {
         var ausenciasParaDelete = ausenciasExistentes.stream().filter(ae -> !novasAusencias.contains(ae)).toList();
         var ausenciasParaSalve = novasAusencias.stream().filter(ae -> !ausenciasExistentes.contains(ae)).toList();
 
-        if(ausenciasParaDelete.isEmpty()) {
+        if (ausenciasParaDelete.isEmpty()) {
             ausenciaRepository.deleteAll(ausenciasParaDelete);
         }
 
-        if(ausenciasParaSalve.isEmpty()) {
+        if (ausenciasParaSalve.isEmpty()) {
             ausenciaRepository.saveAll(ausenciasParaSalve);
         }
 

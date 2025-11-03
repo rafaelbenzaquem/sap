@@ -15,33 +15,38 @@ import static br.jus.trf1.sipe.comum.util.PadroesDeMensagem.MSG_ENTIDADE_INEXIST
 @Service
 public class ArquivoDBHandler implements ArquivoHandler {
 
-    private final ArquivoRepository arquivoRepository;
+    private final ArquivoRepository repository;
+    private final ArquivoCacheDBService cache;
 
-    public ArquivoDBHandler(ArquivoRepository arquivoRepository) {
-        this.arquivoRepository = arquivoRepository;
+    public ArquivoDBHandler(ArquivoRepository repository,
+                            ArquivoCacheDBService cache) {
+        this.repository = repository;
+        this.cache = cache;
     }
 
     @Override
     public ArquivoMetadataResponse armazena(ArquivoNovoRequest arquivo) {
-        if (arquivoRepository.checaSeExisteArquivoComNome(arquivo.nome(), arquivo.id())) {
+        if (repository.checaSeExisteArquivoComNome(arquivo.nome(), arquivo.id())) {
             var map = new HashMap<String, String>();
             map.put("nome", "já existe arquivo com nome " + arquivo.nome());
             throw new CamposUnicosExistentesException(map);
         }
-        Arquivo arquivoSalvo = arquivoRepository.save(arquivo.toModel());
+        Arquivo arquivoSalvo = repository.save(arquivo.toModel());
+        cache.evictPorNome(arquivo.nome());
         return ArquivoMetadataResponse.of(arquivoSalvo);
     }
 
     @Override
     public ArquivoMetadataResponse atualiza(ArquivoAtualizadoRequest arquivo) {
-        if (arquivoRepository.existsById(arquivo.id())) {
-            if (arquivoRepository.checaSeExisteArquivoComNome(arquivo.nome(), arquivo.id())) {
+        if (repository.existsById(arquivo.id())) {
+            if (repository.checaSeExisteArquivoComNome(arquivo.nome(), arquivo.id())) {
                 var map = new HashMap<String, String>();
                 map.put("nome", "já existe arquivo com nome " + arquivo.nome());
                 throw new CamposUnicosExistentesException(map);
             }
 
-            Arquivo arquivoSalvo = arquivoRepository.save(arquivo.toModel());
+            Arquivo arquivoSalvo = repository.save(arquivo.toModel());
+            cache.evictPorNome(arquivo.nome());
             return ArquivoMetadataResponse.of(arquivoSalvo);
         }
         throw new ArquivoInexistenteException(MSG_ENTIDADE_INEXISTENTE.formatted("Arquivo", arquivo.id()));
@@ -49,12 +54,12 @@ public class ArquivoDBHandler implements ArquivoHandler {
 
     @Override
     public Page<ArquivoListResponse> lista(int pag, int tamanho) {
-        return arquivoRepository.findAll(PageRequest.of(pag, tamanho)).map(ArquivoListResponse::of);
+        return repository.findAll(PageRequest.of(pag, tamanho)).map(ArquivoListResponse::of);
     }
 
     @Override
     public ArquivoResponse recuperaPorId(String id) {
-        var opt = arquivoRepository.findById(id);
+        var opt = repository.findById(id);
         if (opt.isPresent()) {
             return ArquivoResponse.of(opt.get());
         }
@@ -63,16 +68,12 @@ public class ArquivoDBHandler implements ArquivoHandler {
 
     @Override
     public ArquivoResponse recuperaPorNome(String nome) {
-        var opt = arquivoRepository.findByNome(nome);
-        if (opt.isPresent()) {
-            return ArquivoResponse.of(opt.get());
-        }
-        throw new ArquivoInexistenteException(MSG_ENTIDADE_INEXISTENTE.formatted("Arquivo", nome));
+        return ArquivoResponse.of(cache.findByNome(nome));
     }
 
     @Override
     public ArquivoMetadataResponse recuperaMetadataPorId(String id) {
-        var opt = arquivoRepository.findById(id);
+        var opt = repository.findById(id);
         if (opt.isPresent()) {
             return ArquivoMetadataResponse.of(opt.get());
         }
@@ -81,7 +82,7 @@ public class ArquivoDBHandler implements ArquivoHandler {
 
     @Override
     public ArquivoMetadataResponse recuperaMetadataPorNome(String nome) {
-        var opt = arquivoRepository.findByNome(nome);
+        var opt = repository.findByNome(nome);
         if (opt.isPresent()) {
             return ArquivoMetadataResponse.of(opt.get());
         }
@@ -90,9 +91,9 @@ public class ArquivoDBHandler implements ArquivoHandler {
 
     @Override
     public ArquivoMetadataResponse apagaPorId(String id) {
-        var opt = arquivoRepository.findById(id);
+        var opt = repository.findById(id);
         if (opt.isPresent()) {
-            arquivoRepository.delete(opt.get());
+            repository.delete(opt.get());
             return ArquivoMetadataResponse.of(opt.get());
         }
         throw new ArquivoInexistenteException(MSG_ENTIDADE_INEXISTENTE.formatted("Arquivo", id));
@@ -100,9 +101,10 @@ public class ArquivoDBHandler implements ArquivoHandler {
 
     @Override
     public ArquivoMetadataResponse apagaPorNome(String nome) {
-        var opt = arquivoRepository.findByNome(nome);
+        var opt = repository.findByNome(nome);
         if (opt.isPresent()) {
-            arquivoRepository.delete(opt.get());
+            repository.delete(opt.get());
+            cache.evictPorNome(nome);
             return ArquivoMetadataResponse.of(opt.get());
         }
         throw new ArquivoInexistenteException(MSG_ENTIDADE_INEXISTENTE.formatted("Arquivo", nome));

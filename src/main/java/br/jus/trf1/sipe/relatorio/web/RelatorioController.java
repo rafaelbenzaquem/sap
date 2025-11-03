@@ -9,13 +9,16 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_ENTRADA_DATA;
 
@@ -67,13 +70,20 @@ public class RelatorioController {
         log.info("Matricula: {}", matricula);
         log.info("Periodo: {} a {}", inicio, fim);
 
+        if (inicio.isAfter(fim)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Data inicial deve ser menor ou igual à final");
+        }
+        if (ChronoUnit.DAYS.between(inicio, fim) > 31) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Período máximo permitido é de 31 dias");
+        }
 
         byte[] bytes = relatorioService.gerarRelatorio(matricula, inicio, fim);
 
         InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(bytes));
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + matricula + ".pdf");
+        headers.add(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\"%s_%s_a_%s.pdf\"".formatted(matricula, inicio, fim));
         headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
         headers.add("Pragma", "no-cache");
         headers.add("Expires", "0");
