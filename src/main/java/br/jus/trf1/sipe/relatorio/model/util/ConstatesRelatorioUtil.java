@@ -8,7 +8,6 @@ public class ConstatesRelatorioUtil {
     private ConstatesRelatorioUtil() {
     }
 
-    public static final String PADRAO_TEXTO_TEMPO_TOTAL_HORA = "%d horas";
     public static final String PADRAO_TEXTO_TEMPO_TOTAL = "%d horas ,%d minutos ,%d segundos";
     public static final String PADRAO_TEXTO_TEMPO_DIARIO = "%02d:%02d:%02d";
 }

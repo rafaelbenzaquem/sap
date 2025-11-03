@@ -6,6 +6,8 @@ import br.jus.trf1.sipe.externo.jsarh.servidor.exceptions.ServidorExternoInexist
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 public class ServidorExternoService {
@@ -18,7 +20,7 @@ public class ServidorExternoService {
         this.lotacaoExternoClient = lotacaoExternoClient;
     }
 
-    public ServidorExterno buscaServidorExterno(String matricula) {
+    public Optional<ServidorExterno> buscaServidorExterno(String matricula) {
         log.info("Buscando dados servidor no SARH: {}", matricula);
         var optServidor = servidorExternoClient.buscaDadosServidor(matricula);
         if (optServidor.isPresent()) {
@@ -26,11 +28,11 @@ public class ServidorExternoService {
             var idLotacao = servidorExternoResponse.getIdLotacao();
             var optLotacaoExternaResponse = lotacaoExternoClient.buscaLotacao(idLotacao);
             if (optLotacaoExternaResponse.isPresent()) {
-                return ServidorExterno.from(servidorExternoResponse, optLotacaoExternaResponse.get());
+                return Optional.of(ServidorExterno.from(servidorExternoResponse, optLotacaoExternaResponse.get()));
             }
             throw new LotacaoExternaInexistenteException("Lotacao id:" + idLotacao + " inexistente.");
         }
-        throw new ServidorExternoInexistenteException("Servidor '%s' inexistente".formatted(matricula));
+        return Optional.empty(); // throw new ServidorExternoInexistenteException("Servidor '%s' inexistente".formatted(matricula));
     }
 
 }

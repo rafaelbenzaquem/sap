@@ -8,18 +8,18 @@ API RESTful para controle de ponto eletrônico, gestão de registros de entrada 
 - [Tecnologias](#tecnologias)
 - [Pré-requisitos](#pré-requisitos)
 - [Instalação e Execução](#instalação-e-execução)
-- [Configuração](#configuração)
 - [Estrutura do Projeto](#estrutura-do-projeto)
 - [Endpoints da API](#endpoints-da-api)
 - [Exemplos de Uso](#exemplos-de-uso)
 - [Relatórios](#relatórios)
+- [Banco de Dados e Migrações](#banco-de-dados-e-migrações)
+- [Testes e Qualidade](#testes-e-qualidade)
 - [Contribuição](#contribuição)
-- [Licença](#licença)
 
 ## Visão Geral
 O SIPE fornece uma solução backend para gestão de ponto eletrônico, capturando registros de entrada e saída de funcionários, calculando horas de permanência, armazenando dados no banco de dados e gerando relatórios PDF mensais. Integra-se com:
 - Sistema de Controle de Acesso (via Feign client, serviço externo).
-- Sistema JF1 (JSARH) para obter informações de feriados, licenças e ausências.
+- Sistema JSARH para obter informações de feriados, licenças e ausências.
 
 ## Segurança
 Este serviço funciona como **OAuth2 Resource Server**. Todas as requisições devem incluir o header:
@@ -50,7 +50,7 @@ As authorities (roles) são extraídas do claim `authorities` no token e usadas 
 
 ## Tecnologias
 - Java 21
-- Spring Boot 3.4.4
+- Spring Boot 3.5.3
 - Spring Data JPA (Hibernate)
 - Spring Cloud OpenFeign
 - Resilience4j
@@ -61,6 +61,7 @@ As authorities (roles) são extraídas do claim `authorities` no token e usadas 
 - Lombok
 - Spring HATEOAS
 - Spring Validation
+- Spring Cloud (BOM 2025.0.0)
 
 ## Pré-requisitos
 - Java 21 ou superior
@@ -75,7 +76,7 @@ As authorities (roles) são extraídas do claim `authorities` no token e usadas 
    ```
 2. Acesse a pasta do projeto:
    ```bash
-   cd sipe
+   cd sipe-api
    ```
 3. Defina o profile ativo e as variáveis de ambiente:
    ```bash
@@ -89,7 +90,7 @@ As authorities (roles) são extraídas do claim `authorities` no token e usadas 
 4. Build e execução:
    ```bash
    mvn clean package
-   java -jar target/sipe-0.3.6.jar
+   java -jar target/sipe-0.3.9.jar
    ```
 5. (Opcional) Modo desenvolvimento:
    ```bash
@@ -164,9 +165,19 @@ curl -X POST http://localhost:8084/v1/sipe/usuarios \
 ## Relatórios
 - `GET /v1/sipe/relatorios/{matricula}?inicio={data}&fim={data}` — Download de relatório em PDF
 
+## Banco de Dados e Migrações
+- Banco de produção: MySQL 8+.
+- Banco para testes: H2 (memória).
+- Migrações com Flyway: scripts em `src/main/resources/db/migration`.
+
+## Testes e Qualidade
+- Testes: `spring-boot-starter-test` e `rest-assured` para testes de API.
+- Banco em testes: H2.
+- Cobertura: JaCoCo configurado no `pom.xml` (gera relatório no ciclo `package`).
+
 
 ## Contribuição
 Pull requests são bem-vindos! Abra issues para sugestões e melhorias.
 
 ---
-_Desenvolvido pela equipe SEINF/SJRR
+_Desenvolvido pela equipe NUTEC/SJRR
