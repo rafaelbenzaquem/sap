@@ -3,7 +3,6 @@ package br.jus.trf1.sipe.relatorio;
 import br.jus.trf1.sipe.arquivo.db.ArquivoRepository;
 import br.jus.trf1.sipe.externo.jsarh.feriado.FeriadoExternalClient;
 import br.jus.trf1.sipe.externo.jsarh.feriado.dto.FeriadoExternalResponse;
-import br.jus.trf1.sipe.ponto.PontoRepository;
 import br.jus.trf1.sipe.ponto.PontoService;
 import br.jus.trf1.sipe.servidor.ServidorService;
 import br.jus.trf1.sipe.usuario.UsuarioAtualService;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
 
+import static br.jus.trf1.sipe.relatorio.config.RelatorioParam.*;
 import static net.sf.jasperreports.engine.JasperExportManager.exportReportToPdf;
 import static net.sf.jasperreports.engine.JasperFillManager.fillReport;
 import static br.jus.trf1.sipe.relatorio.RelatorioUtil.*;
@@ -73,7 +73,7 @@ public class RelatorioUsuarioService implements RelatorioService {
         log.info("Total de feriados recuperados: {}", feriados.size());
 
         log.info("Vinculando usuário com seus dados do SARH...");
-        var servidor = servidorService.vinculaUsuarioServidor(matricula);
+        var servidor = servidorService.atualizaDadosNoSarh(matricula);
 
         log.info("Consultando licenças, férias e ausências especiais do servidor no SARH...");
         servidor = servidorService.vinculaAusenciasServidorNoPeriodo(servidor, inicio, fim);
@@ -87,12 +87,12 @@ public class RelatorioUsuarioService implements RelatorioService {
         var relatorioModel = processaDadosServidorParaRelatorio(servidor, pontos, feriados);
 
         log.info("Carregando arquivos do relatório...");
-        var arquivoLogoImagemEsquerdaSuperior = arquivoRepository.findByNome("logoImagem.png").
-                orElseThrow(() -> new IllegalArgumentException("Arquivo 'logoImagem.png' não encontrado"));
-        var arquivoLogoImagemDireitaSuperior = arquivoRepository.findByNome("logoImagem2.png").
-                orElseThrow(() -> new IllegalArgumentException("Arquivo 'logoImagem2.png' não encontrado"));
-        var arquivoRelatorioPonto = arquivoRepository.findByNome("relatorioA4.jasper").
-                orElseThrow(() -> new IllegalArgumentException("Arquivo 'relatorioA4.jasper' não encontrado"));
+        var arquivoLogoImagemEsquerdaSuperior = arquivoRepository.findByNome(LOGO_SUPERIOR_ESQUERDO).
+                orElseThrow(() -> new IllegalArgumentException(ATTRIB_NAO_ENCONTRADO.formatted(LOGO_SUPERIOR_ESQUERDO)));
+        var arquivoLogoImagemDireitaSuperior = arquivoRepository.findByNome(LOGO_SUPERIOR_DIREITO).
+                orElseThrow(() -> new IllegalArgumentException(ATTRIB_NAO_ENCONTRADO.formatted(LOGO_SUPERIOR_DIREITO)));
+        var arquivoRelatorioPonto = arquivoRepository.findByNome(TEMPLATE_RELATORIO_USUARIO).
+                orElseThrow(() -> new IllegalArgumentException(ATTRIB_NAO_ENCONTRADO.formatted(TEMPLATE_RELATORIO_USUARIO)));
 
         log.info("Mapeando parâmetros para o relatório...");
         var parametrosRelatorio = mapeandoParametrosRelatorio(relatorioModel,

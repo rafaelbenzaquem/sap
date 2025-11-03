@@ -17,31 +17,81 @@ public interface ServidorRepository extends JpaRepository<Servidor, Integer> {
 
 
     @Query(value = """
-        SELECT s FROM Servidor s
-        WHERE s.lotacao.id IN :idsLotacoes order by s.nome asc
-        """,
+            SELECT s FROM Servidor s ORDER BY s.nome ASC
+            """,
             countQuery = """
-        SELECT COUNT(s) FROM Servidor s
-        WHERE s.lotacao.id IN :idsLotacoes order by s.nome asc
-        """)
-    Page<Servidor> buscarPorLotacoes(@Param("idsLotacoes") Set<Integer> idsLotacoes, Pageable pageable);
+                    SELECT COUNT(s) FROM Servidor s
+                    WHERE s.lotacao.id IN :idsLotacoes ORDER BY s.nome ASC
+                    """)
+    List<Servidor> listarTodos();
+
+    @Query(value = """
+            SELECT s FROM Servidor s
+            WHERE s.lotacao.id IN :idsLotacoes ORDER BY s.nome ASC
+            """,
+            countQuery = """
+                    SELECT COUNT(s) FROM Servidor s
+                    WHERE s.lotacao.id IN :idsLotacoes ORDER BY s.nome ASC
+                    """)
+    List<Servidor> listarPorLotacoes(@Param("idsLotacoes") Set<Integer> idsLotacoes);
+
+    @Query(value = """
+             SELECT s FROM Servidor s
+             WHERE LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%'))
+             OR s.cracha=  :cracha
+             OR s.matricula = :matricula
+             """,
+            countQuery = """
+                    SELECT COUNT(s) FROM Servidor s
+                    WHERE LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%'))
+                    OR s.cracha=  :cracha
+                    OR s.matricula = :matricula
+                    """)
+    List<Servidor> listarPorNomeOuCrachaOuMatricula(@Param("nome") String nome,
+                                                              @Param("cracha") Integer cracha,
+                                                              @Param("matricula") String matricula);
 
 
     @Query(value = """
-        SELECT s FROM Servidor s
-        WHERE s.lotacao.id IN :idsLotacoes order by s.nome asc
-        """,
+            SELECT s FROM Servidor s
+                        WHERE (
+                                 LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%'))
+                                 OR s.cracha=  :cracha
+                                 OR s.matricula = :matricula
+                        )
+                        AND s.lotacao.id IN :idsLotacoes ORDER BY s.nome ASC
+            """,
             countQuery = """
-        SELECT COUNT(s) FROM Servidor s
-        WHERE s.lotacao.id IN :idsLotacoes order by s.nome asc
-        """)
-    List<Servidor> buscarPorLotacoes(@Param("idsLotacoes") Set<Integer> idsLotacoes);
+                    SELECT COUNT(s) FROM Servidor s
+                    WHERE (
+                             LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%'))
+                             OR s.cracha=  :cracha
+                             OR s.matricula = :matricula
+                    )
+                    AND s.lotacao.id IN :idsLotacoes ORDER BY s.nome ASC
+                    """)
+    List<Servidor> listarPorNomeOuCrachaOuMatriculaEeLotacoes(@Param("nome") String nome,
+                                                              @Param("cracha") Integer cracha,
+                                                              @Param("matricula") String matricula,
+                                                              @Param("idsLotacoes") Set<Integer> idsLotacoes);
+
+
+    @Query(value = """
+            SELECT s FROM Servidor s
+            WHERE s.lotacao.id IN :idsLotacoes ORDER BY s.nome ASC
+            """,
+            countQuery = """
+                    SELECT COUNT(s) FROM Servidor s
+                    WHERE s.lotacao.id IN :idsLotacoes ORDER BY s.nome ASC
+                    """)
+    Page<Servidor> paginarPorLotacoes(@Param("idsLotacoes") Set<Integer> idsLotacoes, Pageable pageable);
+
 
     @Query(value = """
             SELECT s FROM Servidor s
             WHERE LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%'))
             OR s.cracha=  :cracha
-            OR s.matricula = :matricula order by s.nome asc
+            OR s.matricula = :matricula ORDER BY s.nome ASC
             """,
             countQuery = """
                     SELECT COUNT(s) FROM Servidor s
@@ -49,10 +99,10 @@ public interface ServidorRepository extends JpaRepository<Servidor, Integer> {
                     OR s.cracha=  :cracha
                     OR s.matricula = :matricula order by s.nome asc
                     """)
-    Page<Servidor> findAllByNomeOrCrachaOrMatricula(@Param("nome") String nome,
-                                                    @Param("cracha") Integer cracha,
-                                                    @Param("matricula") String matricula,
-                                                    Pageable pageable);
+    Page<Servidor> paginarPorNomeOuCrachaOuMatricula(@Param("nome") String nome,
+                                                     @Param("cracha") Integer cracha,
+                                                     @Param("matricula") String matricula,
+                                                     Pageable pageable);
 
     @Query(value = """
             SELECT s FROM Servidor s
@@ -61,7 +111,7 @@ public interface ServidorRepository extends JpaRepository<Servidor, Integer> {
                     OR s.cracha=  :cracha
                     OR s.matricula = :matricula
                   )
-            AND s.lotacao.id = :idLotacao order by s.nome asc
+            AND s.lotacao.id = :idLotacao ORDER BY s.nome ASC
             """,
             countQuery = """
                     SELECT COUNT(s) FROM Servidor s
@@ -70,9 +120,9 @@ public interface ServidorRepository extends JpaRepository<Servidor, Integer> {
                             OR s.cracha=  :cracha
                             OR s.matricula = :matricula
                           )
-                    AND (s.lotacao.id = :idLotacao) order by s.nome asc
+                    AND (s.lotacao.id = :idLotacao) ORDER BY s.nome ASC
                     """)
-    Page<Servidor> findAllByNomeOrCrachaOrMatriculaAndIdLotacao(@Param("nome") String nome,
+    Page<Servidor> paginarPorNomeOuCrachaOuMatriculaEeIdLotacao(@Param("nome") String nome,
                                                                 @Param("cracha") Integer cracha,
                                                                 @Param("matricula") String matricula,
                                                                 @Param("idLotacao") Integer idLotacao,

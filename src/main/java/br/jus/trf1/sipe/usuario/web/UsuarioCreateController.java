@@ -37,7 +37,7 @@ public class UsuarioCreateController {
 
         var usuario = usuarioService.salve(request.paraEntidade());
 
-        servidorService.vinculaUsuarioServidor(usuario.getMatricula());
+        servidorService.atualizaDadosNoSarh(usuario.getMatricula());
 
         var uriResponse = ServletUriComponentsBuilder.fromCurrentContextPath().path("/usuarios/{matricula}").buildAndExpand(usuario.getMatricula()).toUri();
 
