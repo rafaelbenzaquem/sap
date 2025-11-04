@@ -86,6 +86,12 @@ public class ServidorService {
 
     public List<Servidor> listar(Integer idLotacaoPai) {
         log.info("listar Por Lotação id: {}", idLotacaoPai);
+        if (usuarioService.permissaoDiretor()) {
+            log.info("listar por lotação do Diretor");
+            var servidorAtual = servidorAtual();
+            var idsLotacoes = lotacaoService.getLotacaos(servidorAtual.getLotacao().getId());
+            return servidorRepository.listarPorLotacoes(idsLotacoes);
+        }
         var idsLotacoes = lotacaoService.getLotacaos(idLotacaoPai);
         return servidorRepository.listarPorLotacoes(idsLotacoes);
     }

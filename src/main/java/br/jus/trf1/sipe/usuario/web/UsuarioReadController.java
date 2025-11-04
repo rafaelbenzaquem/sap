@@ -88,7 +88,7 @@ public class UsuarioReadController {
     ) {
         if (nome == null && cracha == null && matricula == null) {
             log.info("Lista listaUsuarios All");
-            var usuarioPag = servidorService.listar();
+            var usuarioPag = servidorService.listar(idLotacao);
             if (usuarioPag.isEmpty()) {
                 return ResponseEntity.ok(CollectionModel.empty());
             }
