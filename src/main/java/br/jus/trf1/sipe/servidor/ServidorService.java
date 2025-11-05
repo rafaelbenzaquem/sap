@@ -3,6 +3,7 @@ package br.jus.trf1.sipe.servidor;
 import br.jus.trf1.sipe.ausencia.AusenciaRepository;
 import br.jus.trf1.sipe.externo.jsarh.ausencias.AusenciaExternaService;
 import br.jus.trf1.sipe.externo.jsarh.servidor.ServidorExternoService;
+import br.jus.trf1.sipe.lotacao.LotacaoNaoTemDiretorDireto;
 import br.jus.trf1.sipe.lotacao.LotacaoService;
 import br.jus.trf1.sipe.servidor.exceptions.ServidorInexistenteException;
 import br.jus.trf1.sipe.usuario.UsuarioService;
@@ -162,4 +163,12 @@ public class ServidorService {
         return servidor;
     }
 
+    public Servidor buscaDiretorLotacao(Integer idLotacao) {
+        Optional<Servidor> optServidor = servidorRepository.buscaDiretorLotacao(idLotacao);
+
+        if (optServidor.isPresent()) {
+            return optServidor.get();
+        }
+        throw new LotacaoNaoTemDiretorDireto(idLotacao);
+    }
 }

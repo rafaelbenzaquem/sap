@@ -20,8 +20,7 @@ import java.util.List;
 
 import static br.jus.trf1.sipe.relatorio.RelatorioUtil.mapeandoParametrosRelatorio;
 import static br.jus.trf1.sipe.relatorio.RelatorioUtil.processaDadosServidorParaRelatorio;
-import static br.jus.trf1.sipe.relatorio.config.RelatorioParam.*;
-import static br.jus.trf1.sipe.relatorio.config.RelatorioParam.TEMPLATE_RELATORIO_USUARIO;
+import static br.jus.trf1.sipe.comum.util.ConstParamUtil.*;
 import static net.sf.jasperreports.engine.JasperExportManager.exportReportToPdf;
 import static net.sf.jasperreports.engine.JasperFillManager.fillReport;
 

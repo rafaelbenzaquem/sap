@@ -13,21 +13,22 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import static br.jus.trf1.sipe.relatorio.model.util.FomatadorTextoUtil.formataTextoPeriodo;
+import static br.jus.trf1.sipe.comum.util.FomatadorTextoUtil.formataTextoPeriodo;
 
 public class RelatorioUtil {
 
 
-    public RelatorioUtil() {
+    private RelatorioUtil() {
     }
 
-    public static HashMap<String, Object> mapeandoParametrosRelatorio(RelatorioModel relatorioModel,
-                                                                      Arquivo arquivoLogoImagemEsquerdaSuperior,
-                                                                      Arquivo arquivoLogoImagemDireitaSuperior,
-                                                                      LocalDate inicio,
-                                                                      LocalDate fim,
-                                                                      JRBeanCollectionDataSource dataSource) {
+    public static Map<String, Object> mapeandoParametrosRelatorio(RelatorioModel relatorioModel,
+                                                                  Arquivo arquivoLogoImagemEsquerdaSuperior,
+                                                                  Arquivo arquivoLogoImagemDireitaSuperior,
+                                                                  LocalDate inicio,
+                                                                  LocalDate fim,
+                                                                  JRBeanCollectionDataSource dataSource) {
         var parametrosRelatorio = new HashMap<String, Object>();
 
 

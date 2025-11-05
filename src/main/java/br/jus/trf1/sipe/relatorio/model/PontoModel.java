@@ -11,8 +11,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static br.jus.trf1.sipe.relatorio.model.util.FomatadorTextoUtil.formataTextoDia;
-import static br.jus.trf1.sipe.relatorio.model.util.FomatadorTextoUtil.formataTextoTempoDiario;
+import static br.jus.trf1.sipe.comum.util.FomatadorTextoUtil.formataTextoDia;
+import static br.jus.trf1.sipe.comum.util.FomatadorTextoUtil.formataTextoTempoDiario;
 
 /**
  * Representa um ponto no relatório, contendo os registros de entrada e saída.

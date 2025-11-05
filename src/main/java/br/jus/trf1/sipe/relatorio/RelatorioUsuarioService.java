@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
 
-import static br.jus.trf1.sipe.relatorio.config.RelatorioParam.*;
+import static br.jus.trf1.sipe.comum.util.ConstParamUtil.*;
 import static net.sf.jasperreports.engine.JasperExportManager.exportReportToPdf;
 import static net.sf.jasperreports.engine.JasperFillManager.fillReport;
 import static br.jus.trf1.sipe.relatorio.RelatorioUtil.*;

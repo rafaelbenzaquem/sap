@@ -3,6 +3,8 @@ package br.jus.trf1.sipe.relatorio.web;
 import br.jus.trf1.sipe.relatorio.RelatorioLotacaoService;
 import br.jus.trf1.sipe.relatorio.RelatorioService;
 import br.jus.trf1.sipe.relatorio.RelatorioUsuarioService;
+import br.jus.trf1.sipe.servidor.Servidor;
+import br.jus.trf1.sipe.servidor.ServidorService;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.core.io.InputStreamResource;
@@ -29,11 +31,14 @@ public class RelatorioController {
 
     private final RelatorioUsuarioService relatorioUsuarioService;
     private final RelatorioLotacaoService relatorioLotacaoService;
+    private final ServidorService servidorService;
 
     public RelatorioController(RelatorioUsuarioService relatorioUsuarioService,
-                               RelatorioLotacaoService relatorioLotacaoService) {
+                               RelatorioLotacaoService relatorioLotacaoService,
+                               ServidorService servidorService) {
         this.relatorioUsuarioService = relatorioUsuarioService;
         this.relatorioLotacaoService = relatorioLotacaoService;
+        this.servidorService = servidorService;
     }
 
     @GetMapping("/{matricula}")
@@ -49,9 +54,9 @@ public class RelatorioController {
     }
 
 
-    @GetMapping("/lotacao/{matricula}")
+    @GetMapping("/lotacao/usuario/{matricula}")
     @PreAuthorize("hasAuthority('GRP_SIPE_ADMIN')")
-    public ResponseEntity<Resource> downloadRelatorioLotacao(@PathVariable("matricula") String matricula,
+    public ResponseEntity<Resource> downloadRelatorioLotacaoPorUsuario(@PathVariable("matricula") String matricula,
                                                              @RequestParam("inicio")
                                                              @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
                                                              LocalDate inicio,
@@ -59,6 +64,20 @@ public class RelatorioController {
                                                              @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
                                                              LocalDate fim) throws JRException {
         return templateRelatorio(matricula,inicio, fim, relatorioLotacaoService);
+    }
+
+
+    @GetMapping("/lotacao/{idLotacao}")
+    @PreAuthorize("hasAuthority('GRP_SIPE_ADMIN')")
+    public ResponseEntity<Resource> downloadRelatorioLotacao(@PathVariable("idLotacao") Integer idLotacao,
+                                                             @RequestParam("inicio")
+                                                             @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
+                                                             LocalDate inicio,
+                                                             @RequestParam("fim")
+                                                             @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
+                                                             LocalDate fim) throws JRException {
+        Servidor servidor = servidorService.buscaDiretorLotacao(idLotacao);
+        return templateRelatorio(servidor.getMatricula(),inicio, fim, relatorioLotacaoService);
     }
 
 

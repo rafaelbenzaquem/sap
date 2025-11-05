@@ -10,9 +10,9 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 
-import static br.jus.trf1.sipe.relatorio.model.util.CalculadoraPeriodosUtil.*;
-import static br.jus.trf1.sipe.relatorio.model.util.FomatadorTextoUtil.*;
-import static br.jus.trf1.sipe.relatorio.RelatorioUtil.*;
+import static br.jus.trf1.sipe.comum.util.CalculadoraPeriodosUtil.*;
+import static br.jus.trf1.sipe.comum.util.FomatadorTextoUtil.*;
+import static br.jus.trf1.sipe.relatorio.RelatorioUtil.carregarDadosPontos;
 
 /**
  * Representa o modelo de um relatório, contendo os dados necessários para geração.

@@ -128,4 +128,10 @@ public interface ServidorRepository extends JpaRepository<Servidor, Integer> {
                                                                 @Param("idLotacao") Integer idLotacao,
                                                                 Pageable pageable);
 
+    @Query(value = """
+            SELECT s FROM Servidor s
+            WHERE   LOWER(s.funcao) LIKE LOWER(CONCAT('%',"diretor", '%'))
+            AND s.lotacao.id = :idLotacao ORDER BY s.nome ASC
+            """)
+    Optional<Servidor> buscaDiretorLotacao(Integer idLotacao);
 }

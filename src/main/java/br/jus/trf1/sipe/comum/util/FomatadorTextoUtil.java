@@ -1,4 +1,4 @@
-package br.jus.trf1.sipe.relatorio.model.util;
+package br.jus.trf1.sipe.comum.util;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -7,8 +7,8 @@ import java.util.Locale;
 
 import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_SAIDA_DATA;
 import static br.jus.trf1.sipe.comum.util.DataTempoUtil.paraString;
-import static br.jus.trf1.sipe.relatorio.model.util.ConstatesRelatorioUtil.PADRAO_TEXTO_TEMPO_DIARIO;
-import static br.jus.trf1.sipe.relatorio.model.util.ConstatesRelatorioUtil.PADRAO_TEXTO_TEMPO_TOTAL;
+import static br.jus.trf1.sipe.comum.util.ConstParamUtil.PADRAO_TEXTO_TEMPO_DIARIO;
+import static br.jus.trf1.sipe.comum.util.ConstParamUtil.PADRAO_TEXTO_TEMPO_TOTAL;
 
 /**
  * Utilitário para formatação de textos no relatório.

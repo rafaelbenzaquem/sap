@@ -1,6 +1,13 @@
-package br.jus.trf1.sipe.relatorio.config;
+package br.jus.trf1.sipe.comum.util;
 
-public final class RelatorioParam {
+/**
+ * Contém constantes utilizadas na formatação de textos no relatório.
+ */
+public class ConstParamUtil {
+
+    private ConstParamUtil() {
+    }
+
     public static final String LOGO_SUPERIOR_ESQUERDO = "logoImagem.png";
     public static final String LOGO_SUPERIOR_DIREITO = "logoImagem2.png";
     public static final String TEMPLATE_RELATORIO_USUARIO = "relatorioUsuarioA4.jasper";
@@ -9,6 +16,6 @@ public final class RelatorioParam {
     public static final String PARAM_LOGO_1 = "logoImagem";
     public static final String PARAM_LOGO_2 = "logoImagem2";
     public static final String MSG_ARQUIVO_NOT_FOUND = "Arquivo '%s' não encontrado";
-    // ... demais chaves
-    private RelatorioParam() {}
+    public static final String PADRAO_TEXTO_TEMPO_TOTAL = "%d horas ,%d minutos ,%d segundos";
+    public static final String PADRAO_TEXTO_TEMPO_DIARIO = "%02d:%02d:%02d";
 }

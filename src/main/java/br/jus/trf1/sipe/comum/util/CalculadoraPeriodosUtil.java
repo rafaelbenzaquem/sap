@@ -1,4 +1,4 @@
-package br.jus.trf1.sipe.relatorio.model.util;
+package br.jus.trf1.sipe.comum.util;
 
 import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.ausencia.Ausencia;
