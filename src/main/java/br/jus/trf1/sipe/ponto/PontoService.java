@@ -1,7 +1,7 @@
 package br.jus.trf1.sipe.ponto;
 
-import br.jus.trf1.sipe.externo.jsarh.ausencias.AusenciaExterna;
-import br.jus.trf1.sipe.externo.jsarh.ausencias.AusenciaExternaService;
+import br.jus.trf1.sipe.ausencia.externo.jsrh.AusenciaExterna;
+import br.jus.trf1.sipe.ausencia.externo.jsrh.AusenciaExternaService;
 import br.jus.trf1.sipe.externo.jsarh.feriado.FeriadoExternalClient;
 import br.jus.trf1.sipe.externo.jsarh.feriado.dto.FeriadoExternalResponse;
 import br.jus.trf1.sipe.ponto.exceptions.PontoExistenteException;
@@ -117,7 +117,7 @@ public class PontoService {
     private String defineDescricao(LocalDate dia, Optional<AusenciaExterna> ausencia, Optional<FeriadoExternalResponse> feriado) {
         return dia.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.of("pt", "BR")) + "\n" +
                 ausencia.map(a -> ", " + a.getDescricao()).orElse("") + "\n" +
-                feriado.map(f -> ", " + f.getDescricao()).orElse("");
+                feriado.map(f -> ", " + f.descricao()).orElse("");
     }
 
     /**

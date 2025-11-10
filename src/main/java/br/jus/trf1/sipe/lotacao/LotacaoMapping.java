@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.lotacao;
 
-import br.jus.trf1.sipe.externo.jsarh.lotacao.LotacaoExterna;
+import br.jus.trf1.sipe.lotacao.externo.jsarh.LotacaoExterna;
 
 public class LotacaoMapping {
 

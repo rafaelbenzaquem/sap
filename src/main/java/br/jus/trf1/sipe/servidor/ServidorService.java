@@ -1,8 +1,8 @@
 package br.jus.trf1.sipe.servidor;
 
 import br.jus.trf1.sipe.ausencia.AusenciaRepository;
-import br.jus.trf1.sipe.externo.jsarh.ausencias.AusenciaExternaService;
-import br.jus.trf1.sipe.externo.jsarh.servidor.ServidorExternoService;
+import br.jus.trf1.sipe.ausencia.externo.jsrh.AusenciaExternaService;
+import br.jus.trf1.sipe.servidor.externo.jsarh.ServidorExternoService;
 import br.jus.trf1.sipe.lotacao.LotacaoNaoTemDiretorDireto;
 import br.jus.trf1.sipe.lotacao.LotacaoService;
 import br.jus.trf1.sipe.servidor.exceptions.ServidorInexistenteException;
@@ -142,19 +142,18 @@ public class ServidorService {
 
         var ausenciasExternas = ausenciaExternaService.
                 buscaAusenciasServidorPorPeriodo(servidor.getMatricula(), dataInicio, dataFim);
+        var novasAusencias = ausenciasExternas.stream().map(auEx -> auEx.toModel(servidor)).toList();
 
         var ausenciasExistentes = ausenciaRepository.listaAusenciasPorServidorMaisPeriodo(servidor, dataInicio, dataFim);
-
-        var novasAusencias = ausenciasExternas.stream().map(auEx -> auEx.toModel(servidor)).toList();
 
         var ausenciasParaDelete = ausenciasExistentes.stream().filter(ae -> !novasAusencias.contains(ae)).toList();
         var ausenciasParaSalve = novasAusencias.stream().filter(ae -> !ausenciasExistentes.contains(ae)).toList();
 
-        if (ausenciasParaDelete.isEmpty()) {
+        if (!ausenciasParaDelete.isEmpty()) {
             ausenciaRepository.deleteAll(ausenciasParaDelete);
         }
 
-        if (ausenciasParaSalve.isEmpty()) {
+        if (!ausenciasParaSalve.isEmpty()) {
             ausenciaRepository.saveAll(ausenciasParaSalve);
         }
 

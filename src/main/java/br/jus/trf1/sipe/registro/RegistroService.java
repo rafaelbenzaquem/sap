@@ -4,9 +4,9 @@ import br.jus.trf1.sipe.alteracao.alteracao_registro.Acao;
 import br.jus.trf1.sipe.alteracao.alteracao_registro.AlteracaoRegistroService;
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracao;
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracaoService;
-import br.jus.trf1.sipe.externo.coletor.historico.HistoricoExternalClient;
 import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.registro.exceptions.RegistroInexistenteException;
+import br.jus.trf1.sipe.registro.externo.coletor.RegistroExternalService;
 import br.jus.trf1.sipe.servidor.Servidor;
 import br.jus.trf1.sipe.usuario.UsuarioService;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAprovadorException;
@@ -26,16 +26,16 @@ import java.util.Objects;
 public class RegistroService {
 
     private final UsuarioService usuarioService;
-    private final HistoricoExternalClient historicoService;
+    private final RegistroExternalService registroExternalService;
     private final RegistroRepository registroRepository;
     private final PedidoAlteracaoService pedidoAlteracaoService;
     private final AlteracaoRegistroService alteracaoRegistroService;
 
-    public RegistroService(UsuarioService usuarioService, HistoricoExternalClient historicoService,
+    public RegistroService(UsuarioService usuarioService, RegistroExternalService registroExternalService,
                            RegistroRepository registroRepository, PedidoAlteracaoService pedidoAlteracaoService,
                            AlteracaoRegistroService alteracaoRegistroService) {
         this.usuarioService = usuarioService;
-        this.historicoService = historicoService;
+        this.registroExternalService = registroExternalService;
         this.registroRepository = registroRepository;
         this.pedidoAlteracaoService = pedidoAlteracaoService;
         this.alteracaoRegistroService = alteracaoRegistroService;
@@ -80,16 +80,15 @@ public class RegistroService {
 
         var vinculo = usuarioService.buscaPorMatricula(matricula);
 
-        var historicos = historicoService.buscarHistoricoDeAcesso(
-                dia, null, String.format("%016d", vinculo.getCracha()), null, null);
+        var registros = registroExternalService.buscaRegistrosDoDiaPorCracha(dia, vinculo.getCracha());
 
-        return historicos.stream().
-                filter(historico ->
+        return registros.stream().
+                filter(registroExternal ->
                         {
-                            log.debug("historico {}", historico);
+                            log.debug("Historico de registros {}", registroExternal);
                             return registrosAtuais.stream().noneMatch(r ->
                                     {
-                                        var filtered = Objects.equals(historico.acesso(), r.getCodigoAcesso());
+                                        var filtered = Objects.equals(registroExternal.acesso(), r.getCodigoAcesso());
                                         log.debug("registro {} - {}",
                                                 !filtered ? "foi filtrado" : "não foi filtrado", r);
                                         return filtered;
