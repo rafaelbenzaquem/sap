@@ -44,7 +44,7 @@ public class RelatorioLotacaoService implements RelatorioService {
      * Constrói o serviço de relatório com as dependências necessárias.
      *
      * @param feriadoExternalClient Repositório de vínculos.
-     * @param pontoService       Serviço que contrala pontos.
+     * @param pontoService          Serviço que contrala pontos.
      * @param arquivoRepository     Repositório de arquivos.
      * @param servidorService       Serviço de acesso a dados do Servidor no Sarh
      */
@@ -87,9 +87,9 @@ public class RelatorioLotacaoService implements RelatorioService {
         for (var subordinado : subordinados) {
             var matriculaSubordinado = subordinado.getMatricula();
 
-
             log.info("Vinculando usuário com seus dados do SARH...");
-            subordinado = servidorService.atualizaDadosNoSarh(matriculaSubordinado);
+            subordinado = (subordinado.equals(servidorPrincipal)) ? servidorPrincipal :
+                    servidorService.atualizaDadosNoSarh(matriculaSubordinado);
 
             log.info("Consultando ausenciais(licenças, férias e ausências especiais) do servidor no SARH...");
             subordinado = servidorService.vinculaAusenciasServidorNoPeriodo(subordinado, inicio, fim);
