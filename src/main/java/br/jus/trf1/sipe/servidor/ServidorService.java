@@ -154,7 +154,7 @@ public class ServidorService {
         }
 
         if (!ausenciasParaSalve.isEmpty()) {
-            ausenciaRepository.saveAll(ausenciasParaSalve);
+            ausenciasParaSalve.forEach(ausenciaRepository::save);
         }
 
         var todasAusenciasDoPeriodo = ausenciaRepository.listaAusenciasPorServidorMaisPeriodo(servidor, dataInicio, dataFim);

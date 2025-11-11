@@ -2,7 +2,7 @@ package br.jus.trf1.sipe.relatorio;
 
 import br.jus.trf1.sipe.arquivo.db.Arquivo;
 import br.jus.trf1.sipe.ausencia.Ausencia;
-import br.jus.trf1.sipe.externo.jsarh.feriado.FeriadoExternal;
+import br.jus.trf1.sipe.feriado.externo.jsarh.FeriadoJSarh;
 import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.relatorio.model.PontoModel;
 import br.jus.trf1.sipe.relatorio.model.RelatorioModel;
@@ -54,7 +54,7 @@ public class RelatorioUtil {
         return parametrosRelatorio;
     }
 
-    public static RelatorioModel processaDadosServidorParaRelatorio(Servidor servidor, List<Ponto> pontos, List<FeriadoExternal> feriados) {
+    public static RelatorioModel processaDadosServidorParaRelatorio(Servidor servidor, List<Ponto> pontos, List<FeriadoJSarh> feriados) {
         var usuario = UsuarioModel.builder()
                 .nome(servidor.getNome())
                 .cargo(servidor.getCargo() == null ? "Servidor Requisitado" : servidor.getCargo())
@@ -69,7 +69,7 @@ public class RelatorioUtil {
     }
 
 
-    public static List<PontoModel> carregarDadosPontos(List<Ponto> pontos, List<FeriadoExternal> feriados, List<Ausencia> ausencia) {
+    public static List<PontoModel> carregarDadosPontos(List<Ponto> pontos, List<FeriadoJSarh> feriados, List<Ausencia> ausencia) {
         return pontos.stream()
                 .map(ponto -> {
 
@@ -80,7 +80,7 @@ public class RelatorioUtil {
                             .findFirst()
                             .orElse(null);
                     // Verifica se a data do ponto é um feriado
-                    FeriadoExternal feriadoCorrespondente = feriados.stream()
+                    FeriadoJSarh feriadoCorrespondente = feriados.stream()
                             .filter(feriado -> feriado.getData().equals(ponto.getId().getDia()))
                             .findFirst()
                             .orElse(null);

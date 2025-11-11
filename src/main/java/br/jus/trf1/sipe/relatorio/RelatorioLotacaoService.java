@@ -1,8 +1,8 @@
 package br.jus.trf1.sipe.relatorio;
 
 import br.jus.trf1.sipe.arquivo.db.ArquivoRepository;
-import br.jus.trf1.sipe.externo.jsarh.feriado.FeriadoExternalClient;
-import br.jus.trf1.sipe.externo.jsarh.feriado.dto.FeriadoExternalResponse;
+import br.jus.trf1.sipe.feriado.externo.jsarh.FeriadoJSarhClient;
+import br.jus.trf1.sipe.feriado.externo.jsarh.dto.FeriadoJSarhResponse;
 import br.jus.trf1.sipe.ponto.PontoService;
 import br.jus.trf1.sipe.relatorio.model.UsuarioModel;
 import br.jus.trf1.sipe.servidor.ServidorService;
@@ -33,7 +33,7 @@ import static net.sf.jasperreports.engine.JasperFillManager.fillReport;
 public class RelatorioLotacaoService implements RelatorioService {
 
 
-    private final FeriadoExternalClient feriadoExternalClient;
+    private final FeriadoJSarhClient feriadoExternalClient;
     private final PontoService pontoService;
     private final ArquivoRepository arquivoRepository;
     private final ServidorService servidorService;
@@ -48,7 +48,7 @@ public class RelatorioLotacaoService implements RelatorioService {
      * @param arquivoRepository     Repositório de arquivos.
      * @param servidorService       Serviço de acesso a dados do Servidor no Sarh
      */
-    public RelatorioLotacaoService(FeriadoExternalClient feriadoExternalClient, PontoService pontoService,
+    public RelatorioLotacaoService(FeriadoJSarhClient feriadoExternalClient, PontoService pontoService,
                                    ArquivoRepository arquivoRepository, ServidorService servidorService,
                                    UsuarioAtualService usuarioAtualService) {
         this.feriadoExternalClient = feriadoExternalClient;
@@ -81,7 +81,7 @@ public class RelatorioLotacaoService implements RelatorioService {
 
         log.info("Consultando feriados no SARH...");
         var feriados = feriadoExternalClient.buscaFeriados(inicio, fim, null).
-                stream().map(FeriadoExternalResponse::toModel).toList();
+                stream().map(FeriadoJSarhResponse::toModel).toList();
         log.info("Feriados: {}", feriados.size());
 
         for (var subordinado : subordinados) {

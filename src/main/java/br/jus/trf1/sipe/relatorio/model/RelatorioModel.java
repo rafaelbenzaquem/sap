@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.relatorio.model;
 
-import br.jus.trf1.sipe.externo.jsarh.feriado.FeriadoExternal;
+import br.jus.trf1.sipe.feriado.externo.jsarh.FeriadoJSarh;
 import br.jus.trf1.sipe.ponto.Ponto;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +37,7 @@ public class RelatorioModel {
      * @param usuario Modelo do usuário.
      * @param pontos  Lista de pontos registrados.
      */
-    public RelatorioModel(UsuarioModel usuario, List<Ponto> pontos, List<FeriadoExternal> feriados) {
+    public RelatorioModel(UsuarioModel usuario, List<Ponto> pontos, List<FeriadoJSarh> feriados) {
         log.debug("Contruindo RelatorioModel...");
         this.usuario = Objects.requireNonNull(usuario, "Usuário não pode ser nulo");
         this.pontos = Objects.requireNonNull(pontos, "Lista de pontos não pode ser nula");
