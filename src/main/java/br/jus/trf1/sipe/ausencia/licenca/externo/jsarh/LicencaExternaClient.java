@@ -18,7 +18,7 @@ import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_ENTRADA_DA
 @FeignClient(url = "${jsarh.api.url}", fallback = LicencaExternaClientFallBackImpl.class, name = "licencas")
 public interface LicencaExternaClient {
 
-    @GetMapping(value = "/v1/sarh/servidores/{matricula}/ausencias/licencas", produces = "application/json")
+    @GetMapping(value = "/v1/sarh/servidores/{matricula}/ausencias/periodos/licencas", produces = "application/json")
     List<LicencaExternoResponse> buscaLicencaServidorPorPeriodo(
             @PathVariable("matricula") String matricula,
             @RequestParam(name = "inicio", required = false) @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
@@ -27,7 +27,7 @@ public interface LicencaExternaClient {
             LocalDate fim);
 
 
-    @GetMapping(value = "/v1/sarh/servidores/{matricula}/ausencias/licencas/{dia}", produces = "application/json")
+    @GetMapping(value = "/v1/sarh/servidores/{matricula}/ausencias/periodos/licencas/{dia}", produces = "application/json")
     Optional<LicencaExternoResponse> buscaLicencaServidorNoDia(
             @PathVariable("matricula")
             String matricula,
