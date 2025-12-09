@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.folha;
 
-import br.jus.trf1.sipe.servidor.Servidor;
+import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
 import br.jus.trf1.sipe.servidor.ServidorService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +41,7 @@ public class FechamentoFolhaService {
                     "Folha já fechada para " + matricula + " em " + valorMes + "/" + ano);
                 });
         // obtém servidor e folha
-        Servidor servidor = servidorService.buscaPorMatricula(matricula);
+        ServidorJpa servidor = servidorService.buscaPorMatricula(matricula);
         var mesEnum = Mes.getMes(valorMes);
         var folha = folhaService.buscarFolha(matricula, mesEnum, ano)
                 .orElseGet(() -> folhaService.abrirFolha(matricula, mesEnum, ano));

@@ -1,82 +1,107 @@
 package br.jus.trf1.sipe.usuario.domain.service;
 
 import br.jus.trf1.sipe.comum.exceptions.CamposUnicosExistentesException;
+import br.jus.trf1.sipe.comum.exceptions.RecursoInvalidoException;
+import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.usuario.domain.model.Usuario;
 import br.jus.trf1.sipe.usuario.domain.port.in.UsuarioServicePort;
-import br.jus.trf1.sipe.usuario.domain.port.out.UsuarioAtualPort;
 import br.jus.trf1.sipe.usuario.domain.port.out.UsuarioRepositoryPort;
+import br.jus.trf1.sipe.usuario.domain.port.out.UsuarioSecurityPort;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioInexistenteException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 @Service
-@RequiredArgsConstructor
 public class UsuarioService implements UsuarioServicePort {
 
-    private final UsuarioRepositoryPort usuarioRepository;
-    private final UsuarioAtualPort usuarioAtualPort;
+    private final UsuarioRepositoryPort usuarioRepositoryPort;
+    private final UsuarioSecurityPort usuarioSecurityPort;
+
+    public UsuarioService(UsuarioRepositoryPort usuarioRepositoryPort, UsuarioSecurityPort usuarioSecurityPort) {
+        this.usuarioRepositoryPort = usuarioRepositoryPort;
+        this.usuarioSecurityPort = usuarioSecurityPort;
+    }
+
 
     @Override
-    public Page<Usuario> buscaPorNomeOuCrachaOuMatricula(String nome, Integer cracha, String matricula, Pageable pageable) {
-        List<Usuario> usuarios = usuarioRepository.findAllByNomeOrCrachaOrMatricula(nome, cracha, matricula, pageable.getPageNumber(), pageable.getPageSize());
-        long total = usuarioRepository.countByNomeOrCrachaOrMatricula(nome, cracha, matricula);
-        return new PageImpl<>(usuarios, pageable, total);
+    public List<Usuario> buscaPorNomeOuCrachaOuMatricula(String nome,
+                                                         Integer cracha,
+                                                         String matricula,
+                                                         int page, int size) {
+        return usuarioRepositoryPort.listaPorNomeOuCrachaOuMatricula(nome, cracha, matricula, page, size);
     }
 
     @Override
-    public Usuario getUsuarioAtual() {
-        return usuarioAtualPort.getUsuario();
+    public Usuario getUsuarioAutenticado() {
+        return usuarioSecurityPort.getUsuarioAutenticado();
     }
 
     @Override
-    public Page<Usuario> listar(Pageable pageable) {
-        // Esta implementação do JpaRepository não tem um findAll que aceita apenas Pageable.
-        // Assumindo que listar todos é o mesmo que buscar sem filtros.
-        return buscaPorNomeOuCrachaOuMatricula(null, null, null, pageable);
+    public void temPermissaoRecurso(Object recurso) {
+        if(recurso instanceof Ponto ponto) {
+            Objects.requireNonNull(ponto);
+            Objects.requireNonNull(ponto.getId());
+            Objects.requireNonNull(ponto.getId().getUsuarioJPA().getMatricula());
+            usuarioSecurityPort.permissoesNivelUsuario(ponto.getId().getUsuarioJPA().getMatricula());
+        }
+        throw new RecursoInvalidoException("O objeto %s não é um recurso válido!".formatted(recurso));
     }
 
     @Override
+    public List<Usuario> listar(int page, int size) {
+        return usuarioRepositoryPort.lista(page, size);
+    }
+
+
     public Usuario buscaPorMatricula(String matricula) {
-        return usuarioRepository.findUsuarioByMatricula(matricula)
-                .orElseThrow(() -> new UsuarioInexistenteException("Não existe usuário para matrícula: %s!".formatted(matricula)));
+        return usuarioRepositoryPort.buscaPorMatricula(matricula)
+                .orElseThrow(() -> new UsuarioInexistenteException("Não existe usuário para matrícula: %s!"
+                        .formatted(matricula)));
     }
 
     @Override
     public Usuario buscaPorId(Integer id) {
-        return usuarioRepository.findById(id)
-                .orElseThrow(() -> new UsuarioInexistenteException(id));
+        return usuarioRepositoryPort.buscaPorId(id).
+                orElseThrow(() -> new UsuarioInexistenteException(id));
     }
+
 
     @Override
     public Usuario salve(Usuario usuario) {
         var mapCampoMensagem = new HashMap<String, String>();
 
-        if (usuarioRepository.checaSeExisteUsuarioComCracha(usuario.getCracha(), usuario.getId())) {
+        var existeCracha = usuarioRepositoryPort.checaSeExisteUsuarioComCracha(usuario.getCracha(), usuario.getId());
+        var existeMatricula = usuarioRepositoryPort.checaSeExisteUsuarioComMatricula(usuario.getMatricula(), usuario.getId());
+
+        if (existeCracha) {
             mapCampoMensagem.put("cracha", "Existe usuário com crachá = " + usuario.getCracha());
         }
-        if (usuarioRepository.checaSeExisteUsuarioComMatricula(usuario.getMatricula(), usuario.getId())) {
+        if (existeMatricula) {
             mapCampoMensagem.put("matricula", "Existe usuário com matrícula = " + usuario.getMatricula());
         }
 
         if (mapCampoMensagem.isEmpty()) {
-            return usuarioRepository.save(usuario);
+            return usuarioRepositoryPort.salva(usuario);
         }
         throw new CamposUnicosExistentesException(mapCampoMensagem);
     }
 
     @Override
+    public Usuario apagaPorId(Integer id) {
+        return usuarioRepositoryPort.apagarPorId(id)    ;
+    }
+
+    @Override
     public boolean permissaoDiretor() {
-        return usuarioAtualPort.ehDiretor();
+        return usuarioSecurityPort.ehDiretor();
     }
 
     @Override
     public boolean permissaoAdministrador() {
-        return usuarioAtualPort.ehAdmin();
+        return usuarioSecurityPort.ehAdmin();
     }
+
 }

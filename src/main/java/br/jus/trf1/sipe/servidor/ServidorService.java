@@ -2,11 +2,13 @@ package br.jus.trf1.sipe.servidor;
 
 import br.jus.trf1.sipe.ausencia.AusenciaRepository;
 import br.jus.trf1.sipe.ausencia.externo.jsrh.AusenciaExternaService;
+import br.jus.trf1.sipe.servidor.domain.port.out.ServidorRepositoryPort;
 import br.jus.trf1.sipe.servidor.externo.jsarh.ServidorExternoService;
 import br.jus.trf1.sipe.lotacao.LotacaoNaoTemDiretorDireto;
 import br.jus.trf1.sipe.lotacao.LotacaoService;
 import br.jus.trf1.sipe.servidor.exceptions.ServidorInexistenteException;
-import br.jus.trf1.sipe.usuario.UsuarioService;
+import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
+import br.jus.trf1.sipe.usuario.domain.service.UsuarioService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,24 +20,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static br.jus.trf1.sipe.servidor.ServidorMapping.toModel;
+import static br.jus.trf1.sipe.servidor.ServidorCreator.createServidor;
 
 @Slf4j
 @Service
 public class ServidorService {
 
     private final UsuarioService usuarioService;
-    private final ServidorRepository servidorRepository;
+    private final ServidorRepositoryPort servidorRepositoryPort;
     private final ServidorExternoService servidorExternoService;
     private final AusenciaExternaService ausenciaExternaService;
     private final AusenciaRepository ausenciaRepository;
     private final LotacaoService lotacaoService;
 
-    public ServidorService(UsuarioService usuarioService, ServidorRepository servidorRepository,
+    public ServidorService(UsuarioService usuarioService, ServidorRepositoryPort servidorRepositoryPort,
                            ServidorExternoService servidorExternoService, AusenciaExternaService ausenciaExternaService,
                            AusenciaRepository ausenciaRepository, LotacaoService lotacaoService) {
         this.usuarioService = usuarioService;
-        this.servidorRepository = servidorRepository;
+        this.servidorRepositoryPort = servidorRepositoryPort;
         this.servidorExternoService = servidorExternoService;
         this.ausenciaExternaService = ausenciaExternaService;
         this.ausenciaRepository = ausenciaRepository;
@@ -43,101 +45,101 @@ public class ServidorService {
     }
 
     @Transactional
-    public Servidor atualizaDadosNoSarh(String matricula) {
+    public ServidorJpa atualizaDadosNoSarh(String matricula) {
         log.info("Buscando usuário com matricula: {}", matricula);
-        var servidor = (Servidor) usuarioService.buscaPorMatricula(matricula);
+        var servidor = (ServidorJpa) usuarioService.buscaPorMatricula(matricula);
         var servidorExternoOpt = servidorExternoService.buscaServidorExterno(matricula);
         if (servidorExternoOpt.isPresent()) {
             var servidorExterno = servidorExternoOpt.get();
             var lotacaoExterna = servidorExterno.getLotacao();
             lotacaoService.atualizarLotacao(servidor.getLotacao(), lotacaoExterna);
-            servidor = toModel(servidor, servidorExterno);
-            return servidorRepository.save(servidor);
+            servidor = createServidor(servidor, servidorExterno);
+            return servidorRepositoryPort.save(servidor);
         }
         log.info("Não foi possível atualizar os dados do servidor : {}", matricula);
         return servidor;
     }
 
 
-    public Servidor servidorAtual() {
-        var usuarioAtual = usuarioService.getUsuarioAtual();
-        var servidorAtualOpt = servidorRepository.findById(usuarioAtual.getId());
+    public ServidorJpa servidorAtual() {
+        var usuarioAtual = usuarioService.getUsuarioAutenticado();
+        var servidorAtualOpt = servidorRepositoryPort.findById(usuarioAtual.getId());
         if (servidorAtualOpt.isPresent()) {
             return servidorAtualOpt.get();
         }
         throw new ServidorInexistenteException(usuarioAtual.getId());
     }
 
-    public Servidor buscaPorMatricula(String matricula) {
-        Optional<Servidor> optServidor = servidorRepository.findByMatricula(matricula);
+    public ServidorJpa buscaPorMatricula(String matricula) {
+        Optional<ServidorJpa> optServidor = servidorRepositoryPort.findByMatricula(matricula);
         return optServidor.orElseGet(() -> atualizaDadosNoSarh(matricula));
     }
 
 
-    public List<Servidor> listar() {
+    public List<ServidorJpa> listar() {
         if (usuarioService.permissaoDiretor()) {
             log.info("listar por lotação do Diretor");
             var servidorAtual = servidorAtual();
             var idsLotacoes = lotacaoService.getLotacaos(servidorAtual.getLotacao().getId());
-            return servidorRepository.listarPorLotacoes(idsLotacoes);
+            return servidorRepositoryPort.listarPorLotacoes(idsLotacoes);
         }
         log.info("listarAll: Outros");
-        return servidorRepository.listarTodos();
+        return servidorRepositoryPort.listarTodos();
     }
 
-    public List<Servidor> listar(Integer idLotacaoPai) {
+    public List<ServidorJpa> listar(Integer idLotacaoPai) {
         log.info("listar Por Lotação id: {}", idLotacaoPai);
         if (usuarioService.permissaoDiretor()) {
             log.info("listar por lotação do Diretor");
             var servidorAtual = servidorAtual();
             var idsLotacoes = lotacaoService.getLotacaos(servidorAtual.getLotacao().getId());
-            return servidorRepository.listarPorLotacoes(idsLotacoes);
+            return servidorRepositoryPort.listarPorLotacoes(idsLotacoes);
         }
         var idsLotacoes = lotacaoService.getLotacaos(idLotacaoPai);
-        return servidorRepository.listarPorLotacoes(idsLotacoes);
+        return servidorRepositoryPort.listarPorLotacoes(idsLotacoes);
     }
 
-    public List<Servidor> listar(String nome,
-                                 Integer cracha,
-                                 String matricula,
-                                 Integer idLotacao) {
+    public List<ServidorJpa> listar(String nome,
+                                    Integer cracha,
+                                    String matricula,
+                                    Integer idLotacao) {
         if (usuarioService.permissaoDiretor()) {
             log.info("Paginar filtrado: Diretor");
             var servidorAtual = servidorAtual();
             var idsLotacoes = lotacaoService.getLotacaos(servidorAtual.getLotacao().getId());
-            return servidorRepository.listarPorNomeOuCrachaOuMatriculaEeLotacoes(nome, cracha, matricula, idsLotacoes);
+            return servidorRepositoryPort.listarPorNomeOuCrachaOuMatriculaEeLotacoes(nome, cracha, matricula, idsLotacoes);
         }
         log.info("Paginar filtrado: Outros");
         var idsLotacoes = lotacaoService.getLotacaos(idLotacao);
-        return servidorRepository.listarPorNomeOuCrachaOuMatriculaEeLotacoes(nome, cracha, matricula, idsLotacoes);
+        return servidorRepositoryPort.listarPorNomeOuCrachaOuMatriculaEeLotacoes(nome, cracha, matricula, idsLotacoes);
     }
 
 
-    public Page<Servidor> paginar(Pageable pageable) {
+    public Page<ServidorJpa> paginar(Pageable pageable) {
         if (usuarioService.permissaoDiretor()) {
             log.info("listar por lotação do Diretor");
             var servidorAtual = servidorAtual();
             var idsLotacoes = lotacaoService.getLotacaos(servidorAtual.getLotacao().getId());
-            return servidorRepository.paginarPorLotacoes(idsLotacoes, pageable);
+            return servidorRepositoryPort.paginarPorLotacoes(idsLotacoes, pageable);
         }
         log.info("listarAll: Outros");
-        return servidorRepository.findAll(pageable);
+        return servidorRepositoryPort.findAll(pageable);
     }
 
-    public Page<Servidor> paginar(String nome,
-                                  Integer cracha,
-                                  String matricula,
-                                  Pageable pageable) {
+    public Page<ServidorJpa> paginar(String nome,
+                                     Integer cracha,
+                                     String matricula,
+                                     Pageable pageable) {
         if (usuarioService.permissaoDiretor()) {
             log.info("Paginar filtrado: Diretor");
             var servidorAtual = servidorAtual();
-            return servidorRepository.paginarPorNomeOuCrachaOuMatriculaEeIdLotacao(nome, cracha, matricula, servidorAtual.getLotacao().getId(), pageable);
+            return servidorRepositoryPort.paginarPorNomeOuCrachaOuMatriculaEeIdLotacao(nome, cracha, matricula, servidorAtual.getLotacao().getId(), pageable);
         }
         log.info("Paginar filtrado: Outros");
-        return servidorRepository.paginarPorNomeOuCrachaOuMatricula(nome, cracha, matricula, pageable);
+        return servidorRepositoryPort.paginarPorNomeOuCrachaOuMatricula(nome, cracha, matricula, pageable);
     }
 
-    public Servidor vinculaAusenciasServidorNoPeriodo(Servidor servidor, LocalDate dataInicio, LocalDate dataFim) {
+    public ServidorJpa vinculaAusenciasServidorNoPeriodo(ServidorJpa servidor, LocalDate dataInicio, LocalDate dataFim) {
         log.info("Vinculando ausencias do servidor {}", servidor);
 
         var ausenciasExternas = ausenciaExternaService.
@@ -162,8 +164,8 @@ public class ServidorService {
         return servidor;
     }
 
-    public Servidor buscaDiretorLotacao(Integer idLotacao) {
-        Optional<Servidor> optServidor = servidorRepository.buscaDiretorLotacao(idLotacao);
+    public ServidorJpa buscaDiretorLotacao(Integer idLotacao) {
+        Optional<ServidorJpa> optServidor = servidorRepositoryPort.buscaDiretorLotacao(idLotacao);
 
         if (optServidor.isPresent()) {
             return optServidor.get();

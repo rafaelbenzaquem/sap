@@ -71,7 +71,7 @@ public class PedidoAlteracaoController {
 
         log.info("Atualizando realizando Pedido de Alteracao de Ponto - {} - {}", matriculaPonto, diaPonto);
 
-        var usuario = usuarioSecurityAdapter.getUsuario();
+        var usuario = usuarioSecurityAdapter.getUsuarioAutenticado();
         var ponto = pontoService.buscaPonto(matriculaPonto, diaPonto);
         var pedidoAlteracao = pedidoAlteracaoService.criarPedidoAlteracao(ponto, justificativa, usuario);
 

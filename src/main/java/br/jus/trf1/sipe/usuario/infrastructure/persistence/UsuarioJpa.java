@@ -2,7 +2,7 @@ package br.jus.trf1.sipe.usuario.infrastructure.persistence;
 
 import br.jus.trf1.sipe.ausencia.Ausencia;
 import br.jus.trf1.sipe.ponto.Ponto;
-import br.jus.trf1.sipe.usuario.web.dto.UsuarioResponse;
+import br.jus.trf1.sipe.usuario.application.web.dto.UsuarioResponse;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

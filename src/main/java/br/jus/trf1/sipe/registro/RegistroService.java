@@ -7,8 +7,8 @@ import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracaoService;
 import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.registro.exceptions.RegistroInexistenteException;
 import br.jus.trf1.sipe.registro.externo.coletor.RegistroExternalService;
-import br.jus.trf1.sipe.servidor.Servidor;
-import br.jus.trf1.sipe.usuario.UsuarioService;
+import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
+import br.jus.trf1.sipe.usuario.domain.service.UsuarioService;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAprovadorException;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAutorizadoException;
 import lombok.extern.slf4j.Slf4j;
@@ -112,8 +112,8 @@ public class RegistroService {
 
     public Registro aprovarRegistro(Long idRegistro) {
         var registro = registroRepository.findById(idRegistro).orElseThrow(() -> new RegistroInexistenteException(idRegistro));
-        var usuario = usuarioService.getUsuarioAtual();
-        if (usuario instanceof Servidor servidor) {
+        var usuario = usuarioService.getUsuarioAutenticado();
+        if (usuario instanceof ServidorJpa servidor) {
             registro.setServidorAprovador(servidor);
             registro.setDataAprovacao(Timestamp.valueOf(LocalDateTime.now()));
             return registroRepository.save(registro);
@@ -123,11 +123,11 @@ public class RegistroService {
 
     @Transactional
     public List<Registro> addRegistros(PedidoAlteracao pedidoAlteracao, Ponto ponto, List<Registro> registros) {
-        var usuarioAtual = usuarioService.getUsuarioAtual();
-        usuarioService.permissaoRecurso(ponto);
+        var usuarioAtual = usuarioService.getUsuarioAutenticado();
+        usuarioService.temPermissaoRecurso(ponto);
 
         var registrosNovos = registros.stream().
-                map(registro -> addPontoCriador(registro, ponto, (Servidor) usuarioAtual)).toList();
+                map(registro -> addPontoCriador(registro, ponto, (ServidorJpa) usuarioAtual)).toList();
         registrosNovos = registroRepository.saveAll(registrosNovos);
 
         registrosNovos.forEach(registroNovo -> {
@@ -140,8 +140,8 @@ public class RegistroService {
 
     @Transactional
     public void removeRegistro(PedidoAlteracao pedidoAlteracao, Ponto ponto, Registro registro) {
-        var usuarioAtual = usuarioService.getUsuarioAtual();
-        usuarioService.permissaoRecurso(ponto);
+        var usuarioAtual = usuarioService.getUsuarioAutenticado();
+        usuarioService.temPermissaoRecurso(ponto);
 
         var alteracaoRegistroOpt = pedidoAlteracao.getAlteracaoRegistros().stream().
                 filter(pa -> registro.equals(pa.getRegistroOriginal()) || registro.equals(pa.getRegistroNovo())).findFirst();
@@ -154,7 +154,7 @@ public class RegistroService {
 
     }
 
-    public Registro addPontoCriador(Registro registro, Ponto ponto, Servidor servidor) {
+    public Registro addPontoCriador(Registro registro, Ponto ponto, ServidorJpa servidor) {
         return Registro.builder()
                 .id(registro.getId())
                 .hora(registro.getHora())
@@ -168,9 +168,9 @@ public class RegistroService {
 
     @Transactional
     public Registro atualizaRegistro(PedidoAlteracao pedidoAlteracao, Ponto ponto, Registro registroAtualizado) {
-        var usuarioAtual = usuarioService.getUsuarioAtual();
-        usuarioService.permissaoRecurso(ponto);
-        registroAtualizado.setServidorCriador((Servidor) usuarioAtual);
+        var usuarioAtual = usuarioService.getUsuarioAutenticado();
+        usuarioService.temPermissaoRecurso(ponto);
+        registroAtualizado.setServidorCriador((ServidorJpa) usuarioAtual);
         var id = registroAtualizado.getId();
         log.info("Atualiza registro {}", id);
         var opt = registroRepository.findById(id);
@@ -196,12 +196,12 @@ public class RegistroService {
     @Transactional
     public Registro apagar(Long idRegistro, Long idPedidoAlteracao) {
 
-        var usuarioAtual = usuarioService.getUsuarioAtual();
+        var usuarioAtual = usuarioService.getUsuarioAutenticado();
         var registro = buscaRegistroPorId(idRegistro);
         var ponto = registro.getPonto();
         if (registro.getServidorAprovador() == null || registro.getServidorAprovador().equals(usuarioAtual)) {
 
-            usuarioService.permissaoRecurso(ponto);
+            usuarioService.temPermissaoRecurso(ponto);
             var pedidoAlteracao = pedidoAlteracaoService.buscaPedidoAlteracao(idPedidoAlteracao);
 
             var alteracaoRegistroOptional = pedidoAlteracao.getAlteracaoRegistros().

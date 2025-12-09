@@ -2,7 +2,6 @@ package br.jus.trf1.sipe.registro.web.dto;
 
 import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.registro.Sentido;
-import br.jus.trf1.sipe.servidor.Servidor;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;

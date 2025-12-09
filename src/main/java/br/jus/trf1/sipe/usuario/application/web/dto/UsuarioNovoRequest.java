@@ -1,4 +1,4 @@
-package br.jus.trf1.sipe.usuario.web.dto;
+package br.jus.trf1.sipe.usuario.application.web.dto;
 
 
 import br.jus.trf1.sipe.comum.validadores.Unico;

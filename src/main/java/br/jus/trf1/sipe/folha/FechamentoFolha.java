@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.folha;
 
-import br.jus.trf1.sipe.servidor.Servidor;
+import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
 import jakarta.persistence.*;
 import lombok.*;
 import java.sql.Timestamp;
@@ -26,7 +26,7 @@ public class FechamentoFolha {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_servidor", nullable = false,
         foreignKey = @ForeignKey(name = "fk_servidor_fechamento"))
-    private Servidor servidor;
+    private ServidorJpa servidor;
 
     @Column(nullable = false)
     private Integer mes;

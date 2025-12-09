@@ -7,7 +7,7 @@ import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.relatorio.model.PontoModel;
 import br.jus.trf1.sipe.relatorio.model.RelatorioModel;
 import br.jus.trf1.sipe.relatorio.model.UsuarioModel;
-import br.jus.trf1.sipe.servidor.Servidor;
+import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 import java.time.LocalDate;
@@ -54,7 +54,7 @@ public class RelatorioUtil {
         return parametrosRelatorio;
     }
 
-    public static RelatorioModel processaDadosServidorParaRelatorio(Servidor servidor, List<Ponto> pontos, List<FeriadoJSarh> feriados) {
+    public static RelatorioModel processaDadosServidorParaRelatorio(ServidorJpa servidor, List<Ponto> pontos, List<FeriadoJSarh> feriados) {
         var usuario = UsuarioModel.builder()
                 .nome(servidor.getNome())
                 .cargo(servidor.getCargo() == null ? "Servidor Requisitado" : servidor.getCargo())

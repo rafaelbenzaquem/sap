@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.folha;
 
-import br.jus.trf1.sipe.servidor.Servidor;
+import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,7 +16,7 @@ public class FolhaId {
     @JoinColumns(value = {
             @JoinColumn(name = "id_servidor", referencedColumnName = "id", nullable = false, updatable = false),
     }, foreignKey = @ForeignKey(name = "fk_servidor_folha"))
-    private Servidor servidor;
+    private ServidorJpa servidor;
 
     @Column(nullable = false, length = 2)
     private Integer mes;

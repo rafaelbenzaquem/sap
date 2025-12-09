@@ -1,7 +1,7 @@
 package br.jus.trf1.sipe.registro;
 
 import br.jus.trf1.sipe.ponto.Ponto;
-import br.jus.trf1.sipe.servidor.Servidor;
+import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -43,7 +43,7 @@ public final class Registro implements Comparable<Registro> {
     @JoinColumns(value = {
             @JoinColumn(name = "id_servidor_criador", referencedColumnName = "id")
     }, foreignKey = @ForeignKey(name = "fk_criador_registro"))
-    private Servidor servidorCriador;
+    private ServidorJpa servidorCriador;
 
     @ManyToOne
     @JoinColumn(name = "registro_novo_id", foreignKey = @ForeignKey(name = "fk_registro_novo"))
@@ -56,7 +56,7 @@ public final class Registro implements Comparable<Registro> {
     @JoinColumns(value = {
             @JoinColumn(name = "id_servidor_aprovador", referencedColumnName = "id")
     }, foreignKey = @ForeignKey(name = "fk_aprovador_registro"))
-    private Servidor servidorAprovador;
+    private ServidorJpa servidorAprovador;
 
     private Timestamp dataAprovacao;
 

@@ -17,33 +17,33 @@ public interface ServidorJpaRepository extends JpaRepository<Servidor, Integer> 
 
     Optional<Servidor> findByMatricula(String matricula);
 
-    @Query(value = "SELECT s FROM Servidor s ORDER BY s.nome ASC", countQuery = "SELECT COUNT(s) FROM Servidor s")
+    @Query(value = "SELECT s FROM ServidorJpa s ORDER BY s.nome ASC", countQuery = "SELECT COUNT(s) FROM ServidorJpa s")
     List<Servidor> listarTodos();
 
-    @Query(value = "SELECT s FROM Servidor s WHERE s.lotacao.id IN :idsLotacoes ORDER BY s.nome ASC",
-           countQuery = "SELECT COUNT(s) FROM Servidor s WHERE s.lotacao.id IN :idsLotacoes")
+    @Query(value = "SELECT s FROM ServidorJpa s WHERE s.lotacao.id IN :idsLotacoes ORDER BY s.nome ASC",
+           countQuery = "SELECT COUNT(s) FROM ServidorJpa s WHERE s.lotacao.id IN :idsLotacoes")
     List<Servidor> listarPorLotacoes(@Param("idsLotacoes") Set<Integer> idsLotacoes);
 
-    @Query(value = "SELECT s FROM Servidor s WHERE LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%')) OR s.cracha = :cracha OR s.matricula = :matricula",
-           countQuery = "SELECT COUNT(s) FROM Servidor s WHERE LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%')) OR s.cracha = :cracha OR s.matricula = :matricula")
+    @Query(value = "SELECT s FROM ServidorJpa s WHERE LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%')) OR s.cracha = :cracha OR s.matricula = :matricula",
+           countQuery = "SELECT COUNT(s) FROM ServidorJpa s WHERE LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%')) OR s.cracha = :cracha OR s.matricula = :matricula")
     List<Servidor> listarPorNomeOuCrachaOuMatricula(@Param("nome") String nome, @Param("cracha") Integer cracha, @Param("matricula") String matricula);
 
-    @Query(value = "SELECT s FROM Servidor s WHERE (LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%')) OR s.cracha = :cracha OR s.matricula = :matricula) AND s.lotacao.id IN :idsLotacoes ORDER BY s.nome ASC",
-           countQuery = "SELECT COUNT(s) FROM Servidor s WHERE (LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%')) OR s.cracha = :cracha OR s.matricula = :matricula) AND s.lotacao.id IN :idsLotacoes")
+    @Query(value = "SELECT s FROM ServidorJpa s WHERE (LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%')) OR s.cracha = :cracha OR s.matricula = :matricula) AND s.lotacao.id IN :idsLotacoes ORDER BY s.nome ASC",
+           countQuery = "SELECT COUNT(s) FROM ServidorJpa s WHERE (LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%')) OR s.cracha = :cracha OR s.matricula = :matricula) AND s.lotacao.id IN :idsLotacoes")
     List<Servidor> listarPorNomeOuCrachaOuMatriculaEeLotacoes(@Param("nome") String nome, @Param("cracha") Integer cracha, @Param("matricula") String matricula, @Param("idsLotacoes") Set<Integer> idsLotacoes);
 
-    @Query(value = "SELECT s FROM Servidor s WHERE s.lotacao.id IN :idsLotacoes ORDER BY s.nome ASC",
-           countQuery = "SELECT COUNT(s) FROM Servidor s WHERE s.lotacao.id IN :idsLotacoes")
+    @Query(value = "SELECT s FROM ServidorJpa s WHERE s.lotacao.id IN :idsLotacoes ORDER BY s.nome ASC",
+           countQuery = "SELECT COUNT(s) FROM ServidorJpa s WHERE s.lotacao.id IN :idsLotacoes")
     Page<Servidor> paginarPorLotacoes(@Param("idsLotacoes") Set<Integer> idsLotacoes, Pageable pageable);
 
-    @Query(value = "SELECT s FROM Servidor s WHERE LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%')) OR s.cracha = :cracha OR s.matricula = :matricula ORDER BY s.nome ASC",
-           countQuery = "SELECT COUNT(s) FROM Servidor s WHERE LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%')) OR s.cracha = :cracha OR s.matricula = :matricula")
+    @Query(value = "SELECT s FROM ServidorJpa s WHERE LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%')) OR s.cracha = :cracha OR s.matricula = :matricula ORDER BY s.nome ASC",
+           countQuery = "SELECT COUNT(s) FROM ServidorJpa s WHERE LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%')) OR s.cracha = :cracha OR s.matricula = :matricula")
     Page<Servidor> paginarPorNomeOuCrachaOuMatricula(@Param("nome") String nome, @Param("cracha") Integer cracha, @Param("matricula") String matricula, Pageable pageable);
 
-    @Query(value = "SELECT s FROM Servidor s WHERE (LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%')) OR s.cracha = :cracha OR s.matricula = :matricula) AND s.lotacao.id = :idLotacao ORDER BY s.nome ASC",
-           countQuery = "SELECT COUNT(s) FROM Servidor s WHERE (LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%')) OR s.cracha = :cracha OR s.matricula = :matricula) AND (s.lotacao.id = :idLotacao)")
+    @Query(value = "SELECT s FROM ServidorJpa s WHERE (LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%')) OR s.cracha = :cracha OR s.matricula = :matricula) AND s.lotacao.id = :idLotacao ORDER BY s.nome ASC",
+           countQuery = "SELECT COUNT(s) FROM ServidorJpa s WHERE (LOWER(s.nome) LIKE LOWER(CONCAT('%', :nome, '%')) OR s.cracha = :cracha OR s.matricula = :matricula) AND (s.lotacao.id = :idLotacao)")
     Page<Servidor> paginarPorNomeOuCrachaOuMatriculaEeIdLotacao(@Param("nome") String nome, @Param("cracha") Integer cracha, @Param("matricula") String matricula, @Param("idLotacao") Integer idLotacao, Pageable pageable);
 
-    @Query("SELECT s FROM Servidor s WHERE LOWER(s.funcao) LIKE LOWER(CONCAT('%', 'diretor', '%')) AND s.lotacao.id = :idLotacao ORDER BY s.nome ASC")
+    @Query("SELECT s FROM ServidorJpa s WHERE LOWER(s.funcao) LIKE LOWER(CONCAT('%', 'diretor', '%')) AND s.lotacao.id = :idLotacao ORDER BY s.nome ASC")
     Optional<Servidor> buscaDiretorLotacao(@Param("idLotacao") Integer idLotacao);
 }

@@ -2,7 +2,7 @@ package br.jus.trf1.sipe.usuario.infrastructure.security;
 
 import br.jus.trf1.sipe.usuario.UsuarioMapper;
 import br.jus.trf1.sipe.usuario.domain.model.Usuario;
-import br.jus.trf1.sipe.usuario.domain.port.out.UsuarioAtualPort;
+import br.jus.trf1.sipe.usuario.domain.port.out.UsuarioSecurityPort;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAutorizadoException;
 import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpaRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Slf4j
 @Component
-public class UsuarioSecurityAdapter implements UsuarioAtualPort {
+public class UsuarioSecurityAdapter implements UsuarioSecurityPort {
 
     private final UsuarioJpaRepository usuarioRepository;
     private Usuario usuario;
@@ -26,7 +26,7 @@ public class UsuarioSecurityAdapter implements UsuarioAtualPort {
     }
 
     @Override
-    public Usuario getUsuario() {
+    public Usuario getUsuarioAutenticado() {
         if (usuario == null) {
             var matricula = getMatricula();
             return usuarioRepository.findUsuarioByMatricula(matricula)

@@ -7,19 +7,23 @@ import java.util.Optional;
 
 public interface UsuarioRepositoryPort {
 
-    List<Usuario> findAllByNomeOrCrachaOrMatricula(String nome, Integer cracha, String matricula, int page, int size);
+    List<Usuario> listaPorNomeOuCrachaOuMatricula(String nome, Integer cracha, String matricula, int page, int size);
 
-    long countByNomeOrCrachaOrMatricula(String nome, Integer cracha, String matricula);
+    List<Usuario> lista(int page, int size);
 
-    Optional<Usuario> findById(Integer id);
+    List<Usuario> lista();
 
-    Optional<Usuario> findUsuarioByMatricula(String matricula);
+    long contaPorNomeOuCrachaOuMatricula(String nome, Integer cracha, String matricula);
+
+    Optional<Usuario> buscaPorId(Integer id);
+
+    Optional<Usuario> buscaPorMatricula(String matricula);
 
     boolean checaSeExisteUsuarioComMatricula(String matricula, Integer id);
 
     boolean checaSeExisteUsuarioComCracha(Integer cracha, Integer id);
 
-    Usuario save(Usuario usuario);
+    Usuario salva(Usuario usuario);
 
-    void deleteById(Integer id);
+    Usuario apagarPorId(Integer id);
 }

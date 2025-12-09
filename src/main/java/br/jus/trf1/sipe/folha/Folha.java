@@ -1,7 +1,7 @@
 package br.jus.trf1.sipe.folha;
 
 import br.jus.trf1.sipe.ponto.Ponto;
-import br.jus.trf1.sipe.servidor.Servidor;
+import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -28,7 +28,7 @@ public class Folha {
     @JoinColumns(value = {
             @JoinColumn(name = "id_servidor_homologador", referencedColumnName = "id"),
     }, foreignKey = @ForeignKey(name = "fk_homologador_folha"))
-    private Servidor servidorHomologador;
+    private ServidorJpa servidorHomologador;
 
     private Timestamp dataHomologacao;
 
@@ -36,7 +36,7 @@ public class Folha {
     private List<Ponto> pontos;
 
 
-    public void homologar(Servidor servidor) {
+    public void homologar(ServidorJpa servidor) {
         if(servidor.getFuncao().contains("DIRETOR")){
             this.servidorHomologador = servidor;
             this.dataHomologacao = new Timestamp(System.currentTimeMillis());

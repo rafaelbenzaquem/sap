@@ -1,16 +1,16 @@
 package br.jus.trf1.sipe.usuario.domain.port.in;
 
 import br.jus.trf1.sipe.usuario.domain.model.Usuario;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface UsuarioServicePort {
 
-    Page<Usuario> buscaPorNomeOuCrachaOuMatricula(String nome, Integer cracha, String matricula, Pageable pageable);
+    List<Usuario> buscaPorNomeOuCrachaOuMatricula(String nome, Integer cracha, String matricula, int page, int size);
 
-    Usuario getUsuarioAtual();
+    Usuario getUsuarioAutenticado();
 
-    Page<Usuario> listar(Pageable pageable);
+    List<Usuario> listar(int page, int size);
 
     Usuario buscaPorMatricula(String matricula);
 
@@ -18,7 +18,11 @@ public interface UsuarioServicePort {
 
     Usuario salve(Usuario usuario);
 
+    Usuario apagaPorId(Integer id);
+
     boolean permissaoDiretor();
+
+    void temPermissaoRecurso(Object recurso);
 
     boolean permissaoAdministrador();
 }

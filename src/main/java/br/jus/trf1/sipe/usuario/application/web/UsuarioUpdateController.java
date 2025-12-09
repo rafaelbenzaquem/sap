@@ -1,8 +1,9 @@
-package br.jus.trf1.sipe.usuario.web;
+package br.jus.trf1.sipe.usuario.application.web;
 
-import br.jus.trf1.sipe.usuario.UsuarioService;
-import br.jus.trf1.sipe.usuario.web.dto.UsuarioAtualizadoRequest;
-import br.jus.trf1.sipe.usuario.web.dto.UsuarioResponse;
+import br.jus.trf1.sipe.usuario.domain.service.UsuarioService;
+import br.jus.trf1.sipe.usuario.web.UsuarioReadController;
+import br.jus.trf1.sipe.usuario.application.web.dto.UsuarioAtualizadoRequest;
+import br.jus.trf1.sipe.usuario.application.web.dto.UsuarioResponse;
 import jakarta.validation.Valid;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;

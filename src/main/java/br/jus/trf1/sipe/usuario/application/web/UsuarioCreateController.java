@@ -1,9 +1,11 @@
-package br.jus.trf1.sipe.usuario.web;
+package br.jus.trf1.sipe.usuario.application.web;
 
 import br.jus.trf1.sipe.servidor.ServidorService;
-import br.jus.trf1.sipe.usuario.UsuarioService;
-import br.jus.trf1.sipe.usuario.web.dto.UsuarioNovoRequest;
-import br.jus.trf1.sipe.usuario.web.dto.UsuarioResponse;
+import br.jus.trf1.sipe.usuario.UsuarioMapper;
+import br.jus.trf1.sipe.usuario.domain.port.in.UsuarioServicePort;
+import br.jus.trf1.sipe.usuario.domain.service.UsuarioService;
+import br.jus.trf1.sipe.usuario.application.web.dto.UsuarioNovoRequest;
+import br.jus.trf1.sipe.usuario.application.web.dto.UsuarioResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.EntityModel;
@@ -21,11 +23,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class UsuarioCreateController {
 
 
-    private final UsuarioService usuarioService;
+    private final UsuarioServicePort usuarioServicePort;
     private final ServidorService servidorService;
 
-    public UsuarioCreateController(UsuarioService usuarioService, ServidorService servidorService) {
-        this.usuarioService = usuarioService;
+    public UsuarioCreateController(UsuarioService usuarioServicePort, ServidorService servidorService) {
+        this.usuarioServicePort = usuarioServicePort;
         this.servidorService = servidorService;
     }
 
@@ -35,7 +37,7 @@ public class UsuarioCreateController {
         log.info("Criando usuarioJPA: {}", request);
 
 
-        var usuario = usuarioService.salve(request.paraEntidade());
+        var usuario = usuarioServicePort.salve(UsuarioMapper.toDomain(request));
 
         servidorService.atualizaDadosNoSarh(usuario.getMatricula());
 

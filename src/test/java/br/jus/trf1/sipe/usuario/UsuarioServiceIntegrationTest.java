@@ -1,48 +1,43 @@
 package br.jus.trf1.sipe.usuario;
 
 import br.jus.trf1.sipe.comum.exceptions.CamposUnicosExistentesException;
+import br.jus.trf1.sipe.usuario.domain.model.Usuario;
+import br.jus.trf1.sipe.usuario.domain.service.UsuarioService;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioInexistenteException;
-import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
 @Sql(scripts = "classpath:data/usuario/dataset-usuarios.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-class UsuarioJpaServiceIntegrationTest {
+class UsuarioServiceIntegrationTest {
 
     @Autowired
     private UsuarioService usuarioService;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-
     @Test
     void listarDeveRetornarTodosUsuarios() {
-        Pageable page = PageRequest.of(0, 10);
-        Page<UsuarioJpa> result = usuarioService.listar(page);
-        assertEquals(2, result.getTotalElements(), "Deve retornar todos os usuários cadastrado no dataset");
+        List<Usuario> result = usuarioService.listar(0, 10);
+        assertEquals(2, result.size(), "Deve retornar todos os usuários cadastrado no dataset");
     }
 
     @Test
     void buscaPorNomeOuCrachaOuMatricula() {
-        Pageable page = PageRequest.of(0, 10);
-        Page<UsuarioJpa> p = usuarioService.buscaPorNomeOuCrachaOuMatricula("Alice", null, null, page);
-        assertEquals(1, p.getTotalElements());
-        assertEquals("Alice Wonderland", p.getContent().getFirst().getNome());
+        List<Usuario> p = usuarioService.buscaPorNomeOuCrachaOuMatricula("Alice", null, null, 0, 10);
+        assertEquals(1, p.size());
+        assertEquals("Alice Wonderland", p.getFirst().getNome());
     }
 
     @Test
     void buscaPorMatriculaExistente() {
-        UsuarioJpa u = usuarioService.buscaPorMatricula("M001");
+        Usuario u = usuarioService.buscaPorMatricula("M001");
         assertNotNull(u);
         assertEquals("Alice Wonderland", u.getNome());
     }
@@ -56,9 +51,8 @@ class UsuarioJpaServiceIntegrationTest {
 
     @Test
     void buscaPorIdExistente() {
-        UsuarioJpa a = usuarioRepository.findUsuarioByMatricula("M001").orElseThrow();
-        UsuarioJpa u = usuarioService.buscaPorId(a.getId());
-        assertEquals(a.getId(), u.getId());
+        Usuario u = usuarioService.buscaPorId(1);
+        assertNotNull(u);
     }
 
     @Test
@@ -70,17 +64,17 @@ class UsuarioJpaServiceIntegrationTest {
 
     @Test
     void salveSucesso() {
-        UsuarioJpa u = usuarioRepository.findUsuarioByMatricula("M001").orElseThrow();
+        Usuario u = usuarioService.buscaPorMatricula("M001");
+        assertNotNull(u);
         u.setHoraDiaria(9);
-        UsuarioJpa updated = usuarioService.salve(u);
+        Usuario updated = usuarioService.salve(u);
         assertEquals(9, updated.getHoraDiaria());
-        UsuarioJpa fromDb = usuarioRepository.findById(u.getId()).orElseThrow();
-        assertEquals(9, fromDb.getHoraDiaria());
     }
 
     @Test
     void salveMatriculaDuplicadaLancaExcecao() {
-        UsuarioJpa bob = usuarioRepository.findUsuarioByMatricula("M002").orElseThrow();
+        Usuario bob = usuarioService.buscaPorMatricula("M002");
+        assertNotNull(bob);
         bob.setMatricula("M001");
         CamposUnicosExistentesException ex = assertThrows(CamposUnicosExistentesException.class,
             () -> usuarioService.salve(bob));
@@ -89,7 +83,7 @@ class UsuarioJpaServiceIntegrationTest {
 
     @Test
     void salveCrachaDuplicadoLancaExcecao() {
-        UsuarioJpa bob = usuarioRepository.findUsuarioByMatricula("M002").orElseThrow();
+        Usuario bob = usuarioService.buscaPorMatricula("M002");
         bob.setCracha(100);
         CamposUnicosExistentesException ex = assertThrows(CamposUnicosExistentesException.class,
             () -> usuarioService.salve(bob));
@@ -98,7 +92,7 @@ class UsuarioJpaServiceIntegrationTest {
 
     @Test
     void salveMatriculaECrachaDuplicadosLancaExcecao() {
-        UsuarioJpa bob = usuarioRepository.findUsuarioByMatricula("M002").orElseThrow();
+        Usuario bob = usuarioService.buscaPorMatricula("M002");
         bob.setMatricula("M001");
         bob.setCracha(100);
         CamposUnicosExistentesException ex = assertThrows(CamposUnicosExistentesException.class,

@@ -1,4 +1,4 @@
-package br.jus.trf1.sipe.servidor;
+package br.jus.trf1.sipe.servidor.infrastructure.persistence;
 
 import br.jus.trf1.sipe.lotacao.Lotacao;
 import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
@@ -11,7 +11,7 @@ import lombok.*;
 @Setter
 @Entity
 @Table(name = "servidores", schema = "sispontodb")
-public class Servidor extends UsuarioJpa {
+public class ServidorJpa extends UsuarioJpa {
 
     private String email;
 
@@ -21,18 +21,18 @@ public class Servidor extends UsuarioJpa {
 
     @ManyToOne
     @JoinColumn(name = "servidor_gestor_id", referencedColumnName = "id", nullable = true, foreignKey = @ForeignKey(name = "fk_gestor_servidor"))
-    private Servidor gestor;
+    private ServidorJpa gestor;
 
     @ManyToOne
     @JoinColumn(name = "servidor_gestor_substituto_id", referencedColumnName = "id", nullable = true, foreignKey = @ForeignKey(name = "fk_gestor_substituto_servidor"))
-    private Servidor gestorSubstituto;
+    private ServidorJpa gestorSubstituto;
 
 
     @ManyToOne
     @JoinColumn(name = "lotacao_id", referencedColumnName = "id", nullable = true, foreignKey = @ForeignKey(name = "fk_lotacao_servidor"))
     private Lotacao lotacao;
 
-    public Servidor(UsuarioJpa usuarioJPA, String email, String funcao, String cargo, Lotacao lotacao) {
+    public ServidorJpa(UsuarioJpa usuarioJPA, String email, String funcao, String cargo, Lotacao lotacao) {
         super(usuarioJPA.getId(), usuarioJPA.getNome(), usuarioJPA.getMatricula(), usuarioJPA.getCracha(), usuarioJPA.getHoraDiaria());
         this.email = email;
         this.funcao = funcao;

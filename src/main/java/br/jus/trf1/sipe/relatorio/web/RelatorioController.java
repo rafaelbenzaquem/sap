@@ -3,7 +3,7 @@ package br.jus.trf1.sipe.relatorio.web;
 import br.jus.trf1.sipe.relatorio.RelatorioLotacaoService;
 import br.jus.trf1.sipe.relatorio.RelatorioService;
 import br.jus.trf1.sipe.relatorio.RelatorioUsuarioService;
-import br.jus.trf1.sipe.servidor.Servidor;
+import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
 import br.jus.trf1.sipe.servidor.ServidorService;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JRException;
@@ -76,7 +76,7 @@ public class RelatorioController {
                                                              @RequestParam("fim")
                                                              @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
                                                              LocalDate fim) throws JRException {
-        Servidor servidor = servidorService.buscaDiretorLotacao(idLotacao);
+        ServidorJpa servidor = servidorService.buscaDiretorLotacao(idLotacao);
         return templateRelatorio(servidor.getMatricula(),inicio, fim, relatorioLotacaoService);
     }
 
