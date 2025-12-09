@@ -1,4 +1,4 @@
--- dataset para testes de UsuarioRepository
+-- dataset para testes de UsuarioJpaRepository
 -- garante que o schema esteja criado e ativo
 CREATE SCHEMA IF NOT EXISTS SISPONTODB;
 SET SCHEMA SISPONTODB;

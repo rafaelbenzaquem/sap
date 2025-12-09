@@ -18,7 +18,7 @@ public interface PontoRepository extends JpaRepository<Ponto, PontoId> {
      * @param fim       Data final do intervalo.
      * @return Lista de pontos encontrados.
      */
-    @Query("SELECT p FROM Ponto p WHERE LOWER(p.id.usuario.matricula) = LOWER(:matricula) AND p.id.dia BETWEEN :inicio AND :fim")
+    @Query("SELECT p FROM Ponto p WHERE LOWER(p.id.usuarioJPA.matricula) = LOWER(:matricula) AND p.id.dia BETWEEN :inicio AND :fim")
     List<Ponto> buscaPontosPorPeriodo(@Param("matricula") String matricula,
                                       @Param("inicio") LocalDate inicio,
                                       @Param("fim") LocalDate fim
@@ -31,7 +31,7 @@ public interface PontoRepository extends JpaRepository<Ponto, PontoId> {
      * @param dia       Data do ponto.
      * @return Ponto encontrado, se existir.
      */
-    @Query("SELECT p FROM Ponto p WHERE p.id.usuario.matricula = :matricula AND p.id.dia = :dia")
+    @Query("SELECT p FROM Ponto p WHERE p.id.usuarioJPA.matricula = :matricula AND p.id.dia = :dia")
     Optional<Ponto> buscaPonto(
             @Param("matricula") String matricula,
             @Param("dia") LocalDate dia
@@ -44,7 +44,7 @@ public interface PontoRepository extends JpaRepository<Ponto, PontoId> {
                  Ponto p
                  JOIN p.pedidos pa
              WHERE
-                 p.id.usuario.matricula = :matricula
+                 p.id.usuarioJPA.matricula = :matricula
                  AND p.id.dia BETWEEN :dataInicio AND :dataFim
                  AND pa.dataAprovacao IS NULL
                  AND pa.alteracaoRegistros IS NOT EMPTY

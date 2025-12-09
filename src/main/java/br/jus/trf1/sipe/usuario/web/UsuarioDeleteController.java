@@ -1,7 +1,6 @@
 package br.jus.trf1.sipe.usuario.web;
 
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioInexistenteException;
-import br.jus.trf1.sipe.usuario.UsuarioRepository;
 import br.jus.trf1.sipe.usuario.web.dto.UsuarioResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/v1/sipe/usuarios")
 public class UsuarioDeleteController {
 
-    private final UsuarioRepository repository;
+    private final UsuarioJpaRepository repository;
 
     public UsuarioDeleteController(UsuarioRepository repository) {
         this.repository = repository;

@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.ausencia;
 
-import br.jus.trf1.sipe.usuario.Usuario;
+import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,7 +16,7 @@ public interface AusenciaRepository extends JpaRepository<Ausencia, Long> {
             AND (a.inicio BETWEEN :inicio AND :fim
             OR a.fim BETWEEN :inicio AND :fim)
             """)
-    List<Ausencia> listaAusenciasPorServidorMaisPeriodo(@Param("usuario") Usuario usuario,
+    List<Ausencia> listaAusenciasPorServidorMaisPeriodo(@Param("usuario") UsuarioJpa usuario,
                                   @Param("inicio") LocalDate inicio,
                                   @Param("fim") LocalDate fim);
 

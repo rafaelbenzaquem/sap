@@ -1,5 +1,6 @@
 package br.jus.trf1.sipe.usuario;
 
+import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -16,16 +17,16 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 @ActiveProfiles("test")
 @Sql(scripts = "classpath:data/usuario/dataset-usuarios.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-class UsuarioRepositoryTest {
+class UsuarioJpaRepositoryTest {
 
     @Autowired
     private UsuarioRepository repository;
 
     @Test
     void testFindUsuarioByMatriculaExists() {
-        Optional<Usuario> opt = repository.findUsuarioByMatricula("M001");
+        Optional<UsuarioJpa> opt = repository.findUsuarioByMatricula("M001");
         assertTrue(opt.isPresent());
-        Usuario u = opt.get();
+        UsuarioJpa u = opt.get();
         assertEquals("Alice Wonderland", u.getNome());
         assertEquals("C001", u.getCracha());
         assertEquals(8, u.getHoraDiaria());
@@ -33,35 +34,35 @@ class UsuarioRepositoryTest {
 
     @Test
     void testFindUsuarioByMatriculaNotExists() {
-        Optional<Usuario> opt = repository.findUsuarioByMatricula("NONEXIST");
+        Optional<UsuarioJpa> opt = repository.findUsuarioByMatricula("NONEXIST");
         assertFalse(opt.isPresent());
     }
 
     @Test
     void testFindAllByNomeOrCrachaOrMatricula() {
         Pageable page = PageRequest.of(0, 10);
-        Page<Usuario> p1 = repository.findAllByNomeOrCrachaOrMatricula("ali", null, null, page);
+        Page<UsuarioJpa> p1 = repository.findAllByNomeOrCrachaOrMatricula("ali", null, null, page);
         assertEquals(1, p1.getTotalElements());
-        Page<Usuario> p2 = repository.findAllByNomeOrCrachaOrMatricula(null, 200, null, page);
+        Page<UsuarioJpa> p2 = repository.findAllByNomeOrCrachaOrMatricula(null, 200, null, page);
         assertEquals(1, p2.getTotalElements());
-        Page<Usuario> p3 = repository.findAllByNomeOrCrachaOrMatricula(null, null, "M002", page);
+        Page<UsuarioJpa> p3 = repository.findAllByNomeOrCrachaOrMatricula(null, null, "M002", page);
         assertEquals(1, p3.getTotalElements());
-        Page<Usuario> pAll = repository.findAllByNomeOrCrachaOrMatricula(null, null, null, page);
+        Page<UsuarioJpa> pAll = repository.findAllByNomeOrCrachaOrMatricula(null, null, null, page);
         assertEquals(0, pAll.getTotalElements());
     }
 
     @Test
     void testChecaSeExisteUsuarioComMatricula() {
-        Usuario a = repository.findUsuarioByMatricula("M001").orElseThrow();
-        Usuario b = repository.findUsuarioByMatricula("M002").orElseThrow();
+        UsuarioJpa a = repository.findUsuarioByMatricula("M001").orElseThrow();
+        UsuarioJpa b = repository.findUsuarioByMatricula("M002").orElseThrow();
         assertFalse(repository.checaSeExisteUsuarioComMatricula("M001", a.getId()));
         assertTrue(repository.checaSeExisteUsuarioComMatricula("M001", b.getId()));
     }
 
     @Test
     void testChecaSeExisteUsuarioComCracha() {
-        Usuario a = repository.findUsuarioByMatricula("M001").orElseThrow();
-        Usuario b = repository.findUsuarioByMatricula("M002").orElseThrow();
+        UsuarioJpa a = repository.findUsuarioByMatricula("M001").orElseThrow();
+        UsuarioJpa b = repository.findUsuarioByMatricula("M002").orElseThrow();
         assertFalse(repository.checaSeExisteUsuarioComCracha(200, a.getId()));
         assertTrue(repository.checaSeExisteUsuarioComCracha(100, b.getId()));
     }

@@ -1,4 +1,4 @@
-package br.jus.trf1.sipe.usuario;
+package br.jus.trf1.sipe.usuario.infrastructure.persistence;
 
 
 import org.springframework.data.domain.Page;
@@ -6,29 +6,32 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
+@Repository
+public interface UsuarioJpaRepository extends JpaRepository<UsuarioJpa, Integer> {
 
     @Query(value = """
-            SELECT u FROM Usuario u
+            SELECT u FROM UsuarioJpa u
             WHERE LOWER(u.nome) LIKE LOWER(CONCAT('%', :nome, '%'))
             OR u.cracha=  :cracha
             OR u.matricula = :matricula
             """,
             countQuery = """
-                    SELECT COUNT(u) FROM Usuario u
+                    SELECT COUNT(u) FROM UsuarioJpa u
                     WHERE LOWER(u.nome) LIKE LOWER(CONCAT('%', :nome, '%'))
                     OR u.cracha=  :cracha
                     OR u.matricula = :matricula
                     """)
-    Page<Usuario> findAllByNomeOrCrachaOrMatricula(@Param("nome") String nome,
-                                                   @Param("cracha") Integer cracha,
-                                                   @Param("matricula") String matricula,
-                                                   Pageable pageable);
+    Page<UsuarioJpa> findAllByNomeOrCrachaOrMatricula(@Param("nome") String nome,
+                                                      @Param("cracha") Integer cracha,
+                                                      @Param("matricula") String matricula,
+                                                      Pageable pageable);
 
-    Optional<Usuario> findUsuarioByMatricula(String matricula);
+    Optional<UsuarioJpa> findUsuarioByMatricula(String matricula);
+
 
     /**
      * Verifica a existência usando uma consulta JPQL explícita.
@@ -36,10 +39,10 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
      * Útil para consultas mais complexas ou quando a convenção de nome não se aplica bem.
      *
      * @param matricula O matricula a ser verificado.
-     * @param id Identificador o Usuario que faz a requisição
+     * @param id Identificador o UsuarioJpa que faz a requisição
      * @return true se um usuário com o matricula existir, false caso contrário.
      */
-    @Query("SELECT COUNT(u.id) > 0 FROM Usuario u WHERE u.matricula = :matriculaParam AND u.id != :idParam")
+    @Query("SELECT COUNT(u.id) > 0 FROM UsuarioJpa u WHERE u.matricula = :matriculaParam AND u.id != :idParam")
     boolean checaSeExisteUsuarioComMatricula(@Param("matriculaParam") String matricula, @Param("idParam") Integer id);
 
 
@@ -49,9 +52,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
      * Útil para consultas mais complexas ou quando a convenção de nome não se aplica bem.
      *
      * @param cracha O cracha a ser verificado.
-     * @param id Identificador o Usuario que faz a requisição
+     * @param id Identificador o UsuarioJpa que faz a requisição
      * @return true se um usuário com o cracha existir, false caso contrário.
      */
-    @Query("SELECT COUNT(u.id) > 0 FROM Usuario u WHERE u.cracha = :cracha AND u.id != :idParam")
+    @Query("SELECT COUNT(u.id) > 0 FROM UsuarioJpa u WHERE u.cracha = :cracha AND u.id != :idParam")
     boolean checaSeExisteUsuarioComCracha(@Param("cracha") Integer cracha, @Param("idParam") Integer id);
 }

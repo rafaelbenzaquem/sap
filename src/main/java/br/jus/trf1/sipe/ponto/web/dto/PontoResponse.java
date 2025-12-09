@@ -21,7 +21,7 @@ public record PontoResponse(String matricula,
                             @JsonProperty("pedido_alteracao_pendente")
                             Boolean pedidoAlteracaoPendente) {
     public static PontoResponse of(Ponto ponto) {
-        return new PontoResponse(ponto.getId().getUsuario().getMatricula(), ponto.getId().getDia(),
+        return new PontoResponse(ponto.getId().getUsuarioJPA().getMatricula(), ponto.getId().getDia(),
                 ponto.getDescricao(), ponto.getIndice().getValor(), ponto.getHorasPermanencia().toSeconds(), ponto.pedidoAlteracaoPendente());
     }
 }

@@ -4,7 +4,7 @@ import br.jus.trf1.sipe.ausencia.externo.jsrh.AusenciaExterna;
 import br.jus.trf1.sipe.ausencia.Ausencia;
 import br.jus.trf1.sipe.ausencia.ferias.Ferias;
 import br.jus.trf1.sipe.ausencia.ferias.Ocorrencia;
-import br.jus.trf1.sipe.usuario.Usuario;
+import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,7 +29,7 @@ public class FeriasExternas extends AusenciaExterna {
 
 
     @Override
-    public Ausencia toModel(Usuario usuario) {
-        return new Ferias(super.toModel(usuario), Ocorrencia.valueOf(this.flag.getValor()), this.diasGozados, this.dataSuspensao);
+    public Ausencia toModel(UsuarioJpa usuarioJPA) {
+        return new Ferias(super.toModel(usuarioJPA), Ocorrencia.valueOf(this.flag.getValor()), this.diasGozados, this.dataSuspensao);
     }
 }

@@ -6,7 +6,7 @@ import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.registro.RegistroRepository;
 import br.jus.trf1.sipe.registro.exceptions.RegistroInexistenteException;
 import br.jus.trf1.sipe.servidor.Servidor;
-import br.jus.trf1.sipe.usuario.Usuario;
+import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
 import br.jus.trf1.sipe.usuario.UsuarioService;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAprovadorException;
 import org.springframework.stereotype.Service;
@@ -31,11 +31,11 @@ public class PedidoAlteracaoService {
         this.registroRepository = registroRepository;
     }
 
-    public PedidoAlteracao criarPedidoAlteracao(Ponto ponto, String justificativa, Usuario usuarioSolicitante) {
+    public PedidoAlteracao criarPedidoAlteracao(Ponto ponto, String justificativa, UsuarioJpa usuarioJpaSolicitante) {
 
         var pedidoAlteracao = PedidoAlteracao.builder()
                 .ponto(ponto)
-                .usuarioSolicitante(usuarioSolicitante)
+                .usuarioJpaSolicitante(usuarioJpaSolicitante)
                 .status(StatusPedido.PENDENTE)
                 .justificativa(justificativa)
                 .build();

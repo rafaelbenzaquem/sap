@@ -2,7 +2,7 @@ package br.jus.trf1.sipe.ponto.web.dto;
 
 import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.ponto.PontoId;
-import br.jus.trf1.sipe.usuario.Usuario;
+import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -21,7 +21,7 @@ public record PontoAtualizadoRequest(@NotBlank(message = "O campo 'matricula' n√
 ) {
     public Ponto toModel() {
         var id = PontoId.builder()
-                .usuario(Usuario.builder()
+                .usuarioJPA(UsuarioJpa.builder()
                         .matricula(this.matricula)
                         .build())
                 .dia(this.dia)

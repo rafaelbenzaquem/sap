@@ -26,7 +26,7 @@ public class HATEOASUtil {
         if (registros.isEmpty()) {
             return CollectionModel.empty();
         }
-        var matricula = registros.getFirst().getPonto().getId().getUsuario().getMatricula();
+        var matricula = registros.getFirst().getPonto().getId().getUsuarioJPA().getMatricula();
         var dia = registros.getFirst().getPonto().getId().getDia();
 
         var registrosEntityModelList = registros.stream().map(registro ->
@@ -46,12 +46,12 @@ public class HATEOASUtil {
         if (pontos.isEmpty()) {
             return CollectionModel.empty();
         }
-        var matricula = pontos.getFirst().getId().getUsuario().getMatricula();
+        var matricula = pontos.getFirst().getId().getUsuarioJPA().getMatricula();
 
         var registrosEntityModelList = pontos.stream().map(ponto ->
                 EntityModel.of(
                         PontoNovoResponse.of(ponto),
-                        linkTo(methodOn(PontoReadController.class).buscaPonto(ponto.getId().getUsuario().getMatricula(),
+                        linkTo(methodOn(PontoReadController.class).buscaPonto(ponto.getId().getUsuarioJPA().getMatricula(),
                                 ponto.getId().getDia())).withSelfRel()
                 )
         ).toList();

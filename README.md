@@ -82,7 +82,7 @@ As authorities (roles) são extraídas do claim `authorities` no token e usadas 
    ```bash
    export SIPE_API_PROFILE=dev   # ou prod
    export MYSQL_URL=jdbc:mysql://<host>:<porta>/<database>
-   export MYSQL_USER=<usuario>
+   export MYSQL_USER=<usuarioJPA>
    export MYSQL_USER_PASSWORD=<senha>
    export COLETOR_URL=http://<url-coletor>
    export JSARH_URL=http://<url-jsarh>
@@ -106,7 +106,7 @@ As authorities (roles) são extraídas do claim `authorities` no token e usadas 
 ```text
 src/main/java/br/jus/trf1/sipe
 ├── arquivo       # Upload e atualização de arquivos
-├── usuario       # Operações CRUD de usuários
+├── usuarioJPA       # Operações CRUD de usuários
 ├── ponto         # Criação e cálculo de pontos diários
 ├── registro      # Gestão de registros de entrada/saída
 ├── relatorio     # Geração de relatórios PDF

@@ -6,7 +6,7 @@ import br.jus.trf1.sipe.feriado.externo.jsarh.dto.FeriadoJSarhResponse;
 import br.jus.trf1.sipe.ponto.PontoService;
 import br.jus.trf1.sipe.relatorio.model.UsuarioModel;
 import br.jus.trf1.sipe.servidor.ServidorService;
-import br.jus.trf1.sipe.usuario.UsuarioAtualService;
+import br.jus.trf1.sipe.usuario.infrastructure.security.UsuarioSecurityAdapter;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -37,7 +37,7 @@ public class RelatorioLotacaoService implements RelatorioService {
     private final PontoService pontoService;
     private final ArquivoRepository arquivoRepository;
     private final ServidorService servidorService;
-    private final UsuarioAtualService usuarioAtualService;
+    private final UsuarioSecurityAdapter usuarioSecurityAdapter;
 
 
     /**
@@ -50,12 +50,12 @@ public class RelatorioLotacaoService implements RelatorioService {
      */
     public RelatorioLotacaoService(FeriadoJSarhClient feriadoExternalClient, PontoService pontoService,
                                    ArquivoRepository arquivoRepository, ServidorService servidorService,
-                                   UsuarioAtualService usuarioAtualService) {
+                                   UsuarioSecurityAdapter usuarioSecurityAdapter) {
         this.feriadoExternalClient = feriadoExternalClient;
         this.pontoService = pontoService;
         this.arquivoRepository = arquivoRepository;
         this.servidorService = servidorService;
-        this.usuarioAtualService = usuarioAtualService;
+        this.usuarioSecurityAdapter = usuarioSecurityAdapter;
     }
 
 
@@ -70,7 +70,7 @@ public class RelatorioLotacaoService implements RelatorioService {
      */
     public byte[] gerarRelatorio(String matricula, LocalDate inicio, LocalDate fim) throws JRException {
         log.info("Iniciando geração de relatório para matrícula: {}, período: {} a {}", matricula, inicio, fim);
-        usuarioAtualService.permissoesNivelUsuario(matricula);
+        usuarioSecurityAdapter.permissoesNivelUsuario(matricula);
         log.info("Carregando pontos para o período especificado...");
 
         var servidorPrincipal = servidorService.atualizaDadosNoSarh(matricula);

@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.ponto;
 
-import br.jus.trf1.sipe.usuario.Usuario;
+import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,7 +23,7 @@ public class PontoId {
     @JoinColumns(value = {
             @JoinColumn(name = "matricula", referencedColumnName = "matricula")
     }, foreignKey = @ForeignKey(name = "fk_servidor_ponto"))
-    private Usuario usuario;
+    private UsuarioJpa usuarioJPA;
 
     private LocalDate dia;
 
@@ -31,12 +31,12 @@ public class PontoId {
     public final boolean equals(Object o) {
         if (!(o instanceof PontoId pontoId)) return false;
 
-        return Objects.equals(usuario.getMatricula(), pontoId.getUsuario().getMatricula()) && Objects.equals(dia, pontoId.dia);
+        return Objects.equals(usuarioJPA.getMatricula(), pontoId.getUsuarioJPA().getMatricula()) && Objects.equals(dia, pontoId.dia);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hashCode(this.usuario.getMatricula());
+        int result = Objects.hashCode(this.usuarioJPA.getMatricula());
         result = 31 * result + Objects.hashCode(dia);
         return result;
     }
@@ -44,7 +44,7 @@ public class PontoId {
     @Override
     public String toString() {
         return "{" +
-                "matricula=" + usuario.getMatricula() +
+                "matricula=" + usuarioJPA.getMatricula() +
                 ", dia=" + paraString(dia, PADRAO_SAIDA_DATA) +
                 '}';
     }

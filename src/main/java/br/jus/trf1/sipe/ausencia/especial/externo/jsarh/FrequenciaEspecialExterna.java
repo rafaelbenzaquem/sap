@@ -3,7 +3,7 @@ package br.jus.trf1.sipe.ausencia.especial.externo.jsarh;
 import br.jus.trf1.sipe.ausencia.externo.jsrh.AusenciaExterna;
 import br.jus.trf1.sipe.ausencia.Ausencia;
 import br.jus.trf1.sipe.ausencia.especial.FrequenciaEspecial;
-import br.jus.trf1.sipe.usuario.Usuario;
+import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,7 +22,7 @@ public class FrequenciaEspecialExterna extends AusenciaExterna {
 
 
     @Override
-    public Ausencia toModel(Usuario usuario) {
-        return new FrequenciaEspecial(super.toModel(usuario), this.sei);
+    public Ausencia toModel(UsuarioJpa usuarioJPA) {
+        return new FrequenciaEspecial(super.toModel(usuarioJPA), this.sei);
     }
 }

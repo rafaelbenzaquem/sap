@@ -7,8 +7,8 @@ import br.jus.trf1.sipe.feriado.externo.jsarh.dto.FeriadoJSarhResponse;
 import br.jus.trf1.sipe.ponto.exceptions.PontoExistenteException;
 import br.jus.trf1.sipe.ponto.exceptions.PontoInexistenteException;
 import br.jus.trf1.sipe.registro.RegistroService;
-import br.jus.trf1.sipe.usuario.Usuario;
-import br.jus.trf1.sipe.usuario.UsuarioAtualService;
+import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
+import br.jus.trf1.sipe.usuario.infrastructure.security.UsuarioSecurityAdapter;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,18 +34,18 @@ public class PontoService {
     private final RegistroService registroService;
     private final AusenciaExternaService ausenciaService;
     private final FeriadoJSarhClient feriadoService;
-    private final UsuarioAtualService usuarioAtualService;
+    private final UsuarioSecurityAdapter usuarioSecurityAdapter;
 
     public PontoService(PontoRepository pontoRepository,
                         RegistroService registroService,
                         AusenciaExternaService ausenciaService,
                         FeriadoJSarhClient feriadoService,
-                        UsuarioAtualService usuarioAtualService) {
+                        UsuarioSecurityAdapter usuarioSecurityAdapter) {
         this.pontoRepository = pontoRepository;
         this.registroService = registroService;
         this.ausenciaService = ausenciaService;
         this.feriadoService = feriadoService;
-        this.usuarioAtualService = usuarioAtualService;
+        this.usuarioSecurityAdapter = usuarioSecurityAdapter;
     }
 
     public  Boolean existePontoComPedidoAlteracaoPendenteNoPeriodo(String matricula, LocalDate inicio, LocalDate fim) {
@@ -61,7 +61,7 @@ public class PontoService {
      */
     public boolean existe(String matricula, LocalDate dia) {
         return pontoRepository.existsById(PontoId.builder().
-                usuario(Usuario.builder()
+                usuarioJPA(UsuarioJpa.builder()
                         .matricula(matricula)
                         .build()).
                 dia(dia).
@@ -78,9 +78,9 @@ public class PontoService {
      */
     public Ponto buscaPonto(String matricula, LocalDate dia) {
         log.info("Buscando Ponto - {} - {} ", paraString(dia), matricula);
-        usuarioAtualService.permissoesNivelUsuario(matricula);
+        usuarioSecurityAdapter.permissoesNivelUsuario(matricula);
         var pontoOpt = pontoRepository.findById(PontoId.builder().
-                usuario(Usuario.builder()
+                usuarioJPA(UsuarioJpa.builder()
                         .matricula(matricula)
                         .build()).
                 dia(dia).
@@ -102,7 +102,7 @@ public class PontoService {
      */
     public List<Ponto> buscarPontos(String matricula, LocalDate inicio, LocalDate fim) {
         log.info("Lista de Pontos - {} - {} - {} ", paraString(inicio), paraString(fim), matricula);
-        usuarioAtualService.permissoesNivelUsuario(matricula);
+        usuarioSecurityAdapter.permissoesNivelUsuario(matricula);
         return pontoRepository.buscaPontosPorPeriodo(matricula, inicio, fim);
     }
 
@@ -147,8 +147,8 @@ public class PontoService {
      */
     @Transactional
     public Ponto criaPonto(Ponto ponto) {
-        var matricula = ponto.getId().getUsuario().getMatricula();
-        usuarioAtualService.permissoesNivelUsuario(matricula);
+        var matricula = ponto.getId().getUsuarioJPA().getMatricula();
+        usuarioSecurityAdapter.permissoesNivelUsuario(matricula);
         var dia = ponto.getId().getDia();
         log.info("Salvando Ponto - {} - {} ", matricula, dia);
         if (this.existe(matricula, dia)) {
@@ -164,7 +164,7 @@ public class PontoService {
     }
 
     private Ponto defineDescricaoIndice(Ponto ponto) {
-        var matricula = ponto.getId().getUsuario().getMatricula();
+        var matricula = ponto.getId().getUsuarioJPA().getMatricula();
         var dia = ponto.getId().getDia();
         var ausencia = ausenciaService.buscaAusenciaServidorNoDia(matricula, dia);
         var feriadoResponse = feriadoService.buscaFeriadoDoDia(dia);
@@ -185,8 +185,8 @@ public class PontoService {
      * @throws PontoInexistenteException se não existir ponto para matrícula e dia informados
      */
     public Ponto atualizaPonto(Ponto ponto) {
-        var matricula = ponto.getId().getUsuario().getMatricula();
-        usuarioAtualService.permissoesNivelUsuario(matricula);
+        var matricula = ponto.getId().getUsuarioJPA().getMatricula();
+        usuarioSecurityAdapter.permissoesNivelUsuario(matricula);
         var dia = ponto.getId().getDia();
         log.info("Atualizando Ponto - {} - {} ", matricula, dia);
         if (this.existe(matricula, dia)) {
@@ -216,7 +216,7 @@ public class PontoService {
      */
     public List<Ponto> carregaPontos(String matricula, LocalDate inicio, LocalDate fim) {
 
-        usuarioAtualService.permissoesNivelUsuario(matricula);
+        usuarioSecurityAdapter.permissoesNivelUsuario(matricula);
 
         List<Ponto> pontos = pontoRepository.buscaPontosPorPeriodo(matricula, inicio, fim);
 
@@ -229,7 +229,7 @@ public class PontoService {
         while (!dataAtual.isAfter(fim)) {
             var id = PontoId.builder().
                     dia(dataAtual).
-                    usuario(Usuario.builder()
+                    usuarioJPA(UsuarioJpa.builder()
                             .matricula(matricula)
                             .build()).
                     build();

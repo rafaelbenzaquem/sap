@@ -15,7 +15,7 @@ public class RegistroExistenteException extends RuntimeException {
     }
 
     public RegistroExistenteException(Ponto ponto) {
-        this(ponto.getId().getUsuario().getMatricula(), ponto.getId().getDia());
+        this(ponto.getId().getUsuarioJPA().getMatricula(), ponto.getId().getDia());
     }
 
 

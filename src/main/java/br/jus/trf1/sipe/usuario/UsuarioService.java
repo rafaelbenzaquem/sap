@@ -2,7 +2,11 @@ package br.jus.trf1.sipe.usuario;
 
 import br.jus.trf1.sipe.comum.exceptions.CamposUnicosExistentesException;
 import br.jus.trf1.sipe.ponto.Ponto;
+import br.jus.trf1.sipe.usuario.domain.model.Usuario;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioInexistenteException;
+import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
+import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpaRepository;
+import br.jus.trf1.sipe.usuario.infrastructure.security.UsuarioSecurityAdapter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,75 +17,75 @@ import java.util.Objects;
 @Service
 public class UsuarioService {
 
-    private final UsuarioRepository usuarioRepository;
-    private final UsuarioAtualService usuarioAtualService;
+    private final UsuarioJpaRepository usuarioRepository;
+    private final UsuarioSecurityAdapter usuarioSecurityAdapter;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioAtualService usuarioAtualService) {
+    public UsuarioService(UsuarioJpaRepository usuarioRepository, UsuarioSecurityAdapter usuarioSecurityAdapter) {
         this.usuarioRepository = usuarioRepository;
-        this.usuarioAtualService = usuarioAtualService;
+        this.usuarioSecurityAdapter = usuarioSecurityAdapter;
     }
 
 
-    public Page<Usuario> buscaPorNomeOuCrachaOuMatricula(String nome,
-                                                         Integer cracha,
-                                                         String matricula,
-                                                         Pageable pageable) {
+    public Page<UsuarioJpa> buscaPorNomeOuCrachaOuMatricula(String nome,
+                                                            Integer cracha,
+                                                            String matricula,
+                                                            Pageable pageable) {
         return usuarioRepository.findAllByNomeOrCrachaOrMatricula(nome, cracha, matricula, pageable);
     }
 
     public Usuario getUsuarioAtual() {
-        return usuarioAtualService.getUsuario();
+        return usuarioSecurityAdapter.getUsuario();
     }
 
     public void permissaoRecurso(Ponto ponto) {
         Objects.requireNonNull(ponto);
         Objects.requireNonNull(ponto.getId());
-        Objects.requireNonNull(ponto.getId().getUsuario().getMatricula());
-        usuarioAtualService.permissoesNivelUsuario(ponto.getId().getUsuario().getMatricula());
+        Objects.requireNonNull(ponto.getId().getUsuarioJPA().getMatricula());
+        usuarioSecurityAdapter.permissoesNivelUsuario(ponto.getId().getUsuarioJPA().getMatricula());
     }
 
-    public Page<Usuario> listar(Pageable pageable) {
+    public Page<UsuarioJpa> listar(Pageable pageable) {
         return usuarioRepository.findAll(pageable);
     }
 
 
-    public Usuario buscaPorMatricula(String matricula) {
-        return usuarioRepository.findUsuarioByMatricula(matricula).
-                orElseThrow(() -> new UsuarioInexistenteException("Não existe usuário para matrícula: %s!"
+    public UsuarioJpa buscaPorMatricula(String matricula) {
+        return usuarioRepository.findUsuarioByMatricula(matricula)
+                .orElseThrow(() -> new UsuarioInexistenteException("Não existe usuário para matrícula: %s!"
                         .formatted(matricula)));
     }
 
-    public Usuario buscaPorId(Integer id) {
+    public UsuarioJpa buscaPorId(Integer id) {
         return usuarioRepository.findById(id).
                 orElseThrow(() -> new UsuarioInexistenteException(id));
     }
 
 
-    public Usuario salve(Usuario usuario) {
+    public UsuarioJpa salve(UsuarioJpa usuarioJPA) {
         var mapCampoMensagem = new HashMap<String, String>();
 
-        var existeCracha = usuarioRepository.checaSeExisteUsuarioComCracha(usuario.getCracha(), usuario.getId());
-        var existeMatricula = usuarioRepository.checaSeExisteUsuarioComMatricula(usuario.getMatricula(), usuario.getId());
+        var existeCracha = usuarioRepository.checaSeExisteUsuarioComCracha(usuarioJPA.getCracha(), usuarioJPA.getId());
+        var existeMatricula = usuarioRepository.checaSeExisteUsuarioComMatricula(usuarioJPA.getMatricula(), usuarioJPA.getId());
 
         if (existeCracha) {
-            mapCampoMensagem.put("cracha", "Existe usuário com crachá = " + usuario.getCracha());
+            mapCampoMensagem.put("cracha", "Existe usuário com crachá = " + usuarioJPA.getCracha());
         }
         if (existeMatricula) {
-            mapCampoMensagem.put("matricula", "Existe usuário com matrícula = " + usuario.getMatricula());
+            mapCampoMensagem.put("matricula", "Existe usuário com matrícula = " + usuarioJPA.getMatricula());
         }
 
         if (mapCampoMensagem.isEmpty()) {
-            return usuarioRepository.save(usuario);
+            return usuarioRepository.save(usuarioJPA);
         }
         throw new CamposUnicosExistentesException(mapCampoMensagem);
     }
 
     public boolean permissaoDiretor() {
-        return usuarioAtualService.ehDiretor();
+        return usuarioSecurityAdapter.ehDiretor();
     }
 
     public boolean permissaoAdministrador() {
-        return usuarioAtualService.ehAdmin();
+        return usuarioSecurityAdapter.ehAdmin();
     }
 
 }

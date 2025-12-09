@@ -2,7 +2,7 @@ package br.jus.trf1.sipe.alteracao.pedido_alteracao;
 
 import br.jus.trf1.sipe.alteracao.alteracao_registro.AlteracaoRegistro;
 import br.jus.trf1.sipe.ponto.Ponto;
-import br.jus.trf1.sipe.usuario.Usuario;
+import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -44,12 +44,12 @@ public class PedidoAlteracao {
     @ManyToOne
     @JoinColumn(name = "usuario_solicitante_id", referencedColumnName = "id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_pa_usuario_solicitante_id"))
-    private Usuario usuarioSolicitante;
+    private UsuarioJpa usuarioJpaSolicitante;
 
     @ManyToOne
     @JoinColumn(name = "usuario_aprovador_id", referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "fk_pa_usuario_aprovador_id"))
-    private Usuario usuarioAprovador;
+    private UsuarioJpa usuarioJpaAprovador;
 
     @ManyToOne
     @JoinColumns(value = {

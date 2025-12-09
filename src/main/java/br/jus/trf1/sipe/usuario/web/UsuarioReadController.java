@@ -1,7 +1,7 @@
 package br.jus.trf1.sipe.usuario.web;
 
 import br.jus.trf1.sipe.servidor.ServidorService;
-import br.jus.trf1.sipe.usuario.Usuario;
+import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
 import br.jus.trf1.sipe.usuario.UsuarioService;
 import br.jus.trf1.sipe.usuario.web.dto.UsuarioResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -118,7 +118,7 @@ public class UsuarioReadController {
         return ResponseEntity.ok(CollectionModel.of(pagedModel));
     }
 
-    private void addLinksPaginacao(Page<? extends Usuario> usuarioPag,
+    private void addLinksPaginacao(Page<? extends UsuarioJpa> usuarioPag,
                                    PagedModel<EntityModel<UsuarioResponse>> pagedModel,
                                    int page, int size) {
         // Links para paginação
@@ -136,7 +136,7 @@ public class UsuarioReadController {
         }
     }
 
-    private PagedModel<EntityModel<UsuarioResponse>> addLinksHATEOASCrud(Page<? extends Usuario> usuarioPage) {
+    private PagedModel<EntityModel<UsuarioResponse>> addLinksHATEOASCrud(Page<? extends UsuarioJpa> usuarioPage) {
         return PagedModel.of(
                 usuarioPage.getContent().stream()
                         .map(usuario -> EntityModel.of(usuario.toResponse(),

@@ -8,7 +8,7 @@ import br.jus.trf1.sipe.alteracao.pedido_alteracao.web.dto.PedidoAlteracaoRespon
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.web.dto.PedidoAlteracaoUpdateRequest;
 import br.jus.trf1.sipe.comum.util.DataTempoUtil;
 import br.jus.trf1.sipe.ponto.PontoService;
-import br.jus.trf1.sipe.usuario.UsuarioAtualService;
+import br.jus.trf1.sipe.usuario.infrastructure.security.UsuarioSecurityAdapter;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -26,12 +26,12 @@ import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_ENTRADA_DA
 public class PedidoAlteracaoController {
 
     private final PedidoAlteracaoService pedidoAlteracaoService;
-    private final UsuarioAtualService usuarioAtualService;
+    private final UsuarioSecurityAdapter usuarioSecurityAdapter;
     private final PontoService pontoService;
 
-    public PedidoAlteracaoController(PedidoAlteracaoService pedidoAlteracaoService, UsuarioAtualService usuarioAtualService, PontoService pontoService) {
+    public PedidoAlteracaoController(PedidoAlteracaoService pedidoAlteracaoService, UsuarioSecurityAdapter usuarioSecurityAdapter, PontoService pontoService) {
         this.pedidoAlteracaoService = pedidoAlteracaoService;
-        this.usuarioAtualService = usuarioAtualService;
+        this.usuarioSecurityAdapter = usuarioSecurityAdapter;
         this.pontoService = pontoService;
     }
 
@@ -71,7 +71,7 @@ public class PedidoAlteracaoController {
 
         log.info("Atualizando realizando Pedido de Alteracao de Ponto - {} - {}", matriculaPonto, diaPonto);
 
-        var usuario = usuarioAtualService.getUsuario();
+        var usuario = usuarioSecurityAdapter.getUsuario();
         var ponto = pontoService.buscaPonto(matriculaPonto, diaPonto);
         var pedidoAlteracao = pedidoAlteracaoService.criarPedidoAlteracao(ponto, justificativa, usuario);
 

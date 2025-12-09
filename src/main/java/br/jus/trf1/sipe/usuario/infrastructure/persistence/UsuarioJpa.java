@@ -1,4 +1,4 @@
-package br.jus.trf1.sipe.usuario;
+package br.jus.trf1.sipe.usuario.infrastructure.persistence;
 
 import br.jus.trf1.sipe.ausencia.Ausencia;
 import br.jus.trf1.sipe.ponto.Ponto;
@@ -22,7 +22,7 @@ import java.util.Objects;
         @UniqueConstraint(columnNames = {"matricula"}, name = "uk_usuario_matricula"),
         @UniqueConstraint(columnNames = {"cracha"}, name = "uk_usuario_cracha")
 })
-public class Usuario {
+public class UsuarioJpa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,13 +39,13 @@ public class Usuario {
     private Integer horaDiaria;
 
 
-    @OneToMany(mappedBy = "id.usuario", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "id.usuarioJPA", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Ponto> pontos;
 
     @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Ausencia> ausencias;
 
-    public Usuario(Integer id, String nome, String matricula, Integer cracha, Integer horaDiaria) {
+    public UsuarioJpa(Integer id, String nome, String matricula, Integer cracha, Integer horaDiaria) {
         this.id = id;
         this.nome = nome;
         this.matricula = matricula;
@@ -59,9 +59,9 @@ public class Usuario {
 
     @Override
     public final boolean equals(Object o) {
-        if (!(o instanceof Usuario usuario)) return false;
+        if (!(o instanceof UsuarioJpa usuarioJPA)) return false;
 
-        return Objects.equals(id, usuario.id);
+        return Objects.equals(id, usuarioJPA.id);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class Usuario {
 
     @Override
     public String toString() {
-        return "Usuario{" +
+        return "UsuarioJpa{" +
                 "id=" + id +
                 ", nome='" + nome + '\'' +
                 ", matricula='" + matricula + '\'' +

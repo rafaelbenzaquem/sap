@@ -3,7 +3,7 @@ package br.jus.trf1.sipe.ausencia.licenca.externo.jsarh;
 import br.jus.trf1.sipe.ausencia.externo.jsrh.AusenciaExterna;
 import br.jus.trf1.sipe.ausencia.Ausencia;
 import br.jus.trf1.sipe.ausencia.licenca.Licenca;
-import br.jus.trf1.sipe.usuario.Usuario;
+import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,8 +21,8 @@ public class LicencaExterna extends AusenciaExterna {
     }
 
     @Override
-    public Ausencia toModel(Usuario usuario) {
-        return new Licenca(super.toModel(usuario), this.sei);
+    public Ausencia toModel(UsuarioJpa usuarioJPA) {
+        return new Licenca(super.toModel(usuarioJPA), this.sei);
     }
 
 }

@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.ausencia;
 
-import br.jus.trf1.sipe.usuario.Usuario;
+import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,9 +24,9 @@ public class Ausencia {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id", referencedColumnName = "id", nullable = false, foreignKey = @ForeignKey(name = "fk_ausencia_usuario"))
-    private Usuario usuario;
+    private UsuarioJpa usuario;
 
-    public Ausencia(String id, LocalDate inicio, LocalDate fim, String descricao, Usuario usuario) {
+    public Ausencia(String id, LocalDate inicio, LocalDate fim, String descricao, UsuarioJpa usuario) {
         this.id = id;
         this.inicio = inicio;
         this.fim = fim;

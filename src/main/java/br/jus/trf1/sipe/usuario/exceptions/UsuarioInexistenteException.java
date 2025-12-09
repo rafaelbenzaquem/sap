@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.usuario.exceptions;
 
-import br.jus.trf1.sipe.usuario.Usuario;
+import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
 
 import static br.jus.trf1.sipe.comum.util.PadroesDeMensagem.MSG_ENTIDADE_INEXISTENTE;
 
@@ -8,7 +8,7 @@ import static br.jus.trf1.sipe.comum.util.PadroesDeMensagem.MSG_ENTIDADE_INEXIST
 public class UsuarioInexistenteException extends RuntimeException {
 
     public UsuarioInexistenteException(Integer id) {
-        this(MSG_ENTIDADE_INEXISTENTE.formatted(Usuario.class.getSimpleName(), id));
+        this(MSG_ENTIDADE_INEXISTENTE.formatted(UsuarioJpa.class.getSimpleName(), id));
     }
 
     public UsuarioInexistenteException(String msg) {
