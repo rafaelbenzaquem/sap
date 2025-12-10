@@ -1,8 +1,9 @@
-package br.jus.trf1.sipe.servidor.externo.jsarh;
+package br.jus.trf1.sipe.servidor.aplication.jsarh;
 
-import br.jus.trf1.sipe.lotacao.externo.jsarh.LotacaoExterna;
-import br.jus.trf1.sipe.lotacao.externo.jsarh.dto.LotacaoExternaResponse;
-import br.jus.trf1.sipe.servidor.externo.jsarh.dto.ServidorExternoResponse;
+import br.jus.trf1.sipe.lotacao.LotacaoMapping;
+import br.jus.trf1.sipe.lotacao.aplication.jsarh.LotacaoJSarh;
+import br.jus.trf1.sipe.lotacao.aplication.jsarh.dto.LotacaoJSarhResponse;
+import br.jus.trf1.sipe.servidor.aplication.jsarh.dto.ServidorJSarhResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import java.util.Objects;
 @Builder
 @AllArgsConstructor
 @Getter
-public class ServidorExterno {
+public class ServidorJSarh {
 
     private final String matricula;
 
@@ -24,24 +25,24 @@ public class ServidorExterno {
 
     private final String cargo;
 
-   private final LotacaoExterna lotacao;
+   private final LotacaoJSarh lotacao;
 
 
 
-   public static ServidorExterno from(ServidorExternoResponse servidorExternoResponse, LotacaoExternaResponse lotacaoExternaResponse) {
-       return ServidorExterno.builder()
+   public static ServidorJSarh from(ServidorJSarhResponse servidorExternoResponse, LotacaoJSarhResponse lotacaoExternaResponse) {
+       return ServidorJSarh.builder()
                .matricula(servidorExternoResponse.getMatricula())
                .nome(servidorExternoResponse.getNome())
                .email(servidorExternoResponse.getEmail())
                .funcao(servidorExternoResponse.getFuncao())
                .cargo(servidorExternoResponse.getCargo())
-               .lotacao(LotacaoExterna.from(lotacaoExternaResponse))
+               .lotacao(LotacaoMapping.toJSarhDomain(lotacaoExternaResponse))
                .build();
    }
 
     @Override
     public final boolean equals(Object o) {
-        if (!(o instanceof ServidorExterno that)) return false;
+        if (!(o instanceof ServidorJSarh that)) return false;
         if (!super.equals(o)) return false;
 
         return Objects.equals(matricula, that.matricula);

@@ -1,4 +1,4 @@
-package br.jus.trf1.sipe.lotacao;
+package br.jus.trf1.sipe.lotacao.infrastructure.persistence;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(schema = "sisponto", name = "lotacoes")
-public class Lotacao {
+public class LotacaoJpa {
 
     @Id
     private Integer id;
@@ -22,8 +22,8 @@ public class Lotacao {
 
     @ManyToOne
     @JoinColumn(name = "id_lotacao_pai")
-    private Lotacao lotacaoPai;
+    private LotacaoJpa lotacaoPai;
 
     @OneToMany(mappedBy = "lotacaoPai", fetch = FetchType.LAZY)
-    private List<Lotacao> subLotacoes;
+    private List<LotacaoJpa> subLotacoes;
 }

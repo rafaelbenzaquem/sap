@@ -6,11 +6,19 @@ import java.util.List;
 
 public interface UsuarioServicePort {
 
-    List<Usuario> buscaPorNomeOuCrachaOuMatricula(String nome, Integer cracha, String matricula, int page, int size);
+    List<Usuario> paginaPorNomeOuCrachaOuMatricula(String nome, Integer cracha, String matricula, int page, int size);
+
+    List<Usuario> pagina(int page, int size);
+
+    List<Usuario> listaPorNomeOuCrachaOuMatricula(String nome, Integer cracha, String matricula);
+
+    List<Usuario> lista();
+
+    long conta();
+
+    long contaPorNomeOuCrachaOuMatricula(String nome, Integer cracha, String matricula);
 
     Usuario getUsuarioAutenticado();
-
-    List<Usuario> listar(int page, int size);
 
     Usuario buscaPorMatricula(String matricula);
 

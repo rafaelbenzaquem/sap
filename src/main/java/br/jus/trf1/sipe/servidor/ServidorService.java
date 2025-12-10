@@ -3,8 +3,8 @@ package br.jus.trf1.sipe.servidor;
 import br.jus.trf1.sipe.ausencia.AusenciaRepository;
 import br.jus.trf1.sipe.ausencia.externo.jsrh.AusenciaExternaService;
 import br.jus.trf1.sipe.servidor.domain.port.out.ServidorRepositoryPort;
-import br.jus.trf1.sipe.servidor.externo.jsarh.ServidorExternoService;
-import br.jus.trf1.sipe.lotacao.LotacaoNaoTemDiretorDireto;
+import br.jus.trf1.sipe.servidor.aplication.jsarh.ServidorJSarhService;
+import br.jus.trf1.sipe.lotacao.LotacaoNaoTemDiretor;
 import br.jus.trf1.sipe.lotacao.LotacaoService;
 import br.jus.trf1.sipe.servidor.exceptions.ServidorInexistenteException;
 import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
@@ -28,13 +28,13 @@ public class ServidorService {
 
     private final UsuarioService usuarioService;
     private final ServidorRepositoryPort servidorRepositoryPort;
-    private final ServidorExternoService servidorExternoService;
+    private final ServidorJSarhService servidorExternoService;
     private final AusenciaExternaService ausenciaExternaService;
     private final AusenciaRepository ausenciaRepository;
     private final LotacaoService lotacaoService;
 
     public ServidorService(UsuarioService usuarioService, ServidorRepositoryPort servidorRepositoryPort,
-                           ServidorExternoService servidorExternoService, AusenciaExternaService ausenciaExternaService,
+                           ServidorJSarhService servidorExternoService, AusenciaExternaService ausenciaExternaService,
                            AusenciaRepository ausenciaRepository, LotacaoService lotacaoService) {
         this.usuarioService = usuarioService;
         this.servidorRepositoryPort = servidorRepositoryPort;
@@ -170,6 +170,6 @@ public class ServidorService {
         if (optServidor.isPresent()) {
             return optServidor.get();
         }
-        throw new LotacaoNaoTemDiretorDireto(idLotacao);
+        throw new LotacaoNaoTemDiretor(idLotacao);
     }
 }

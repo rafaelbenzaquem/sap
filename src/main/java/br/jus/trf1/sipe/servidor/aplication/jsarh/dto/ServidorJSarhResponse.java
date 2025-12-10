@@ -1,4 +1,4 @@
-package br.jus.trf1.sipe.servidor.externo.jsarh.dto;
+package br.jus.trf1.sipe.servidor.aplication.jsarh.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import java.util.Objects;
 @Builder
 @AllArgsConstructor
 @Getter
-public class ServidorExternoResponse extends RepresentationModel<ServidorExternoResponse> {
+public class ServidorJSarhResponse extends RepresentationModel<ServidorJSarhResponse> {
 
     private final String matricula;
 
@@ -29,7 +29,7 @@ public class ServidorExternoResponse extends RepresentationModel<ServidorExterno
 
     @Override
     public final boolean equals(Object o) {
-        if (!(o instanceof ServidorExternoResponse that)) return false;
+        if (!(o instanceof ServidorJSarhResponse that)) return false;
         if (!super.equals(o)) return false;
 
         return Objects.equals(matricula, that.matricula);

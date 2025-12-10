@@ -23,14 +23,14 @@ class UsuarioServiceIntegrationTest {
     private UsuarioService usuarioService;
 
     @Test
-    void listarDeveRetornarTodosUsuarios() {
-        List<Usuario> result = usuarioService.listar(0, 10);
+    void paginaDeveRetornarTodosUsuarios() {
+        List<Usuario> result = usuarioService.pagina(0, 10);
         assertEquals(2, result.size(), "Deve retornar todos os usuários cadastrado no dataset");
     }
 
     @Test
-    void buscaPorNomeOuCrachaOuMatricula() {
-        List<Usuario> p = usuarioService.buscaPorNomeOuCrachaOuMatricula("Alice", null, null, 0, 10);
+    void paginaPorNomeOuCrachaOuMatricula() {
+        List<Usuario> p = usuarioService.paginaPorNomeOuCrachaOuMatricula("Alice", null, null, 0, 10);
         assertEquals(1, p.size());
         assertEquals("Alice Wonderland", p.getFirst().getNome());
     }

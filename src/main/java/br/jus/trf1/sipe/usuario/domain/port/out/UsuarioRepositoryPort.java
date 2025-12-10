@@ -7,11 +7,15 @@ import java.util.Optional;
 
 public interface UsuarioRepositoryPort {
 
-    List<Usuario> listaPorNomeOuCrachaOuMatricula(String nome, Integer cracha, String matricula, int page, int size);
+    List<Usuario> paginaPorNomeOuCrachaOuMatricula(String nome, Integer cracha, String matricula, int page, int size);
 
-    List<Usuario> lista(int page, int size);
+    List<Usuario> pagina(int page, int size);
+
+    List<Usuario> listaPorNomeOuCrachaOuMatricula(String nome,Integer cracha,String matricula);
 
     List<Usuario> lista();
+
+    long conta();
 
     long contaPorNomeOuCrachaOuMatricula(String nome, Integer cracha, String matricula);
 

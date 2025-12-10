@@ -1,7 +1,7 @@
-package br.jus.trf1.sipe.servidor.externo.jsarh;
+package br.jus.trf1.sipe.servidor.aplication.jsarh;
 
-import br.jus.trf1.sipe.lotacao.externo.jsarh.LotacaoExternoClient;
-import br.jus.trf1.sipe.lotacao.externo.jsarh.exceptions.LotacaoExternaInexistenteException;
+import br.jus.trf1.sipe.lotacao.aplication.jsarh.LotacaoJSarhClient;
+import br.jus.trf1.sipe.lotacao.aplication.jsarh.exceptions.LotacaoJSarhInexistenteException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -9,17 +9,17 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-public class ServidorExternoService {
+public class ServidorJSarhService {
 
-    private final ServidorExternoClient servidorExternoClient;
-    private final LotacaoExternoClient lotacaoExternoClient;
+    private final ServidorJSarhClient servidorExternoClient;
+    private final LotacaoJSarhClient lotacaoExternoClient;
 
-    public ServidorExternoService(ServidorExternoClient servidorExternoClient, LotacaoExternoClient lotacaoExternoClient) {
+    public ServidorJSarhService(ServidorJSarhClient servidorExternoClient, LotacaoJSarhClient lotacaoExternoClient) {
         this.servidorExternoClient = servidorExternoClient;
         this.lotacaoExternoClient = lotacaoExternoClient;
     }
 
-    public Optional<ServidorExterno> buscaServidorExterno(String matricula) {
+    public Optional<ServidorJSarh> buscaServidorExterno(String matricula) {
         log.info("Buscando dados servidor no SARH: {}", matricula);
         var optServidor = servidorExternoClient.buscaDadosServidor(matricula);
         if (optServidor.isPresent()) {
@@ -27,9 +27,9 @@ public class ServidorExternoService {
             var idLotacao = servidorExternoResponse.getIdLotacao();
             var optLotacaoExternaResponse = lotacaoExternoClient.buscaLotacao(idLotacao);
             if (optLotacaoExternaResponse.isPresent()) {
-                return Optional.of(ServidorExterno.from(servidorExternoResponse, optLotacaoExternaResponse.get()));
+                return Optional.of(ServidorJSarh.from(servidorExternoResponse, optLotacaoExternaResponse.get()));
             }
-            throw new LotacaoExternaInexistenteException("Lotacao id:" + idLotacao + " inexistente.");
+            throw new LotacaoJSarhInexistenteException("Lotacao id:" + idLotacao + " inexistente.");
         }
         return Optional.empty(); // throw new ServidorExternoInexistenteException("Servidor '%s' inexistente".formatted(matricula));
     }

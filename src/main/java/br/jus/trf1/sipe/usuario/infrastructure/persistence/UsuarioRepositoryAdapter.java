@@ -19,15 +19,22 @@ public class UsuarioRepositoryAdapter implements UsuarioRepositoryPort {
     private final UsuarioJpaRepository usuarioJpaRepository;
 
     @Override
-    public List<Usuario> listaPorNomeOuCrachaOuMatricula(String nome, Integer cracha, String matricula, int page, int size) {
-        Page<UsuarioJpa> pageResult = usuarioJpaRepository.findAllByNomeOrCrachaOrMatricula(nome, cracha, matricula, PageRequest.of(page, size));
+    public List<Usuario> paginaPorNomeOuCrachaOuMatricula(String nome, Integer cracha, String matricula, int page, int size) {
+        Page<UsuarioJpa> pageResult = usuarioJpaRepository.paginaPorNomeOuCrachaOuMatricula(nome, cracha, matricula, PageRequest.of(page, size));
         return pageResult.getContent().stream().map(UsuarioMapper::toDomain).toList();
     }
 
     @Override
-    public List<Usuario> lista(int page, int size) {
+    public List<Usuario> pagina(int page, int size) {
         Page<UsuarioJpa> pageResult = usuarioJpaRepository.findAll(PageRequest.of(page, size));
         return pageResult.getContent().stream().map(UsuarioMapper::toDomain).toList();
+    }
+
+
+    @Override
+    public List<Usuario> listaPorNomeOuCrachaOuMatricula(String nome, Integer cracha, String matricula) {
+        List<UsuarioJpa> usuarios = usuarioJpaRepository.listaPorNomeOuCrachaOuMatricula(nome, cracha, matricula);
+        return usuarios.stream().map(UsuarioMapper::toDomain).toList();
     }
 
     @Override
@@ -36,9 +43,13 @@ public class UsuarioRepositoryAdapter implements UsuarioRepositoryPort {
     }
 
     @Override
+    public long conta() {
+        return usuarioJpaRepository.count();
+    }
+
+    @Override
     public long contaPorNomeOuCrachaOuMatricula(String nome, Integer cracha, String matricula) {
-        Page<UsuarioJpa> pageResult = usuarioJpaRepository.findAllByNomeOrCrachaOrMatricula(nome, cracha, matricula, PageRequest.of(0, 1));
-        return pageResult.getTotalElements();
+         return usuarioJpaRepository.countAllByNomeOrCrachaOrMatricula(nome,cracha,matricula);
     }
 
     @Override

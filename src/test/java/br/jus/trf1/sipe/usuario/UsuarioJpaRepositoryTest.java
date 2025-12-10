@@ -39,7 +39,7 @@ class UsuarioJpaRepositoryTest {
     }
 
     @Test
-    void testFindAllByNomeOrCrachaOrMatricula() {
+    void testPaginaPorNomeOuCrachaOuMatricula() {
         Pageable page = PageRequest.of(0, 10);
         Page<UsuarioJpa> p1 = repository.findAllByNomeOrCrachaOrMatricula("ali", null, null, page);
         assertEquals(1, p1.getTotalElements());

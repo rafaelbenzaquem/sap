@@ -1,11 +1,11 @@
 package br.jus.trf1.sipe.lotacao.domain.port.out;
 
-import br.jus.trf1.sipe.lotacao.domain.model.Lotacao;
+import br.jus.trf1.sipe.lotacao.infrastructure.persistence.LotacaoJpa;
 import java.util.Optional;
 import java.util.Set;
 
 public interface LotacaoRepositoryPort {
-    Set<Lotacao> findLotacoesRecursivas(Integer lotacaoId);
-    Optional<Lotacao> findById(Integer id);
-    Lotacao save(Lotacao lotacao);
+    Set<LotacaoJpa> findLotacoesRecursivas(Integer lotacaoId);
+    Optional<LotacaoJpa> findById(Integer id);
+    LotacaoJpa save(LotacaoJpa lotacao);
 }

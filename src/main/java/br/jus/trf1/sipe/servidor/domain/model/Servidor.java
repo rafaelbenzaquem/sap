@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.servidor.domain.model;
 
-import br.jus.trf1.sipe.lotacao.domain.model.Lotacao;
+import br.jus.trf1.sipe.lotacao.infrastructure.persistence.LotacaoJpa;
 import br.jus.trf1.sipe.usuario.domain.model.Usuario;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,9 +27,9 @@ public class Servidor extends Usuario {
 
     @ManyToOne
     @JoinColumn(name = "lotacao_id", referencedColumnName = "id", nullable = true, foreignKey = @ForeignKey(name = "fk_lotacao_servidor"))
-    private Lotacao lotacao;
+    private LotacaoJpa lotacao;
 
-    public Servidor(Usuario usuario, String email, String funcao, String cargo, Lotacao lotacao) {
+    public Servidor(Usuario usuario, String email, String funcao, String cargo, LotacaoJpa lotacao) {
         super(usuario.getId(), usuario.getNome(), usuario.getMatricula(), usuario.getCracha(), usuario.getHoraDiaria());
         this.email = email;
         this.funcao = funcao;

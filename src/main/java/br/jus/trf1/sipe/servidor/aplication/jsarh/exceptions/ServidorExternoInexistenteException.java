@@ -1,4 +1,4 @@
-package br.jus.trf1.sipe.servidor.externo.jsarh.exceptions;
+package br.jus.trf1.sipe.servidor.aplication.jsarh.exceptions;
 
 public class ServidorExternoInexistenteException extends RuntimeException {
 

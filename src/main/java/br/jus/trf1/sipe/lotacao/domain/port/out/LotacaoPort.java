@@ -1,9 +1,10 @@
 package br.jus.trf1.sipe.lotacao.domain.port.out;
 
-import br.jus.trf1.sipe.lotacao.domain.model.Lotacao;
+import br.jus.trf1.sipe.lotacao.aplication.jsarh.LotacaoJSarh;
+import br.jus.trf1.sipe.lotacao.infrastructure.persistence.LotacaoJpa;
 import java.util.Set;
 
 public interface LotacaoPort {
-    void atualizarLotacao(Lotacao lotacao);
-    Set<Integer> getLotacaos(Integer idLotacaoPai);
+    void atualizarLotacao(LotacaoJpa lotacao, LotacaoJSarh lotacaoJSarh);
+    Set<Integer> getLotacoes(Integer idLotacaoPai);
 }

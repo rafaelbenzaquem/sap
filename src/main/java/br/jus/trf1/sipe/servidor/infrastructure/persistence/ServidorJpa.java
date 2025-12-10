@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.servidor.infrastructure.persistence;
 
-import br.jus.trf1.sipe.lotacao.Lotacao;
+import br.jus.trf1.sipe.lotacao.infrastructure.persistence.LotacaoJpa;
 import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,9 +30,9 @@ public class ServidorJpa extends UsuarioJpa {
 
     @ManyToOne
     @JoinColumn(name = "lotacao_id", referencedColumnName = "id", nullable = true, foreignKey = @ForeignKey(name = "fk_lotacao_servidor"))
-    private Lotacao lotacao;
+    private LotacaoJpa lotacao;
 
-    public ServidorJpa(UsuarioJpa usuarioJPA, String email, String funcao, String cargo, Lotacao lotacao) {
+    public ServidorJpa(UsuarioJpa usuarioJPA, String email, String funcao, String cargo, LotacaoJpa lotacao) {
         super(usuarioJPA.getId(), usuarioJPA.getNome(), usuarioJPA.getMatricula(), usuarioJPA.getCracha(), usuarioJPA.getHoraDiaria());
         this.email = email;
         this.funcao = funcao;

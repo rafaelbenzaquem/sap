@@ -1,7 +1,7 @@
 package br.jus.trf1.sipe.servidor;
 
 import br.jus.trf1.sipe.ausencia.Ausencia;
-import br.jus.trf1.sipe.servidor.externo.jsarh.ServidorExterno;
+import br.jus.trf1.sipe.servidor.aplication.jsarh.ServidorJSarh;
 import br.jus.trf1.sipe.lotacao.LotacaoMapping;
 import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
 import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
@@ -15,17 +15,17 @@ import java.util.List;
     private ServidorCreator() {
     }
 
-    public static ServidorJpa createServidor(UsuarioJpa usuarioJPA, ServidorExterno servidorExterno, List<Ausencia> ausencias) {
+    public static ServidorJpa createServidor(UsuarioJpa usuarioJPA, ServidorJSarh servidorExterno, List<Ausencia> ausencias) {
         var servidor = new ServidorJpa(usuarioJPA, servidorExterno.getEmail(), servidorExterno.getFuncao(),
-                servidorExterno.getCargo(), LotacaoMapping.toModel(servidorExterno.getLotacao()));
+                servidorExterno.getCargo(), LotacaoMapping.toEntity(servidorExterno.getLotacao()));
         servidor.setAusencias(ausencias);
         return servidor;
     }
 
-    public static ServidorJpa createServidor(UsuarioJpa usuarioJPA, ServidorExterno servidorExterno) {
+    public static ServidorJpa createServidor(UsuarioJpa usuarioJPA, ServidorJSarh servidorExterno) {
         log.info("Vinculando dados do SARH para usuário: {}", usuarioJPA.getMatricula());
         return new ServidorJpa(usuarioJPA, servidorExterno.getEmail(), servidorExterno.getFuncao(),
-                servidorExterno.getCargo(), LotacaoMapping.toModel(servidorExterno.getLotacao()));
+                servidorExterno.getCargo(), LotacaoMapping.toEntity(servidorExterno.getLotacao()));
     }
 
 }

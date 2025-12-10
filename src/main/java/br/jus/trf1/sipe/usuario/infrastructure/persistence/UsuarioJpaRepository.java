@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -25,13 +26,42 @@ public interface UsuarioJpaRepository extends JpaRepository<UsuarioJpa, Integer>
                     OR u.cracha=  :cracha
                     OR u.matricula = :matricula
                     """)
-    Page<UsuarioJpa> findAllByNomeOrCrachaOrMatricula(@Param("nome") String nome,
+    Page<UsuarioJpa> paginaPorNomeOuCrachaOuMatricula(@Param("nome") String nome,
                                                       @Param("cracha") Integer cracha,
                                                       @Param("matricula") String matricula,
                                                       Pageable pageable);
 
+
+    @Query(value = """
+            SELECT u FROM UsuarioJpa u
+            WHERE LOWER(u.nome) LIKE LOWER(CONCAT('%', :nome, '%'))
+            OR u.cracha=  :cracha
+            OR u.matricula = :matricula
+            """,
+            countQuery = """
+                    SELECT COUNT(u) FROM UsuarioJpa u
+                    WHERE LOWER(u.nome) LIKE LOWER(CONCAT('%', :nome, '%'))
+                    OR u.cracha=  :cracha
+                    OR u.matricula = :matricula
+                    """)
+    List<UsuarioJpa> listaPorNomeOuCrachaOuMatricula(@Param("nome") String nome,
+                                                      @Param("cracha") Integer cracha,
+                                                      @Param("matricula") String matricula);
+
     Optional<UsuarioJpa> findUsuarioByMatricula(String matricula);
 
+
+
+
+    @Query(value = """
+                    SELECT COUNT(u) FROM UsuarioJpa u
+                    WHERE LOWER(u.nome) LIKE LOWER(CONCAT('%', :nome, '%'))
+                    OR u.cracha=  :cracha
+                    OR u.matricula = :matricula
+                    """)
+    long countAllByNomeOrCrachaOrMatricula(@Param("nome") String nome,
+                                                      @Param("cracha") Integer cracha,
+                                                      @Param("matricula") String matricula);
 
     /**
      * Verifica a existência usando uma consulta JPQL explícita.

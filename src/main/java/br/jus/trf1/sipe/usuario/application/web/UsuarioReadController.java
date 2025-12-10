@@ -8,7 +8,6 @@ import br.jus.trf1.sipe.usuario.domain.port.in.UsuarioServicePort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
@@ -29,7 +28,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class UsuarioReadController {
 
     private final UsuarioServicePort usuarioService;
-    private final ServidorService servidorService; // Assumindo porta para ServidorService
 
     @GetMapping(value = "/{matricula}")
     @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
@@ -41,76 +39,81 @@ public class UsuarioReadController {
         ));
     }
 
-//    @GetMapping("/pag")
-//    @PreAuthorize("hasAnyAuthority('GRP_SIPE_ADMIN', 'GRP_SIPE_RH', 'GRP_SIPE_DIRETOR')")
-//    public ResponseEntity<CollectionModel<EntityModel<UsuarioResponse>>> paginarUsuarios(@RequestParam(required = false) String nome,
-//                                                                                    @RequestParam(required = false) String cracha,
-//                                                                                    @RequestParam(required = false) String matricula,
-//                                                                                    @RequestParam(defaultValue = "0") int page,
-//                                                                                    @RequestParam(defaultValue = "5") int size) {
-//        List<? extends Usuario> usuarioPag;
-//        if (nome == null && cracha == null && matricula == null) {
-//            log.info("Pagina listaUsuarios All");
-//            usuarioPag = usuarioService.listar(page, size);
-//        } else {
-//            var isNumerico = cracha != null && cracha.matches("\\d{3,16}");
-//            log.info("Pagina listaUsuarios filtered");
-//            usuarioPag = usuarioService.buscaPorNomeOuCrachaOuMatricula(nome, isNumerico ? Integer.parseInt(cracha) : 0, matricula, page, size);
-//        }
-//
-//        var pagedModel = addLinksHATEOASCrud(usuarioPag);
-//        addLinksPaginacao(usuarioPag, pagedModel, page, size);
-//        return ResponseEntity.ok(pagedModel);
-//    }
+    @GetMapping("/pag")
+    @PreAuthorize("hasAnyAuthority('GRP_SIPE_ADMIN', 'GRP_SIPE_RH', 'GRP_SIPE_DIRETOR')")
+    public ResponseEntity<CollectionModel<EntityModel<UsuarioResponse>>> paginarUsuarios(@RequestParam(required = false) String nome,
+                                                                                         @RequestParam(required = false) String cracha,
+                                                                                         @RequestParam(required = false) String matricula,
+                                                                                         @RequestParam(defaultValue = "0") int page,
+                                                                                         @RequestParam(defaultValue = "5") int size) {
+        List<? extends Usuario> usuarios;
+        long totalElements = 90;
+        if (nome == null && cracha == null && matricula == null) {
+            log.info("Pagina listaUsuarios All");
+            usuarios = usuarioService.pagina(page, size);
+            totalElements = usuarioService.conta();
+        } else {
+            var isNumerico = cracha != null && cracha.matches("\\d{3,16}");
+            log.info("Pagina listaUsuarios filtered");
+            usuarios = usuarioService.paginaPorNomeOuCrachaOuMatricula(nome, isNumerico ? Integer.parseInt(cracha) : 0, matricula, page, size);
+            totalElements = usuarioService.contaPorNomeOuCrachaOuMatricula(nome, isNumerico ? Integer.parseInt(cracha) : 0, matricula);
+        }
+
+        var pagedModel = addLinksHATEOASCrud(usuarios, page, size, totalElements);
+        addLinksPaginacao(usuarios, pagedModel, page, size, totalElements);
+        return ResponseEntity.ok(pagedModel);
+    }
 
 
-//    @GetMapping
-//    @PreAuthorize("hasAnyAuthority('GRP_SIPE_ADMIN', 'GRP_SIPE_RH', 'GRP_SIPE_DIRETOR')")
-//    public ResponseEntity<CollectionModel<EntityModel<UsuarioResponse>>> listarUsuarios(@RequestParam(required = false) String nome,
-//                                                                                        @RequestParam(required = false) String cracha,
-//                                                                                        @RequestParam(required = false) String matricula,
-//                                                                                        @RequestParam(required = false, name = "id_lotacao", defaultValue = "15") Integer idLotacao) {
-//                List<? extends Usuario> usuarioPag;
-//        if (nome == null && cracha == null && matricula == null) {
-//            log.info("Pagina listaUsuarios All");
-//            usuarioPag = usuarioService.listar(page, size);
-//        } else {
-//            var isNumerico = cracha != null && cracha.matches("\\d{3,16}");
-//            log.info("Pagina listaUsuarios filtered");
-//            usuarioPag = usuarioService.buscaPorNomeOuCrachaOuMatricula(nome, isNumerico ? Integer.parseInt(cracha) : 0, matricula, page, size);
-//        }
-//
-//        var models = usuarioList.stream().map(usuario ->
-//            EntityModel.of(UsuarioMapper.toResponse(usuario),
-//                linkTo(methodOn(UsuarioReadController.class).buscaUsuario(usuario.getMatricula())).withSelfRel(),
-//                linkTo(methodOn(UsuarioDeleteController.class).apagaVinculo(usuario.getId())).withRel("delete")
-//            )
-//        ).toList();
-//
-//        return ResponseEntity.ok(CollectionModel.of(models));
-//    }
+    @GetMapping
+    @PreAuthorize("hasAnyAuthority('GRP_SIPE_ADMIN', 'GRP_SIPE_RH', 'GRP_SIPE_DIRETOR')")
+    public ResponseEntity<CollectionModel<EntityModel<UsuarioResponse>>> listarUsuarios(@RequestParam(required = false) String nome,
+                                                                                        @RequestParam(required = false) String cracha,
+                                                                                        @RequestParam(required = false) String matricula,
+                                                                                        @RequestParam(required = false, name = "id_lotacao", defaultValue = "15") Integer idLotacao) {
+        List<? extends Usuario> usuarioList;
+        if (nome == null && cracha == null && matricula == null) {
+            log.info("Pagina listaUsuarios All");
+            usuarioList = usuarioService.lista();
+        } else {
+            var isNumerico = cracha != null && cracha.matches("\\d{3,16}");
+            log.info("Pagina listaUsuarios filtered");
+            usuarioList = usuarioService.listaPorNomeOuCrachaOuMatricula(nome, isNumerico ? Integer.parseInt(cracha) : 0, matricula);
+        }
 
-//    private void addLinksPaginacao(Page<? extends Usuario> usuarioPag, PagedModel<EntityModel<UsuarioResponse>> pagedModel, int page, int size) {
-//        if (usuarioPag.hasPrevious()) {
-//            pagedModel.add(Link.of(linkTo(methodOn(UsuarioReadController.class).paginarUsuarios(null, null, null, page - 1, size)).toString(), "prev"));
-//        }
-//        if (usuarioPag.hasNext()) {
-//            pagedModel.add(Link.of(linkTo(methodOn(UsuarioReadController.class).paginarUsuarios(null, null, null, page + 1, size)).toString(), "next"));
-//        }
-//    }
-//
-//    private PagedModel<EntityModel<UsuarioResponse>> addLinksHATEOASCrud(Page<? extends Usuario> usuarioPage) {
-//        return PagedModel.of(
-//                usuarioPage.getContent().stream()
-//                        .map(usuario -> EntityModel.of(UsuarioMapper.toResponse(usuario),
-//                                linkTo(methodOn(UsuarioReadController.class).buscaUsuario(usuario.getMatricula())).withSelfRel(),
-//                                linkTo(methodOn(UsuarioDeleteController.class).apagaVinculo(usuario.getId())).withRel("delete")
-//                        )).toList(),
-//                new PagedModel.PageMetadata(
-//                        usuarioPage.getSize(),
-//                        usuarioPage.getNumber(),
-//                        usuarioPage.getTotalElements(),
-//                        usuarioPage.getTotalPages())
-//        );
-//    }
+        var models = usuarioList.stream().map(usuario ->
+                EntityModel.of(UsuarioMapper.toResponse(usuario),
+                        linkTo(methodOn(UsuarioReadController.class).buscaUsuario(usuario.getMatricula())).withSelfRel(),
+                        linkTo(methodOn(UsuarioDeleteController.class).apagaVinculo(usuario.getId())).withRel("delete")
+                )
+        ).toList();
+
+        return ResponseEntity.ok(CollectionModel.of(models));
+    }
+
+    private void addLinksPaginacao(List<? extends Usuario> usuarios, PagedModel<EntityModel<UsuarioResponse>> pagedModel, int page, int size, long totalElements) {
+        var totalDePaginas = (int) Math.ceil(((double) totalElements / (double) size));
+
+        if (page > 0) {
+            pagedModel.add(Link.of(linkTo(methodOn(UsuarioReadController.class).paginarUsuarios(null, null, null, page - 1, size)).toString(), "prev"));
+        }
+        if (page < totalDePaginas) {
+            pagedModel.add(Link.of(linkTo(methodOn(UsuarioReadController.class).paginarUsuarios(null, null, null, page + 1, size)).toString(), "next"));
+        }
+    }
+
+    private PagedModel<EntityModel<UsuarioResponse>> addLinksHATEOASCrud(List<? extends Usuario> usuarios, int page, int size, long totalElements) {
+        return PagedModel.of(
+                usuarios.stream()
+                        .map(usuario -> EntityModel.of(UsuarioMapper.toResponse(usuario),
+                                linkTo(methodOn(UsuarioReadController.class).buscaUsuario(usuario.getMatricula())).withSelfRel(),
+                                linkTo(methodOn(UsuarioDeleteController.class).apagaVinculo(usuario.getId())).withRel("delete")
+                        )).toList(),
+                new PagedModel.PageMetadata(
+                        size,
+                        page,
+                        totalElements,
+                        (long) Math.ceil(((double) totalElements / (double) size)))
+        );
+    }
 }

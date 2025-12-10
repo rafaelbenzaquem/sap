@@ -1,4 +1,4 @@
-package br.jus.trf1.sipe.lotacao.externo.jsarh.dto;
+package br.jus.trf1.sipe.lotacao.aplication.jsarh.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.Objects;
 @Builder
 @AllArgsConstructor
 @Getter
-public class LotacaoExternaResponse extends RepresentationModel<LotacaoExternaResponse> {
+public class LotacaoJSarhResponse extends RepresentationModel<LotacaoJSarhResponse> {
 
     private final Integer id;
     private final String sigla;
@@ -22,7 +22,7 @@ public class LotacaoExternaResponse extends RepresentationModel<LotacaoExternaRe
 
     @Override
     public final boolean equals(Object o) {
-        if (!(o instanceof LotacaoExternaResponse that)) return false;
+        if (!(o instanceof LotacaoJSarhResponse that)) return false;
         if (!super.equals(o)) return false;
 
         return Objects.equals(id, that.id);

@@ -25,15 +25,6 @@ public class UsuarioService implements UsuarioServicePort {
         this.usuarioSecurityPort = usuarioSecurityPort;
     }
 
-
-    @Override
-    public List<Usuario> buscaPorNomeOuCrachaOuMatricula(String nome,
-                                                         Integer cracha,
-                                                         String matricula,
-                                                         int page, int size) {
-        return usuarioRepositoryPort.listaPorNomeOuCrachaOuMatricula(nome, cracha, matricula, page, size);
-    }
-
     @Override
     public Usuario getUsuarioAutenticado() {
         return usuarioSecurityPort.getUsuarioAutenticado();
@@ -51,11 +42,39 @@ public class UsuarioService implements UsuarioServicePort {
     }
 
     @Override
-    public List<Usuario> listar(int page, int size) {
-        return usuarioRepositoryPort.lista(page, size);
+    public List<Usuario> paginaPorNomeOuCrachaOuMatricula(String nome,
+                                                          Integer cracha,
+                                                          String matricula,
+                                                          int page, int size) {
+        return usuarioRepositoryPort.paginaPorNomeOuCrachaOuMatricula(nome, cracha, matricula, page, size);
+    }
+    @Override
+    public List<Usuario> listaPorNomeOuCrachaOuMatricula(String nome,
+                                                          Integer cracha,
+                                                          String matricula) {
+        return usuarioRepositoryPort.listaPorNomeOuCrachaOuMatricula(nome, cracha, matricula);
+    }
+    @Override
+    public List<Usuario> pagina(int page, int size) {
+        return usuarioRepositoryPort.pagina(page, size);
     }
 
+    @Override
+    public List<Usuario> lista() {
+        return usuarioRepositoryPort.lista();
+    }
 
+    @Override
+    public long conta() {
+        return usuarioRepositoryPort.conta();
+    }
+
+    @Override
+    public long contaPorNomeOuCrachaOuMatricula(String nome, Integer cracha, String matricula) {
+        return usuarioRepositoryPort.contaPorNomeOuCrachaOuMatricula(nome, cracha, matricula);
+    }
+
+    @Override
     public Usuario buscaPorMatricula(String matricula) {
         return usuarioRepositoryPort.buscaPorMatricula(matricula)
                 .orElseThrow(() -> new UsuarioInexistenteException("Não existe usuário para matrícula: %s!"
