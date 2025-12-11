@@ -1,9 +1,8 @@
 package br.jus.trf1.sipe.usuario.application.web;
 
-import br.jus.trf1.sipe.servidor.domain.service.ServidorService;
-import br.jus.trf1.sipe.usuario.UsuarioMapper;
+import br.jus.trf1.sipe.servidor.domain.service.ServidorServiceAdapter;
 import br.jus.trf1.sipe.usuario.domain.port.in.UsuarioServicePort;
-import br.jus.trf1.sipe.usuario.domain.service.UsuarioService;
+import br.jus.trf1.sipe.usuario.domain.service.UsuarioServiceAdapter;
 import br.jus.trf1.sipe.usuario.application.web.dto.UsuarioNovoRequest;
 import br.jus.trf1.sipe.usuario.application.web.dto.UsuarioResponse;
 import jakarta.validation.Valid;
@@ -24,9 +23,9 @@ public class UsuarioCreateController {
 
 
     private final UsuarioServicePort usuarioServicePort;
-    private final ServidorService servidorService;
+    private final ServidorServiceAdapter servidorService;
 
-    public UsuarioCreateController(UsuarioService usuarioServicePort, ServidorService servidorService) {
+    public UsuarioCreateController(UsuarioServiceAdapter usuarioServicePort, ServidorServiceAdapter servidorService) {
         this.usuarioServicePort = usuarioServicePort;
         this.servidorService = servidorService;
     }
@@ -37,7 +36,7 @@ public class UsuarioCreateController {
         log.info("Criando usuarioJPA: {}", request);
 
 
-        var usuario = usuarioServicePort.salve(UsuarioMapper.toDomain(request));
+        var usuario = usuarioServicePort.salve(UsuarioWebMapper.toDomain(request));
 
         servidorService.atualizaDadosDoSarh(usuario.getMatricula());
 

@@ -1,7 +1,7 @@
 package br.jus.trf1.sipe.lotacao.domain.service;
 
-import br.jus.trf1.sipe.lotacao.LotacaoMapping;
-import br.jus.trf1.sipe.lotacao.aplication.jsarh.LotacaoJSarh;
+import br.jus.trf1.sipe.lotacao.application.jsarh.LotacaoJSarhMapper;
+import br.jus.trf1.sipe.lotacao.application.jsarh.LotacaoJSarh;
 import br.jus.trf1.sipe.lotacao.infrastructure.persistence.LotacaoJpa;
 import br.jus.trf1.sipe.lotacao.domain.port.in.LotacaoServicePort;
 import br.jus.trf1.sipe.lotacao.domain.port.out.LotacaoRepositoryPort;
@@ -29,7 +29,7 @@ public class LotacaoService implements LotacaoServicePort {
     public void atualizarLotacao(LotacaoJpa lotacao, LotacaoJSarh lotacaoExterna) {
         if (lotacao == null || !Objects.equals(lotacao.getId(), lotacaoExterna.id())) {
             if (lotacaoRepository.findById(lotacaoExterna.id()).isEmpty()) {
-                LotacaoJpa novaLotacao = LotacaoMapping.toEntity(lotacaoExterna);
+                LotacaoJpa novaLotacao = LotacaoJSarhMapper.toEntity(lotacaoExterna);
                 lotacaoRepository.save(novaLotacao);
             }
         }

@@ -8,8 +8,8 @@ import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.registro.exceptions.RegistroInexistenteException;
 import br.jus.trf1.sipe.registro.externo.coletor.RegistroExternalService;
 import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
-import br.jus.trf1.sipe.usuario.UsuarioMapper;
-import br.jus.trf1.sipe.usuario.domain.service.UsuarioService;
+import br.jus.trf1.sipe.usuario.application.web.UsuarioWebMapper;
+import br.jus.trf1.sipe.usuario.domain.service.UsuarioServiceAdapter;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAprovadorException;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAutorizadoException;
 import lombok.extern.slf4j.Slf4j;
@@ -26,13 +26,13 @@ import java.util.Objects;
 @Service
 public class RegistroService {
 
-    private final UsuarioService usuarioService;
+    private final UsuarioServiceAdapter usuarioService;
     private final RegistroExternalService registroExternalService;
     private final RegistroRepository registroRepository;
     private final PedidoAlteracaoService pedidoAlteracaoService;
     private final AlteracaoRegistroService alteracaoRegistroService;
 
-    public RegistroService(UsuarioService usuarioService, RegistroExternalService registroExternalService,
+    public RegistroService(UsuarioServiceAdapter usuarioService, RegistroExternalService registroExternalService,
                            RegistroRepository registroRepository, PedidoAlteracaoService pedidoAlteracaoService,
                            AlteracaoRegistroService alteracaoRegistroService) {
         this.usuarioService = usuarioService;
@@ -114,7 +114,7 @@ public class RegistroService {
     public Registro aprovarRegistro(Long idRegistro) {
         var registro = registroRepository.findById(idRegistro).orElseThrow(() -> new RegistroInexistenteException(idRegistro));
         var usuario = usuarioService.getUsuarioAutenticado();
-        var usuarioJpa = UsuarioMapper.toEntity(usuario);
+        var usuarioJpa = UsuarioWebMapper.toEntity(usuario);
         if (usuarioJpa instanceof ServidorJpa servidor) {
             registro.setServidorAprovador(servidor);
             registro.setDataAprovacao(Timestamp.valueOf(LocalDateTime.now()));
@@ -127,7 +127,7 @@ public class RegistroService {
     public List<Registro> addRegistros(PedidoAlteracao pedidoAlteracao, Ponto ponto, List<Registro> registros) {
         var usuarioAutenticado = usuarioService.getUsuarioAutenticado();
         usuarioService.temPermissaoRecurso(ponto);
-        var usuarioJpa = UsuarioMapper.toEntity(usuarioAutenticado);
+        var usuarioJpa = UsuarioWebMapper.toEntity(usuarioAutenticado);
         var registrosNovos = registros.stream().
                 map(registro -> addPontoCriador(registro, ponto, (ServidorJpa) usuarioJpa)).toList();
         registrosNovos = registroRepository.saveAll(registrosNovos);
@@ -171,7 +171,7 @@ public class RegistroService {
     @Transactional
     public Registro atualizaRegistro(PedidoAlteracao pedidoAlteracao, Ponto ponto, Registro registroAtualizado) {
         var usuarioAutenticado = usuarioService.getUsuarioAutenticado();
-        var usuarioJpa = UsuarioMapper.toEntity(usuarioAutenticado);
+        var usuarioJpa = UsuarioWebMapper.toEntity(usuarioAutenticado);
         usuarioService.temPermissaoRecurso(ponto);
         registroAtualizado.setServidorCriador((ServidorJpa) usuarioJpa);
         var id = registroAtualizado.getId();

@@ -7,7 +7,7 @@ import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.registro.RegistroService;
 import br.jus.trf1.sipe.registro.web.dto.RegistroAtualizadoRequest;
 import br.jus.trf1.sipe.registro.web.dto.RegistroResponse;
-import br.jus.trf1.sipe.servidor.domain.service.ServidorService;
+import br.jus.trf1.sipe.servidor.domain.service.ServidorServiceAdapter;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -34,11 +34,11 @@ public class RegistroUpdateController {
 
     private final RegistroService registroService;
     private final PontoService pontoService;
-    private final ServidorService servidorService;
+    private final ServidorServiceAdapter servidorService;
     private final PedidoAlteracaoService pedidoAlteracaoService;
 
 
-    public RegistroUpdateController(RegistroService registroService, PontoService pontoService, ServidorService servidorService, PedidoAlteracaoService pedidoAlteracaoService) {
+    public RegistroUpdateController(RegistroService registroService, PontoService pontoService, ServidorServiceAdapter servidorService, PedidoAlteracaoService pedidoAlteracaoService) {
         this.registroService = registroService;
         this.pontoService = pontoService;
         this.servidorService = servidorService;

@@ -1,9 +1,8 @@
 package br.jus.trf1.sipe.folha;
 
-import br.jus.trf1.sipe.servidor.ServidorMapper;
+import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpaMapper;
 import br.jus.trf1.sipe.servidor.domain.model.Servidor;
-import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
-import br.jus.trf1.sipe.servidor.domain.service.ServidorService;
+import br.jus.trf1.sipe.servidor.domain.service.ServidorServiceAdapter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,11 +18,11 @@ import java.time.YearMonth;
 @Service
 public class FechamentoFolhaService {
     private final FolhaService folhaService;
-    private final ServidorService servidorService;
+    private final ServidorServiceAdapter servidorService;
     private final FechamentoFolhaRepository repository;
 
     public FechamentoFolhaService(FolhaService folhaService,
-                                  ServidorService servidorService,
+                                  ServidorServiceAdapter servidorService,
                                   FechamentoFolhaRepository repository) {
         this.folhaService = folhaService;
         this.servidorService = servidorService;
@@ -44,7 +43,7 @@ public class FechamentoFolhaService {
                 });
         // obtém servidor e folha
         Servidor servidor = servidorService.buscaPorMatricula(matricula);
-        var servidorJpa = ServidorMapper.toEntity(servidor);
+        var servidorJpa = ServidorJpaMapper.toEntity(servidor);
         var mesEnum = Mes.getMes(valorMes);
         var folha = folhaService.buscarFolha(matricula, mesEnum, ano)
                 .orElseGet(() -> folhaService.abrirFolha(matricula, mesEnum, ano));

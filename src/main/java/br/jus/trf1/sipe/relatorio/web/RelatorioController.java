@@ -4,8 +4,7 @@ import br.jus.trf1.sipe.relatorio.RelatorioLotacaoService;
 import br.jus.trf1.sipe.relatorio.RelatorioService;
 import br.jus.trf1.sipe.relatorio.RelatorioUsuarioService;
 import br.jus.trf1.sipe.servidor.domain.model.Servidor;
-import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
-import br.jus.trf1.sipe.servidor.domain.service.ServidorService;
+import br.jus.trf1.sipe.servidor.domain.service.ServidorServiceAdapter;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.core.io.InputStreamResource;
@@ -32,11 +31,11 @@ public class RelatorioController {
 
     private final RelatorioUsuarioService relatorioUsuarioService;
     private final RelatorioLotacaoService relatorioLotacaoService;
-    private final ServidorService servidorService;
+    private final ServidorServiceAdapter servidorService;
 
     public RelatorioController(RelatorioUsuarioService relatorioUsuarioService,
                                RelatorioLotacaoService relatorioLotacaoService,
-                               ServidorService servidorService) {
+                               ServidorServiceAdapter servidorService) {
         this.relatorioUsuarioService = relatorioUsuarioService;
         this.relatorioLotacaoService = relatorioLotacaoService;
         this.servidorService = servidorService;

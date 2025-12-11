@@ -4,7 +4,7 @@ import br.jus.trf1.sipe.arquivo.db.ArquivoRepository;
 import br.jus.trf1.sipe.feriado.externo.jsarh.FeriadoJSarhClient;
 import br.jus.trf1.sipe.feriado.externo.jsarh.dto.FeriadoJSarhResponse;
 import br.jus.trf1.sipe.ponto.PontoService;
-import br.jus.trf1.sipe.servidor.domain.service.ServidorService;
+import br.jus.trf1.sipe.servidor.domain.service.ServidorServiceAdapter;
 import br.jus.trf1.sipe.usuario.infrastructure.security.UsuarioSecurityAdapter;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JREmptyDataSource;
@@ -31,7 +31,7 @@ public class RelatorioUsuarioService implements RelatorioService {
     private final FeriadoJSarhClient feriadoExternalClient;
     private final PontoService pontoService;
     private final ArquivoRepository arquivoRepository;
-    private final ServidorService servidorService;
+    private final ServidorServiceAdapter servidorService;
     private final UsuarioSecurityAdapter usuarioSecurityAdapter;
 
 
@@ -44,7 +44,7 @@ public class RelatorioUsuarioService implements RelatorioService {
      * @param servidorService       Serviço de acesso a dados do Servidor no Sarh
      */
     public RelatorioUsuarioService(FeriadoJSarhClient feriadoExternalClient, PontoService pontoService,
-                                   ArquivoRepository arquivoRepository, ServidorService servidorService,
+                                   ArquivoRepository arquivoRepository, ServidorServiceAdapter servidorService,
                                    UsuarioSecurityAdapter usuarioSecurityAdapter) {
         this.feriadoExternalClient = feriadoExternalClient;
         this.pontoService = pontoService;

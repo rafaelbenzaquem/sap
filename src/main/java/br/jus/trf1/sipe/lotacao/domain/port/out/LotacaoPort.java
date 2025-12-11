@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.lotacao.domain.port.out;
 
-import br.jus.trf1.sipe.lotacao.aplication.jsarh.LotacaoJSarh;
+import br.jus.trf1.sipe.lotacao.application.jsarh.LotacaoJSarh;
 import br.jus.trf1.sipe.lotacao.infrastructure.persistence.LotacaoJpa;
 import java.util.Set;
 

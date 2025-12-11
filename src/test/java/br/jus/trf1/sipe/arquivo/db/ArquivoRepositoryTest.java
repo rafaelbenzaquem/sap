@@ -1,5 +1,7 @@
 package br.jus.trf1.sipe.arquivo.db;
 
+import br.jus.trf1.sipe.arquivo.infrastructure.db.ArquivoJpa;
+import br.jus.trf1.sipe.arquivo.infrastructure.db.ArquivoJpaRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -13,16 +15,16 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 @ActiveProfiles("test")
 @Sql(scripts = "classpath:data/arquivo/dataset-arquivos.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-class ArquivoRepositoryTest {
+class ArquivoJpaRepositoryTest {
 
     @Autowired
-    private ArquivoRepository repository;
+    private ArquivoJpaRepository repository;
 
     @Test
     void testFindByNomeExists() {
-        Optional<Arquivo> opt = repository.findByNome("file1");
+        Optional<ArquivoJpa> opt = repository.findByNome("file1");
         assertTrue(opt.isPresent(), "Deve encontrar arquivo com nome file1");
-        Arquivo a = opt.get();
+        ArquivoJpa a = opt.get();
         assertEquals("id1", a.getId());
         assertEquals("file1", a.getNome());
         assertEquals("text/plain", a.getTipoDeConteudo());
@@ -32,7 +34,7 @@ class ArquivoRepositoryTest {
 
     @Test
     void testFindByNomeNotExists() {
-        Optional<Arquivo> opt = repository.findByNome("nonexistent");
+        Optional<ArquivoJpa> opt = repository.findByNome("nonexistent");
         assertFalse(opt.isPresent(), "Não deve encontrar arquivo inexistente");
     }
 

@@ -1,7 +1,7 @@
 package br.jus.trf1.sipe.servidor.infrastructure.persistence;
 
 import br.jus.trf1.sipe.lotacao.infrastructure.persistence.LotacaoJpa;
-import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
+import br.jus.trf1.sipe.usuario.infrastructure.db.UsuarioJpa;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

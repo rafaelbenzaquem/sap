@@ -2,7 +2,7 @@ package br.jus.trf1.sipe.usuario;
 
 import br.jus.trf1.sipe.comum.exceptions.CamposUnicosExistentesException;
 import br.jus.trf1.sipe.usuario.domain.model.Usuario;
-import br.jus.trf1.sipe.usuario.domain.service.UsuarioService;
+import br.jus.trf1.sipe.usuario.domain.service.UsuarioServiceAdapter;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioInexistenteException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UsuarioServiceIntegrationTest {
 
     @Autowired
-    private UsuarioService usuarioService;
+    private UsuarioServiceAdapter usuarioService;
 
     @Test
     void paginaDeveRetornarTodosUsuarios() {

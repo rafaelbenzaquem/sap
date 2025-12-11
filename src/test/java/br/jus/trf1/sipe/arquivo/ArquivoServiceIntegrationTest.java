@@ -1,10 +1,10 @@
 package br.jus.trf1.sipe.arquivo;
 
-import br.jus.trf1.sipe.arquivo.db.ArquivoRepository;
+import br.jus.trf1.sipe.arquivo.application.web.dto.ArquivoListResponse;
+import br.jus.trf1.sipe.arquivo.domain.model.Arquivo;
+import br.jus.trf1.sipe.arquivo.domain.port.out.ArquivoRepositoryPort;
+import br.jus.trf1.sipe.arquivo.domain.service.ArquivoServiceDapter;
 import br.jus.trf1.sipe.arquivo.exceptions.ArquivoInexistenteException;
-import br.jus.trf1.sipe.arquivo.web.dto.ArquivoAtualizadoRequest;
-import br.jus.trf1.sipe.arquivo.web.dto.ArquivoListResponse;
-import br.jus.trf1.sipe.arquivo.web.dto.ArquivoNovoRequest;
 import br.jus.trf1.sipe.comum.exceptions.CamposUnicosExistentesException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,14 +23,14 @@ import static org.junit.jupiter.api.Assertions.*;
 class ArquivoServiceIntegrationTest {
 
     @Autowired
-    private ArquivoService service;
+    private ArquivoServiceDapter service;
 
     @Autowired
-    private ArquivoRepository repository;
+    private ArquivoRepositoryPort repository;
 
     @Test
     void testArmazenaSucesso() {
-        var request = ArquivoNovoRequest.builder()
+        var request = Arquivo.builder()
                 .id("id3")
                 .nome("file3")
                 .tipoDeConteudo("text/plain")
@@ -37,16 +39,16 @@ class ArquivoServiceIntegrationTest {
                 .build();
         var meta = service.armazena(request);
         assertNotNull(meta);
-        assertEquals("id3", meta.id());
-        assertEquals("file3", meta.nome());
-        assertEquals("text/plain", meta.tipoDeConteudo());
-        assertEquals(16L, meta.tamanho());
-        assertEquals("desc3", meta.descricao());
+        assertEquals("id3", meta.getId());
+        assertEquals("file3", meta.getNome());
+        assertEquals("text/plain", meta.getTipoDeConteudo());
+        assertEquals(16L, meta.getBytes());
+        assertEquals("desc3", meta.getNome());
     }
 
     @Test
     void testArmazenaNomeDuplicado() {
-        var request = ArquivoNovoRequest.builder()
+        var request = Arquivo.builder()
                 .id("id3")
                 .nome("file1")
                 .tipoDeConteudo("text/plain")
@@ -58,16 +60,16 @@ class ArquivoServiceIntegrationTest {
 
     @Test
     void testLista() {
-        Page<ArquivoListResponse> page = service.lista(0, 10);
-        assertEquals(2, page.getTotalElements());
+        List<Arquivo> arquivos = service.lista(0, 10);
+        assertEquals(2, arquivos.size());
     }
 
     @Test
     void testRecuperaPorIdENome() {
         var resp1 = service.recuperaPorId("id1");
-        assertEquals("file1", resp1.nome());
+        assertEquals("file1", resp1.getNome());
         var resp2 = service.recuperaPorNome("file2");
-        assertEquals("file2", resp2.nome());
+        assertEquals("file2", resp2.getNome());
     }
 
     @Test
@@ -75,17 +77,11 @@ class ArquivoServiceIntegrationTest {
         assertThrows(ArquivoInexistenteException.class, () -> service.recuperaPorId("no"));
     }
 
-    @Test
-    void testRecuperaMetadata() {
-        var meta1 = service.recuperaMetadataPorId("id1");
-        assertEquals("file1", meta1.nome());
-        var meta2 = service.recuperaMetadataPorNome("file2");
-        assertEquals("file2", meta2.nome());
-    }
+
 
     @Test
     void testAtualizaSucesso() {
-        var request = ArquivoAtualizadoRequest.builder()
+        var request = Arquivo.builder()
                 .id("id1")
                 .nome("file1new")
                 .tipoDeConteudo("text/plain")
@@ -93,13 +89,13 @@ class ArquivoServiceIntegrationTest {
                 .descricao("descNew")
                 .build();
         var meta = service.atualiza(request);
-        assertEquals("file1new", meta.nome());
-        assertEquals(24L, meta.tamanho());
+        assertEquals("file1new", meta.getNome());
+        assertEquals(24L, meta.getBytes());
     }
 
     @Test
     void testAtualizaInexistente() {
-        var request = ArquivoAtualizadoRequest.builder()
+        var request = Arquivo.builder()
                 .id("no")
                 .nome("x")
                 .tipoDeConteudo("t")
@@ -111,7 +107,7 @@ class ArquivoServiceIntegrationTest {
 
     @Test
     void testAtualizaNomeDuplicado() {
-        var request = ArquivoAtualizadoRequest.builder()
+        var request = Arquivo.builder()
                 .id("id2")
                 .nome("file1")
                 .tipoDeConteudo("text/plain")
@@ -124,15 +120,15 @@ class ArquivoServiceIntegrationTest {
     @Test
     void testApagaEInexistente() {
         var meta = service.apagaPorId("id1");
-        assertEquals("file1", meta.nome());
-        assertEquals(1, repository.count());
+        assertEquals("file1", meta.getNome());
+        assertEquals(1, repository.contar());
         assertThrows(ArquivoInexistenteException.class, () -> service.apagaPorId("no"));
     }
 
     @Test
     void testApagaPorNome() {
         var meta = service.apagaPorNome("file2");
-        assertEquals("file2", meta.nome());
-        assertEquals(1, repository.count());
+        assertEquals("file2", meta.getNome());
+        assertEquals(1, repository.contar());
     }
 }

@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.ausencia;
 
-import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
+import br.jus.trf1.sipe.usuario.infrastructure.db.UsuarioJpa;
 import jakarta.persistence.*;
 import lombok.*;
 

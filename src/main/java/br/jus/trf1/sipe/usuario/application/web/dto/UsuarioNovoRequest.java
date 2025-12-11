@@ -2,7 +2,7 @@ package br.jus.trf1.sipe.usuario.application.web.dto;
 
 
 import br.jus.trf1.sipe.comum.validadores.Unico;
-import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
+import br.jus.trf1.sipe.usuario.infrastructure.db.UsuarioJpa;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -21,7 +21,4 @@ public record UsuarioNovoRequest(@NotBlank(message = "Campo 'nome' não pode ser
                                  @JsonProperty(value = "hora_diaria")
                                  @NotNull(message = "Campo 'hora_diaria' não pode ser nulo.")
                                  Integer horaDiaria) {
-    public UsuarioJpa paraEntidade() {
-        return new UsuarioJpa(null, this.nome(), this.matricula(), this.cracha(), this.horaDiaria());
-    }
 }

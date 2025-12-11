@@ -1,7 +1,7 @@
 package br.jus.trf1.sipe.usuario;
 
-import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
-import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpaRepository;
+import br.jus.trf1.sipe.usuario.infrastructure.db.UsuarioJpa;
+import br.jus.trf1.sipe.usuario.infrastructure.db.UsuarioJpaRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;

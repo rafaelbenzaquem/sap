@@ -1,9 +1,7 @@
 package br.jus.trf1.sipe.usuario.application.web;
 
-import br.jus.trf1.sipe.usuario.UsuarioMapper;
 import br.jus.trf1.sipe.usuario.application.web.dto.UsuarioResponse;
 import br.jus.trf1.sipe.usuario.domain.port.in.UsuarioServicePort;
-import br.jus.trf1.sipe.usuario.domain.port.out.UsuarioRepositoryPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,6 +23,6 @@ public class UsuarioDeleteController {
     @PreAuthorize("hasAuthority('GRP_SIPE_ADMIN')")
     public ResponseEntity<UsuarioResponse> apagaVinculo(@PathVariable Integer id) {
             var usuario = usuarioRepositoryPort.apagaPorId(id);
-            return ResponseEntity.ok().body(UsuarioMapper.toResponse(usuario));
+            return ResponseEntity.ok().body(UsuarioWebMapper.toResponse(usuario));
     }
 }

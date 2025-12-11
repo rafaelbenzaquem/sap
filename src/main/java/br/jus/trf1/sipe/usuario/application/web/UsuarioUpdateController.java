@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.usuario.application.web;
 
-import br.jus.trf1.sipe.usuario.domain.service.UsuarioService;
+import br.jus.trf1.sipe.usuario.domain.service.UsuarioServiceAdapter;
 import br.jus.trf1.sipe.usuario.application.web.dto.UsuarioAtualizadoRequest;
 import br.jus.trf1.sipe.usuario.application.web.dto.UsuarioResponse;
 import jakarta.validation.Valid;
@@ -16,9 +16,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping(value = "/v1/sipe/usuarios")
 public class UsuarioUpdateController {
 
-    private final UsuarioService service;
+    private final UsuarioServiceAdapter service;
 
-    public UsuarioUpdateController(UsuarioService service) {
+    public UsuarioUpdateController(UsuarioServiceAdapter service) {
         this.service = service;
     }
 

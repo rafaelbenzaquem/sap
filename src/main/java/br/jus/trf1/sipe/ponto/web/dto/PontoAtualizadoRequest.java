@@ -2,7 +2,7 @@ package br.jus.trf1.sipe.ponto.web.dto;
 
 import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.ponto.PontoId;
-import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
+import br.jus.trf1.sipe.usuario.infrastructure.db.UsuarioJpa;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

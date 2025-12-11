@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.alteracao.pedido_alteracao.web.dto;
 
-import br.jus.trf1.sipe.alteracao.alteracao_registro.web.AlteracaoRegistroResponse;
+import br.jus.trf1.sipe.alteracao.alteracao_registro.web.dto.AlteracaoRegistroResponse;
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracao;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;

@@ -1,8 +1,6 @@
 package br.jus.trf1.sipe.servidor.domain.port.out;
 
 import br.jus.trf1.sipe.servidor.domain.model.Servidor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,7 +8,7 @@ import java.util.Set;
 
 public interface ServidorRepositoryPort {
 
-    Optional<Servidor> findByMatricula(String matricula);
+    Optional<Servidor> buscaPorMatricula(String matricula);
 
     List<Servidor> listarTodos();
 
@@ -30,7 +28,7 @@ public interface ServidorRepositoryPort {
 
     Optional<Servidor> buscaDiretorLotacao(Integer idLotacao);
 
-    Servidor save(Servidor servidor);
+    Servidor salva(Servidor servidor);
     
-    Optional<Servidor> findById(Integer id);
+    Optional<Servidor> buscaPorId(Integer id);
 }

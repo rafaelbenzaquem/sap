@@ -1,6 +1,5 @@
 package br.jus.trf1.sipe.usuario.application.web;
 
-import br.jus.trf1.sipe.usuario.UsuarioMapper;
 import br.jus.trf1.sipe.usuario.application.web.dto.UsuarioResponse;
 import br.jus.trf1.sipe.usuario.domain.model.Usuario;
 import br.jus.trf1.sipe.usuario.domain.port.in.UsuarioServicePort;
@@ -31,7 +30,7 @@ public class UsuarioReadController {
     @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
     public ResponseEntity<EntityModel<UsuarioResponse>> buscaUsuario(@PathVariable("matricula") String matricula) {
         var usuario = usuarioService.buscaPorMatricula(matricula);
-        return ResponseEntity.ok(EntityModel.of(UsuarioMapper.toResponse(usuario),
+        return ResponseEntity.ok(EntityModel.of(UsuarioWebMapper.toResponse(usuario),
                 linkTo(methodOn(UsuarioReadController.class).buscaUsuario(matricula)).withSelfRel(),
                 linkTo(methodOn(UsuarioDeleteController.class).apagaVinculo(usuario.getId())).withRel("delete")
         ));
@@ -80,7 +79,7 @@ public class UsuarioReadController {
         }
 
         var models = usuarioList.stream().map(usuario ->
-                EntityModel.of(UsuarioMapper.toResponse(usuario),
+                EntityModel.of(UsuarioWebMapper.toResponse(usuario),
                         linkTo(methodOn(UsuarioReadController.class).buscaUsuario(usuario.getMatricula())).withSelfRel(),
                         linkTo(methodOn(UsuarioDeleteController.class).apagaVinculo(usuario.getId())).withRel("delete")
                 )
@@ -103,7 +102,7 @@ public class UsuarioReadController {
     private PagedModel<EntityModel<UsuarioResponse>> addLinksHATEOASCrud(List<? extends Usuario> usuarios, int page, int size, long totalElements) {
         return PagedModel.of(
                 usuarios.stream()
-                        .map(usuario -> EntityModel.of(UsuarioMapper.toResponse(usuario),
+                        .map(usuario -> EntityModel.of(UsuarioWebMapper.toResponse(usuario),
                                 linkTo(methodOn(UsuarioReadController.class).buscaUsuario(usuario.getMatricula())).withSelfRel(),
                                 linkTo(methodOn(UsuarioDeleteController.class).apagaVinculo(usuario.getId())).withRel("delete")
                         )).toList(),
