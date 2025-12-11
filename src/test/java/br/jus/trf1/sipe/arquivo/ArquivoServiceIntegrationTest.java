@@ -1,10 +1,11 @@
 package br.jus.trf1.sipe.arquivo;
 
-import br.jus.trf1.sipe.arquivo.db.ArquivoRepository;
+import br.jus.trf1.sipe.arquivo.application.web.ArquivoWebDapter;
+import br.jus.trf1.sipe.arquivo.application.web.dto.ArquivoAtualizadoRequest;
+import br.jus.trf1.sipe.arquivo.application.web.dto.ArquivoListResponse;
+import br.jus.trf1.sipe.arquivo.application.web.dto.ArquivoNovoRequest;
+import br.jus.trf1.sipe.arquivo.domain.port.out.ArquivoRepositoryPort;
 import br.jus.trf1.sipe.arquivo.exceptions.ArquivoInexistenteException;
-import br.jus.trf1.sipe.arquivo.web.dto.ArquivoAtualizadoRequest;
-import br.jus.trf1.sipe.arquivo.web.dto.ArquivoListResponse;
-import br.jus.trf1.sipe.arquivo.web.dto.ArquivoNovoRequest;
 import br.jus.trf1.sipe.comum.exceptions.CamposUnicosExistentesException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +22,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class ArquivoServiceIntegrationTest {
 
     @Autowired
-    private ArquivoService service;
+    private ArquivoWebDapter service;
 
     @Autowired
-    private ArquivoRepository repository;
+    private ArquivoRepositoryPort repository;
 
     @Test
     void testArmazenaSucesso() {
@@ -125,7 +126,7 @@ class ArquivoServiceIntegrationTest {
     void testApagaEInexistente() {
         var meta = service.apagaPorId("id1");
         assertEquals("file1", meta.nome());
-        assertEquals(1, repository.count());
+        assertEquals(1, repository.contar());
         assertThrows(ArquivoInexistenteException.class, () -> service.apagaPorId("no"));
     }
 
@@ -133,6 +134,6 @@ class ArquivoServiceIntegrationTest {
     void testApagaPorNome() {
         var meta = service.apagaPorNome("file2");
         assertEquals("file2", meta.nome());
-        assertEquals(1, repository.count());
+        assertEquals(1, repository.contar());
     }
 }

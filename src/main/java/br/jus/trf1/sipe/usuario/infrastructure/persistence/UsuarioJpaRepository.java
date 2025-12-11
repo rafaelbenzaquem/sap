@@ -48,6 +48,7 @@ public interface UsuarioJpaRepository extends JpaRepository<UsuarioJpa, Integer>
                                                       @Param("cracha") Integer cracha,
                                                       @Param("matricula") String matricula);
 
+
     Optional<UsuarioJpa> findUsuarioByMatricula(String matricula);
 
 

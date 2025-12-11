@@ -1,14 +1,8 @@
 package br.jus.trf1.sipe.servidor;
 
-import br.jus.trf1.sipe.ausencia.Ausencia;
-import br.jus.trf1.sipe.lotacao.LotacaoMapping;
-import br.jus.trf1.sipe.servidor.aplication.jsarh.ServidorJSarh;
 import br.jus.trf1.sipe.servidor.domain.model.Servidor;
 import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
-import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
 
 @Slf4j
 public class ServidorMapper {

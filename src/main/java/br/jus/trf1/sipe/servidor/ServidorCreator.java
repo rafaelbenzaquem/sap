@@ -1,7 +1,7 @@
 package br.jus.trf1.sipe.servidor;
 
 import br.jus.trf1.sipe.ausencia.Ausencia;
-import br.jus.trf1.sipe.servidor.aplication.jsarh.ServidorJSarh;
+import br.jus.trf1.sipe.servidor.application.jsarh.ServidorJSarh;
 import br.jus.trf1.sipe.lotacao.LotacaoMapping;
 import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
 import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;

@@ -6,7 +6,7 @@ import br.jus.trf1.sipe.servidor.ServidorMapper;
 import br.jus.trf1.sipe.servidor.domain.model.Servidor;
 import br.jus.trf1.sipe.servidor.domain.port.in.ServidorServicePort;
 import br.jus.trf1.sipe.servidor.domain.port.out.ServidorRepositoryPort;
-import br.jus.trf1.sipe.servidor.aplication.jsarh.ServidorJSarhService;
+import br.jus.trf1.sipe.servidor.application.jsarh.ServidorJSarhService;
 import br.jus.trf1.sipe.lotacao.exceptions.LotacaoNaoTemDiretorException;
 import br.jus.trf1.sipe.lotacao.domain.service.LotacaoService;
 import br.jus.trf1.sipe.servidor.exceptions.ServidorInexistenteException;

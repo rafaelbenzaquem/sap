@@ -21,7 +21,4 @@ public record UsuarioNovoRequest(@NotBlank(message = "Campo 'nome' não pode ser
                                  @JsonProperty(value = "hora_diaria")
                                  @NotNull(message = "Campo 'hora_diaria' não pode ser nulo.")
                                  Integer horaDiaria) {
-    public UsuarioJpa paraEntidade() {
-        return new UsuarioJpa(null, this.nome(), this.matricula(), this.cracha(), this.horaDiaria());
-    }
 }
