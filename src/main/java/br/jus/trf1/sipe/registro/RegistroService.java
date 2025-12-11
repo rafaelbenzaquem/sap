@@ -8,6 +8,7 @@ import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.registro.exceptions.RegistroInexistenteException;
 import br.jus.trf1.sipe.registro.externo.coletor.RegistroExternalService;
 import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
+import br.jus.trf1.sipe.usuario.UsuarioMapper;
 import br.jus.trf1.sipe.usuario.domain.service.UsuarioService;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAprovadorException;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAutorizadoException;
@@ -113,7 +114,8 @@ public class RegistroService {
     public Registro aprovarRegistro(Long idRegistro) {
         var registro = registroRepository.findById(idRegistro).orElseThrow(() -> new RegistroInexistenteException(idRegistro));
         var usuario = usuarioService.getUsuarioAutenticado();
-        if (usuario instanceof ServidorJpa servidor) {
+        var usuarioJpa = UsuarioMapper.toEntity(usuario);
+        if (usuarioJpa instanceof ServidorJpa servidor) {
             registro.setServidorAprovador(servidor);
             registro.setDataAprovacao(Timestamp.valueOf(LocalDateTime.now()));
             return registroRepository.save(registro);
@@ -123,11 +125,11 @@ public class RegistroService {
 
     @Transactional
     public List<Registro> addRegistros(PedidoAlteracao pedidoAlteracao, Ponto ponto, List<Registro> registros) {
-        var usuarioAtual = usuarioService.getUsuarioAutenticado();
+        var usuarioAutenticado = usuarioService.getUsuarioAutenticado();
         usuarioService.temPermissaoRecurso(ponto);
-
+        var usuarioJpa = UsuarioMapper.toEntity(usuarioAutenticado);
         var registrosNovos = registros.stream().
-                map(registro -> addPontoCriador(registro, ponto, (ServidorJpa) usuarioAtual)).toList();
+                map(registro -> addPontoCriador(registro, ponto, (ServidorJpa) usuarioJpa)).toList();
         registrosNovos = registroRepository.saveAll(registrosNovos);
 
         registrosNovos.forEach(registroNovo -> {
@@ -168,9 +170,10 @@ public class RegistroService {
 
     @Transactional
     public Registro atualizaRegistro(PedidoAlteracao pedidoAlteracao, Ponto ponto, Registro registroAtualizado) {
-        var usuarioAtual = usuarioService.getUsuarioAutenticado();
+        var usuarioAutenticado = usuarioService.getUsuarioAutenticado();
+        var usuarioJpa = UsuarioMapper.toEntity(usuarioAutenticado);
         usuarioService.temPermissaoRecurso(ponto);
-        registroAtualizado.setServidorCriador((ServidorJpa) usuarioAtual);
+        registroAtualizado.setServidorCriador((ServidorJpa) usuarioJpa);
         var id = registroAtualizado.getId();
         log.info("Atualiza registro {}", id);
         var opt = registroRepository.findById(id);

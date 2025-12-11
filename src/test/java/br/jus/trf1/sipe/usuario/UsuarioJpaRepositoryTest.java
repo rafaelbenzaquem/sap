@@ -1,6 +1,7 @@
 package br.jus.trf1.sipe.usuario;
 
 import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
+import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpaRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -20,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UsuarioJpaRepositoryTest {
 
     @Autowired
-    private UsuarioRepository repository;
+    private UsuarioJpaRepository repository;
 
     @Test
     void testFindUsuarioByMatriculaExists() {
@@ -41,13 +42,13 @@ class UsuarioJpaRepositoryTest {
     @Test
     void testPaginaPorNomeOuCrachaOuMatricula() {
         Pageable page = PageRequest.of(0, 10);
-        Page<UsuarioJpa> p1 = repository.findAllByNomeOrCrachaOrMatricula("ali", null, null, page);
+        Page<UsuarioJpa> p1 = repository.paginaPorNomeOuCrachaOuMatricula("ali", null, null, page);
         assertEquals(1, p1.getTotalElements());
-        Page<UsuarioJpa> p2 = repository.findAllByNomeOrCrachaOrMatricula(null, 200, null, page);
+        Page<UsuarioJpa> p2 = repository.paginaPorNomeOuCrachaOuMatricula(null, 200, null, page);
         assertEquals(1, p2.getTotalElements());
-        Page<UsuarioJpa> p3 = repository.findAllByNomeOrCrachaOrMatricula(null, null, "M002", page);
+        Page<UsuarioJpa> p3 = repository.paginaPorNomeOuCrachaOuMatricula(null, null, "M002", page);
         assertEquals(1, p3.getTotalElements());
-        Page<UsuarioJpa> pAll = repository.findAllByNomeOrCrachaOrMatricula(null, null, null, page);
+        Page<UsuarioJpa> pAll = repository.paginaPorNomeOuCrachaOuMatricula(null, null, null, page);
         assertEquals(0, pAll.getTotalElements());
     }
 

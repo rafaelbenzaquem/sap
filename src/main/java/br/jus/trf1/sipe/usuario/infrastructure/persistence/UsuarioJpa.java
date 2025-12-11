@@ -7,11 +7,12 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 import java.util.Objects;
 
-@Builder
+@SuperBuilder
 @Getter
 @Setter
 @NoArgsConstructor

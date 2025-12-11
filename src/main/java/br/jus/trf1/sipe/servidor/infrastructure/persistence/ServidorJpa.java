@@ -4,7 +4,9 @@ import br.jus.trf1.sipe.lotacao.infrastructure.persistence.LotacaoJpa;
 import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

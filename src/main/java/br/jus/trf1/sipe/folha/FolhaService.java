@@ -1,7 +1,8 @@
 package br.jus.trf1.sipe.folha;
 
 import br.jus.trf1.sipe.ponto.PontoService;
-import br.jus.trf1.sipe.servidor.ServidorService;
+import br.jus.trf1.sipe.servidor.ServidorMapper;
+import br.jus.trf1.sipe.servidor.domain.service.ServidorService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -25,7 +26,7 @@ public class FolhaService {
 
     public Folha abrirFolha(String matricula, Mes mes, int ano) {
         var servidor = servidorService.buscaPorMatricula(matricula);
-
+        var servidorJpa = ServidorMapper.toEntity(servidor);
 
         var diaInicial = LocalDate.of(ano, mes.getValor(), 1);
         var diaFinal = YearMonth.of(ano, mes.getValor()).atEndOfMonth();
@@ -35,7 +36,7 @@ public class FolhaService {
 
         var folha = Folha.builder()
                 .id(FolhaId.builder()
-                        .servidor(servidor)
+                        .servidor(servidorJpa)
                         .ano(ano)
                         .mes(mes.getValor())
                         .build())

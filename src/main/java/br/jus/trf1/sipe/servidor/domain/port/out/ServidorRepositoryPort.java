@@ -20,11 +20,13 @@ public interface ServidorRepositoryPort {
 
     List<Servidor> listarPorNomeOuCrachaOuMatriculaEeLotacoes(String nome, Integer cracha, String matricula, Set<Integer> idsLotacoes);
 
-    Page<Servidor> paginarPorLotacoes(Set<Integer> idsLotacoes, Pageable pageable);
+    List<Servidor> paginar(int page, int size);
 
-    Page<Servidor> paginarPorNomeOuCrachaOuMatricula(String nome, Integer cracha, String matricula, Pageable pageable);
+    List<Servidor> paginarPorLotacoes(Set<Integer> idsLotacoes,int page, int size);
 
-    Page<Servidor> paginarPorNomeOuCrachaOuMatriculaEeIdLotacao(String nome, Integer cracha, String matricula, Integer idLotacao, Pageable pageable);
+    List<Servidor> paginarPorNomeOuCrachaOuMatricula(String nome, Integer cracha, String matricula, int page, int size);
+
+    List<Servidor> paginarPorNomeOuCrachaOuMatriculaEeIdLotacao(String nome, Integer cracha, String matricula, Integer idLotacao, int page, int size);
 
     Optional<Servidor> buscaDiretorLotacao(Integer idLotacao);
 

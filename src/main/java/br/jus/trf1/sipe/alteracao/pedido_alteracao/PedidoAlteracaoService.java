@@ -6,6 +6,8 @@ import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.registro.RegistroRepository;
 import br.jus.trf1.sipe.registro.exceptions.RegistroInexistenteException;
 import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
+import br.jus.trf1.sipe.usuario.UsuarioMapper;
+import br.jus.trf1.sipe.usuario.domain.model.Usuario;
 import br.jus.trf1.sipe.usuario.infrastructure.persistence.UsuarioJpa;
 import br.jus.trf1.sipe.usuario.domain.service.UsuarioService;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAprovadorException;
@@ -31,11 +33,11 @@ public class PedidoAlteracaoService {
         this.registroRepository = registroRepository;
     }
 
-    public PedidoAlteracao criarPedidoAlteracao(Ponto ponto, String justificativa, UsuarioJpa usuarioJpaSolicitante) {
+    public PedidoAlteracao criarPedidoAlteracao(Ponto ponto, String justificativa, Usuario usuarioSolicitante) {
 
         var pedidoAlteracao = PedidoAlteracao.builder()
                 .ponto(ponto)
-                .usuarioJpaSolicitante(usuarioJpaSolicitante)
+                .usuarioJpaSolicitante(UsuarioMapper.toEntity(usuarioSolicitante))
                 .status(StatusPedido.PENDENTE)
                 .justificativa(justificativa)
                 .build();
@@ -62,7 +64,8 @@ public class PedidoAlteracaoService {
     public Registro aprovarRegistro(Long idRegistro) {
         var registro = registroRepository.findById(idRegistro).orElseThrow(() -> new RegistroInexistenteException(idRegistro));
         var usuario = usuarioService.getUsuarioAutenticado();
-        if (usuario instanceof ServidorJpa servidor) {
+        var usuarioJpa = UsuarioMapper.toEntity(usuario);
+        if (usuarioJpa instanceof ServidorJpa servidor) {
             registro.setServidorAprovador(servidor);
             registro.setDataAprovacao(Timestamp.valueOf(LocalDateTime.now()));
             return registroRepository.save(registro);

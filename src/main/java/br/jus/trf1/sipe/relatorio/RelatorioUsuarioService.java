@@ -4,7 +4,7 @@ import br.jus.trf1.sipe.arquivo.db.ArquivoRepository;
 import br.jus.trf1.sipe.feriado.externo.jsarh.FeriadoJSarhClient;
 import br.jus.trf1.sipe.feriado.externo.jsarh.dto.FeriadoJSarhResponse;
 import br.jus.trf1.sipe.ponto.PontoService;
-import br.jus.trf1.sipe.servidor.ServidorService;
+import br.jus.trf1.sipe.servidor.domain.service.ServidorService;
 import br.jus.trf1.sipe.usuario.infrastructure.security.UsuarioSecurityAdapter;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JREmptyDataSource;
@@ -73,7 +73,7 @@ public class RelatorioUsuarioService implements RelatorioService {
         log.info("Total de feriados recuperados: {}", feriados.size());
 
         log.info("Vinculando usuário com seus dados do SARH...");
-        var servidor = servidorService.atualizaDadosNoSarh(matricula);
+        var servidor = servidorService.atualizaDadosDoSarh(matricula);
 
         log.info("Consultando licenças, férias e ausências especiais do servidor no SARH...");
         servidor = servidorService.vinculaAusenciasServidorNoPeriodo(servidor, inicio, fim);

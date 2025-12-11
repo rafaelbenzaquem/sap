@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.usuario.application.web;
 
-import br.jus.trf1.sipe.servidor.ServidorService;
+import br.jus.trf1.sipe.servidor.domain.service.ServidorService;
 import br.jus.trf1.sipe.usuario.UsuarioMapper;
 import br.jus.trf1.sipe.usuario.domain.port.in.UsuarioServicePort;
 import br.jus.trf1.sipe.usuario.domain.service.UsuarioService;
@@ -39,7 +39,7 @@ public class UsuarioCreateController {
 
         var usuario = usuarioServicePort.salve(UsuarioMapper.toDomain(request));
 
-        servidorService.atualizaDadosNoSarh(usuario.getMatricula());
+        servidorService.atualizaDadosDoSarh(usuario.getMatricula());
 
         var uriResponse = ServletUriComponentsBuilder.fromCurrentContextPath().path("/usuarios/{matricula}").buildAndExpand(usuario.getMatricula()).toUri();
 

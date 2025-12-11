@@ -3,12 +3,16 @@ package br.jus.trf1.sipe.usuario.domain.model;
 import br.jus.trf1.sipe.ausencia.Ausencia;
 import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.usuario.application.web.dto.UsuarioResponse;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 import java.util.Objects;
 
-@Builder
+@SuperBuilder
 @Getter
 @Setter
 @NoArgsConstructor

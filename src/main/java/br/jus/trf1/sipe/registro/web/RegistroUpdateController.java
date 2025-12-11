@@ -7,7 +7,7 @@ import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.registro.RegistroService;
 import br.jus.trf1.sipe.registro.web.dto.RegistroAtualizadoRequest;
 import br.jus.trf1.sipe.registro.web.dto.RegistroResponse;
-import br.jus.trf1.sipe.servidor.ServidorService;
+import br.jus.trf1.sipe.servidor.domain.service.ServidorService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;

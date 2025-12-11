@@ -1,13 +1,11 @@
 package br.jus.trf1.sipe.usuario.application.web;
 
-import br.jus.trf1.sipe.servidor.ServidorService;
 import br.jus.trf1.sipe.usuario.UsuarioMapper;
 import br.jus.trf1.sipe.usuario.application.web.dto.UsuarioResponse;
 import br.jus.trf1.sipe.usuario.domain.model.Usuario;
 import br.jus.trf1.sipe.usuario.domain.port.in.UsuarioServicePort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;

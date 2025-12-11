@@ -1,7 +1,9 @@
 package br.jus.trf1.sipe.folha;
 
+import br.jus.trf1.sipe.servidor.ServidorMapper;
+import br.jus.trf1.sipe.servidor.domain.model.Servidor;
 import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
-import br.jus.trf1.sipe.servidor.ServidorService;
+import br.jus.trf1.sipe.servidor.domain.service.ServidorService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +43,8 @@ public class FechamentoFolhaService {
                     "Folha já fechada para " + matricula + " em " + valorMes + "/" + ano);
                 });
         // obtém servidor e folha
-        ServidorJpa servidor = servidorService.buscaPorMatricula(matricula);
+        Servidor servidor = servidorService.buscaPorMatricula(matricula);
+        var servidorJpa = ServidorMapper.toEntity(servidor);
         var mesEnum = Mes.getMes(valorMes);
         var folha = folhaService.buscarFolha(matricula, mesEnum, ano)
                 .orElseGet(() -> folhaService.abrirFolha(matricula, mesEnum, ano));
@@ -60,14 +63,14 @@ public class FechamentoFolhaService {
             }
         }
         // horas esperadas em minutos
-        long esperados = (long) servidor.getHoraDiaria() * diasUteis * 60L;
+        long esperados = (long) servidorJpa.getHoraDiaria() * diasUteis * 60L;
         long saldo = totalMinutos - esperados;
         // datas de fechamento e prazo
         Timestamp fechamento = Timestamp.valueOf(LocalDateTime.now());
         Timestamp prazo = Timestamp.valueOf(LocalDateTime.now().plusMonths(3));
         // persiste
         FechamentoFolha fechamentoFolha = FechamentoFolha.builder()
-                .servidor(servidor)
+                .servidor(servidorJpa)
                 .mes(valorMes)
                 .ano(ano)
                 .horasExecutadasMinutos(totalMinutos)

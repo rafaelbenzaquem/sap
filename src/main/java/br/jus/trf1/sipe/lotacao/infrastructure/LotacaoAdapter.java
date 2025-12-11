@@ -13,15 +13,15 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class LotacaoAdapter implements LotacaoPort {
 
-    private final LotacaoServicePort lotacaoService;
+    private final LotacaoServicePort lotacaoServicePort;
 
     @Override
     public void atualizarLotacao(LotacaoJpa lotacao, LotacaoJSarh lotacaoJSarh) {
-        lotacaoService.atualizarLotacao(lotacao, lotacaoJSarh);
+        lotacaoServicePort.atualizarLotacao(lotacao, lotacaoJSarh);
     }
 
     @Override
     public Set<Integer> getLotacoes(Integer idLotacaoPai) {
-        return lotacaoService.getLotacaos(idLotacaoPai);
+        return lotacaoServicePort.getLotacaos(idLotacaoPai);
     }
 }

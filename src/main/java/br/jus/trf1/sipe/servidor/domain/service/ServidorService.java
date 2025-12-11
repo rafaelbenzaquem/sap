@@ -1,19 +1,20 @@
-package br.jus.trf1.sipe.servidor;
+package br.jus.trf1.sipe.servidor.domain.service;
 
 import br.jus.trf1.sipe.ausencia.AusenciaRepository;
 import br.jus.trf1.sipe.ausencia.externo.jsrh.AusenciaExternaService;
+import br.jus.trf1.sipe.servidor.ServidorMapper;
+import br.jus.trf1.sipe.servidor.domain.model.Servidor;
+import br.jus.trf1.sipe.servidor.domain.port.in.ServidorServicePort;
 import br.jus.trf1.sipe.servidor.domain.port.out.ServidorRepositoryPort;
 import br.jus.trf1.sipe.servidor.aplication.jsarh.ServidorJSarhService;
-import br.jus.trf1.sipe.lotacao.LotacaoNaoTemDiretor;
-import br.jus.trf1.sipe.lotacao.LotacaoService;
+import br.jus.trf1.sipe.lotacao.exceptions.LotacaoNaoTemDiretorException;
+import br.jus.trf1.sipe.lotacao.domain.service.LotacaoService;
 import br.jus.trf1.sipe.servidor.exceptions.ServidorInexistenteException;
 import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
+import br.jus.trf1.sipe.usuario.UsuarioMapper;
 import br.jus.trf1.sipe.usuario.domain.service.UsuarioService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ import static br.jus.trf1.sipe.servidor.ServidorCreator.createServidor;
 
 @Slf4j
 @Service
-public class ServidorService {
+public class ServidorService implements ServidorServicePort {
 
     private final UsuarioService usuarioService;
     private final ServidorRepositoryPort servidorRepositoryPort;
@@ -44,24 +45,27 @@ public class ServidorService {
         this.lotacaoService = lotacaoService;
     }
 
-    @Transactional
-    public ServidorJpa atualizaDadosNoSarh(String matricula) {
+    @Override
+    public Servidor atualizaDadosDoSarh(String matricula) {
         log.info("Buscando usuário com matricula: {}", matricula);
-        var servidor = (ServidorJpa) usuarioService.buscaPorMatricula(matricula);
+        var usuario = usuarioService.buscaPorMatricula(matricula);
+        var servidorJpa = (ServidorJpa) UsuarioMapper.toEntity(usuario);
         var servidorExternoOpt = servidorExternoService.buscaServidorExterno(matricula);
         if (servidorExternoOpt.isPresent()) {
             var servidorExterno = servidorExternoOpt.get();
             var lotacaoExterna = servidorExterno.getLotacao();
-            lotacaoService.atualizarLotacao(servidor.getLotacao(), lotacaoExterna);
-            servidor = createServidor(servidor, servidorExterno);
+            lotacaoService.atualizarLotacao(servidorJpa.getLotacao(), lotacaoExterna);
+            servidorJpa = createServidor(servidorJpa, servidorExterno);
+            var servidor = ServidorMapper.toDomain(servidorJpa);
             return servidorRepositoryPort.save(servidor);
         }
         log.info("Não foi possível atualizar os dados do servidor : {}", matricula);
-        return servidor;
+        return (Servidor) usuario;
     }
 
 
-    public ServidorJpa servidorAtual() {
+    @Override
+    public Servidor servidorAtual() {
         var usuarioAtual = usuarioService.getUsuarioAutenticado();
         var servidorAtualOpt = servidorRepositoryPort.findById(usuarioAtual.getId());
         if (servidorAtualOpt.isPresent()) {
@@ -70,13 +74,15 @@ public class ServidorService {
         throw new ServidorInexistenteException(usuarioAtual.getId());
     }
 
-    public ServidorJpa buscaPorMatricula(String matricula) {
-        Optional<ServidorJpa> optServidor = servidorRepositoryPort.findByMatricula(matricula);
-        return optServidor.orElseGet(() -> atualizaDadosNoSarh(matricula));
+    @Override
+    public Servidor buscaPorMatricula(String matricula) {
+        Optional<Servidor> optServidor = servidorRepositoryPort.findByMatricula(matricula);
+        return optServidor.orElseGet(() -> atualizaDadosDoSarh(matricula));
     }
 
 
-    public List<ServidorJpa> listar() {
+    @Override
+    public List<Servidor> listar() {
         if (usuarioService.permissaoDiretor()) {
             log.info("listar por lotação do Diretor");
             var servidorAtual = servidorAtual();
@@ -87,7 +93,8 @@ public class ServidorService {
         return servidorRepositoryPort.listarTodos();
     }
 
-    public List<ServidorJpa> listar(Integer idLotacaoPai) {
+    @Override
+    public List<Servidor> listar(Integer idLotacaoPai) {
         log.info("listar Por Lotação id: {}", idLotacaoPai);
         if (usuarioService.permissaoDiretor()) {
             log.info("listar por lotação do Diretor");
@@ -99,10 +106,11 @@ public class ServidorService {
         return servidorRepositoryPort.listarPorLotacoes(idsLotacoes);
     }
 
-    public List<ServidorJpa> listar(String nome,
-                                    Integer cracha,
-                                    String matricula,
-                                    Integer idLotacao) {
+    @Override
+    public List<Servidor> listar(String nome,
+                                 Integer cracha,
+                                 String matricula,
+                                 Integer idLotacao) {
         if (usuarioService.permissaoDiretor()) {
             log.info("Paginar filtrado: Diretor");
             var servidorAtual = servidorAtual();
@@ -115,38 +123,41 @@ public class ServidorService {
     }
 
 
-    public Page<ServidorJpa> paginar(Pageable pageable) {
+    @Override
+    public List<Servidor> paginar(int page, int size) {
         if (usuarioService.permissaoDiretor()) {
             log.info("listar por lotação do Diretor");
             var servidorAtual = servidorAtual();
             var idsLotacoes = lotacaoService.getLotacaos(servidorAtual.getLotacao().getId());
-            return servidorRepositoryPort.paginarPorLotacoes(idsLotacoes, pageable);
+            return servidorRepositoryPort.paginarPorLotacoes(idsLotacoes, page, size);
         }
         log.info("listarAll: Outros");
-        return servidorRepositoryPort.findAll(pageable);
+        return servidorRepositoryPort.paginar(page, size);
     }
 
-    public Page<ServidorJpa> paginar(String nome,
-                                     Integer cracha,
-                                     String matricula,
-                                     Pageable pageable) {
+    @Override
+    public List<Servidor> paginar(String nome,
+                                  Integer cracha,
+                                  String matricula,
+                                  int page, int size) {
         if (usuarioService.permissaoDiretor()) {
             log.info("Paginar filtrado: Diretor");
             var servidorAtual = servidorAtual();
-            return servidorRepositoryPort.paginarPorNomeOuCrachaOuMatriculaEeIdLotacao(nome, cracha, matricula, servidorAtual.getLotacao().getId(), pageable);
+            return servidorRepositoryPort.paginarPorNomeOuCrachaOuMatriculaEeIdLotacao(nome, cracha, matricula, servidorAtual.getLotacao().getId(), page, size);
         }
         log.info("Paginar filtrado: Outros");
-        return servidorRepositoryPort.paginarPorNomeOuCrachaOuMatricula(nome, cracha, matricula, pageable);
+        return servidorRepositoryPort.paginarPorNomeOuCrachaOuMatricula(nome, cracha, matricula, page, size);
     }
 
-    public ServidorJpa vinculaAusenciasServidorNoPeriodo(ServidorJpa servidor, LocalDate dataInicio, LocalDate dataFim) {
+    @Override
+    public Servidor vinculaAusenciasServidorNoPeriodo(Servidor servidor, LocalDate dataInicio, LocalDate dataFim) {
         log.info("Vinculando ausencias do servidor {}", servidor);
 
         var ausenciasExternas = ausenciaExternaService.
                 buscaAusenciasServidorPorPeriodo(servidor.getMatricula(), dataInicio, dataFim);
-        var novasAusencias = ausenciasExternas.stream().map(auEx -> auEx.toModel(servidor)).toList();
+        var novasAusencias = ausenciasExternas.stream().map(auEx -> auEx.toModel(ServidorMapper.toEntity(servidor))).toList();
 
-        var ausenciasExistentes = ausenciaRepository.listaAusenciasPorServidorMaisPeriodo(servidor, dataInicio, dataFim);
+        var ausenciasExistentes = ausenciaRepository.listaAusenciasPorServidorMaisPeriodo(ServidorMapper.toEntity(servidor), dataInicio, dataFim);
 
         var ausenciasParaDelete = ausenciasExistentes.stream().filter(ae -> !novasAusencias.contains(ae)).toList();
         var ausenciasParaSalve = novasAusencias.stream().filter(ae -> !ausenciasExistentes.contains(ae)).toList();
@@ -159,17 +170,17 @@ public class ServidorService {
             ausenciasParaSalve.forEach(ausenciaRepository::save);
         }
 
-        var todasAusenciasDoPeriodo = ausenciaRepository.listaAusenciasPorServidorMaisPeriodo(servidor, dataInicio, dataFim);
+        var todasAusenciasDoPeriodo = ausenciaRepository.listaAusenciasPorServidorMaisPeriodo(ServidorMapper.toEntity(servidor), dataInicio, dataFim);
         servidor.setAusencias(new ArrayList<>(todasAusenciasDoPeriodo));
         return servidor;
     }
 
-    public ServidorJpa buscaDiretorLotacao(Integer idLotacao) {
-        Optional<ServidorJpa> optServidor = servidorRepositoryPort.buscaDiretorLotacao(idLotacao);
+    public Servidor buscaDiretorLotacao(Integer idLotacao) {
+        Optional<Servidor> optServidor = servidorRepositoryPort.buscaDiretorLotacao(idLotacao);
 
         if (optServidor.isPresent()) {
             return optServidor.get();
         }
-        throw new LotacaoNaoTemDiretor(idLotacao);
+        throw new LotacaoNaoTemDiretorException(idLotacao);
     }
 }

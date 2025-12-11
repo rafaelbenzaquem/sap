@@ -5,7 +5,7 @@ import br.jus.trf1.sipe.feriado.externo.jsarh.FeriadoJSarhClient;
 import br.jus.trf1.sipe.feriado.externo.jsarh.dto.FeriadoJSarhResponse;
 import br.jus.trf1.sipe.ponto.PontoService;
 import br.jus.trf1.sipe.relatorio.model.UsuarioModel;
-import br.jus.trf1.sipe.servidor.ServidorService;
+import br.jus.trf1.sipe.servidor.domain.service.ServidorService;
 import br.jus.trf1.sipe.usuario.infrastructure.security.UsuarioSecurityAdapter;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JREmptyDataSource;
@@ -73,7 +73,7 @@ public class RelatorioLotacaoService implements RelatorioService {
         usuarioSecurityAdapter.permissoesNivelUsuario(matricula);
         log.info("Carregando pontos para o período especificado...");
 
-        var servidorPrincipal = servidorService.atualizaDadosNoSarh(matricula);
+        var servidorPrincipal = servidorService.atualizaDadosDoSarh(matricula);
 
         var subordinados = servidorService.listar(servidorPrincipal.getLotacao().getId());
 
@@ -89,7 +89,7 @@ public class RelatorioLotacaoService implements RelatorioService {
 
             log.info("Vinculando usuário com seus dados do SARH...");
             subordinado = (subordinado.equals(servidorPrincipal)) ? servidorPrincipal :
-                    servidorService.atualizaDadosNoSarh(matriculaSubordinado);
+                    servidorService.atualizaDadosDoSarh(matriculaSubordinado);
 
             log.info("Consultando ausenciais(licenças, férias e ausências especiais) do servidor no SARH...");
             subordinado = servidorService.vinculaAusenciasServidorNoPeriodo(subordinado, inicio, fim);
