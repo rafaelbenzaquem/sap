@@ -1,3 +1,4 @@
+<<<<<<<< HEAD:src/main/java/br/jus/trf1/sipe/arquivo/infrastructure/cache/ArquivoCacheJpaAdapter.java
 package br.jus.trf1.sipe.arquivo.infrastructure.cache;
 
 import br.jus.trf1.sipe.arquivo.domain.model.Arquivo;
@@ -5,6 +6,13 @@ import br.jus.trf1.sipe.arquivo.domain.port.out.ArquivoCachePort;
 import br.jus.trf1.sipe.arquivo.exceptions.ArquivoInexistenteException;
 import br.jus.trf1.sipe.arquivo.infrastructure.db.ArquivoJpaMapper;
 import br.jus.trf1.sipe.arquivo.infrastructure.db.ArquivoJpaRepository;
+========
+package br.jus.trf1.sipe.arquivo.infrastructure.db;
+
+import br.jus.trf1.sipe.arquivo.domain.exceptions.ArquivoInexistenteException;
+import br.jus.trf1.sipe.arquivo.domain.model.Arquivo;
+import br.jus.trf1.sipe.arquivo.domain.port.out.ArquivoCachePort;
+>>>>>>>> 451c99aaaec1b365a86256fde99bde855167c24f:src/main/java/br/jus/trf1/sipe/arquivo/infrastructure/db/ArquivoCacheJpaAdapter.java
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
