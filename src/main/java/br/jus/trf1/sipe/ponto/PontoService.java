@@ -7,7 +7,7 @@ import br.jus.trf1.sipe.feriado.externo.jsarh.dto.FeriadoJSarhResponse;
 import br.jus.trf1.sipe.ponto.exceptions.PontoExistenteException;
 import br.jus.trf1.sipe.ponto.exceptions.PontoInexistenteException;
 import br.jus.trf1.sipe.registro.RegistroService;
-import br.jus.trf1.sipe.usuario.infrastructure.db.UsuarioJpa;
+import br.jus.trf1.sipe.usuario.infrastructure.jpa.UsuarioJpa;
 import br.jus.trf1.sipe.usuario.infrastructure.security.UsuarioSecurityAdapter;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;

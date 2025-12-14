@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.ponto;
 
-import br.jus.trf1.sipe.usuario.infrastructure.db.UsuarioJpa;
+import br.jus.trf1.sipe.usuario.infrastructure.jpa.UsuarioJpa;
 import jakarta.persistence.*;
 import lombok.*;
 

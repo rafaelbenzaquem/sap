@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.usuario.exceptions;
 
-import br.jus.trf1.sipe.usuario.infrastructure.db.UsuarioJpa;
+import br.jus.trf1.sipe.usuario.infrastructure.jpa.UsuarioJpa;
 
 import static br.jus.trf1.sipe.comum.util.PadroesDeMensagem.MSG_ENTIDADE_INEXISTENTE;
 

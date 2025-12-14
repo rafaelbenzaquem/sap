@@ -8,12 +8,12 @@ import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.registro.exceptions.RegistroInexistenteException;
 import br.jus.trf1.sipe.registro.externo.coletor.RegistroExternalService;
 import br.jus.trf1.sipe.servidor.domain.model.Servidor;
-import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
-import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpaMapper;
+import br.jus.trf1.sipe.servidor.infrastructure.jpa.ServidorJpa;
+import br.jus.trf1.sipe.servidor.infrastructure.jpa.ServidorJpaMapper;
 import br.jus.trf1.sipe.usuario.domain.service.UsuarioServiceAdapter;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAprovadorException;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAutorizadoException;
-import br.jus.trf1.sipe.usuario.infrastructure.db.UsuarioJpaMapper;
+import br.jus.trf1.sipe.usuario.infrastructure.jpa.UsuarioJpaMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -144,16 +144,12 @@ public class RegistroService {
 
     @Transactional
     public void removeRegistro(PedidoAlteracao pedidoAlteracao, Ponto ponto, Registro registro) {
-        var usuarioAtual = usuarioService.getUsuarioAutenticado();
         usuarioService.temPermissaoRecurso(ponto);
 
         var alteracaoRegistroOpt = pedidoAlteracao.getAlteracaoRegistros().stream().
                 filter(pa -> registro.equals(pa.getRegistroOriginal()) || registro.equals(pa.getRegistroNovo())).findFirst();
 
-        if (alteracaoRegistroOpt.isPresent()) {
-            var alteracaoRegistro = alteracaoRegistroOpt.get();
-            alteracaoRegistroService.apagar(alteracaoRegistro.getId());
-        }
+        alteracaoRegistroOpt.ifPresent(alteracaoRegistro -> alteracaoRegistroService.apagar(alteracaoRegistro.getId()));
 
 
     }

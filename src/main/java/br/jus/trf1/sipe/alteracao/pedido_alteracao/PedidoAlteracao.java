@@ -2,7 +2,7 @@ package br.jus.trf1.sipe.alteracao.pedido_alteracao;
 
 import br.jus.trf1.sipe.alteracao.alteracao_registro.AlteracaoRegistro;
 import br.jus.trf1.sipe.ponto.Ponto;
-import br.jus.trf1.sipe.usuario.infrastructure.db.UsuarioJpa;
+import br.jus.trf1.sipe.usuario.infrastructure.jpa.UsuarioJpa;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

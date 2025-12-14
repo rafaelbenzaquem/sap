@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.servidor.exceptions;
 
-import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
+import br.jus.trf1.sipe.servidor.infrastructure.jpa.ServidorJpa;
 
 import static br.jus.trf1.sipe.comum.util.PadroesDeMensagem.MSG_ENTIDADE_INEXISTENTE;
 

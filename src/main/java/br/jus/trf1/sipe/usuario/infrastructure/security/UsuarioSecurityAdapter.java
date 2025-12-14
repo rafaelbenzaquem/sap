@@ -1,11 +1,10 @@
 package br.jus.trf1.sipe.usuario.infrastructure.security;
 
-import br.jus.trf1.sipe.usuario.application.web.UsuarioWebMapper;
 import br.jus.trf1.sipe.usuario.domain.model.Usuario;
 import br.jus.trf1.sipe.usuario.domain.port.out.UsuarioSecurityPort;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAutorizadoException;
-import br.jus.trf1.sipe.usuario.infrastructure.db.UsuarioJpaMapper;
-import br.jus.trf1.sipe.usuario.infrastructure.db.UsuarioJpaRepository;
+import br.jus.trf1.sipe.usuario.infrastructure.jpa.UsuarioJpaMapper;
+import br.jus.trf1.sipe.usuario.infrastructure.jpa.UsuarioJpaRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

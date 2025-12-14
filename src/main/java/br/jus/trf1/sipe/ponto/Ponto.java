@@ -1,7 +1,7 @@
 package br.jus.trf1.sipe.ponto;
 
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracao;
-import br.jus.trf1.sipe.folha.Folha;
+import br.jus.trf1.sipe.folha.infrastructure.jpa.FolhaJpa;
 import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.registro.Sentido;
 import jakarta.persistence.*;
@@ -53,7 +53,7 @@ public class Ponto {
             @JoinColumn(name = "ano_folha", referencedColumnName = "ano"),
             @JoinColumn(name = "mes_folha", referencedColumnName = "mes")
     }, foreignKey = @ForeignKey(name = "fk_folha_ponto"))
-    private Folha folha;
+    private FolhaJpa folha;
 
     public IndicePonto getIndice() {
         return IndicePonto.toEnum(indice);

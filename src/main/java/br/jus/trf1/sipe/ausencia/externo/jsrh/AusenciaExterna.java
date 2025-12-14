@@ -1,7 +1,7 @@
 package br.jus.trf1.sipe.ausencia.externo.jsrh;
 
 import br.jus.trf1.sipe.ausencia.Ausencia;
-import br.jus.trf1.sipe.usuario.infrastructure.db.UsuarioJpa;
+import br.jus.trf1.sipe.usuario.infrastructure.jpa.UsuarioJpa;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

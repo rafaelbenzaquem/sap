@@ -2,7 +2,7 @@ package br.jus.trf1.sipe.usuario.application.web.dto;
 
 
 import br.jus.trf1.sipe.comum.validadores.Unico;
-import br.jus.trf1.sipe.usuario.infrastructure.db.UsuarioJpa;
+import br.jus.trf1.sipe.usuario.infrastructure.jpa.UsuarioJpa;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

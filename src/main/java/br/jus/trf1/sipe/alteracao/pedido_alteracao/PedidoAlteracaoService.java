@@ -5,11 +5,11 @@ import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.registro.RegistroRepository;
 import br.jus.trf1.sipe.registro.exceptions.RegistroInexistenteException;
-import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
+import br.jus.trf1.sipe.servidor.infrastructure.jpa.ServidorJpa;
 import br.jus.trf1.sipe.usuario.domain.model.Usuario;
 import br.jus.trf1.sipe.usuario.domain.service.UsuarioServiceAdapter;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAprovadorException;
-import br.jus.trf1.sipe.usuario.infrastructure.db.UsuarioJpaMapper;
+import br.jus.trf1.sipe.usuario.infrastructure.jpa.UsuarioJpaMapper;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
