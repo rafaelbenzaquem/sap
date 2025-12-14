@@ -2,7 +2,6 @@ package br.jus.trf1.sipe.lotacao.application.jsarh;
 
 import br.jus.trf1.sipe.lotacao.application.jsarh.dto.LotacaoJSarhResponse;
 import br.jus.trf1.sipe.lotacao.domain.model.Lotacao;
-import br.jus.trf1.sipe.lotacao.infrastructure.persistence.LotacaoJpa;
 
 public class LotacaoJSarhMapper {
 
@@ -17,6 +16,17 @@ public class LotacaoJSarhMapper {
                 .descricao(lotacaoJSarhResponse.getDescricao())
                 .lotacaoPai(lotacaoJSarhResponse.getLotacaoPai() == null ? null : LotacaoJSarh.builder()
                         .id(lotacaoJSarhResponse.getLotacaoPai())
+                        .build())
+                .build();
+    }
+
+    public static LotacaoJSarh toJSarhModel(Lotacao lotacao) {
+        return LotacaoJSarh.builder()
+                .id(lotacao.getId())
+                .sigla(lotacao.getSigla())
+                .descricao(lotacao.getDescricao())
+                .lotacaoPai(lotacao.getLotacaoPai() == null ? null : LotacaoJSarh.builder()
+                        .id(lotacao.getLotacaoPai().getId())
                         .build())
                 .build();
     }

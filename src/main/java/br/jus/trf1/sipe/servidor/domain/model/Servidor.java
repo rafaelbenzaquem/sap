@@ -1,9 +1,11 @@
 package br.jus.trf1.sipe.servidor.domain.model;
 
-import br.jus.trf1.sipe.lotacao.infrastructure.persistence.LotacaoJpa;
+import br.jus.trf1.sipe.lotacao.domain.model.Lotacao;
 import br.jus.trf1.sipe.usuario.domain.model.Usuario;
-import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
@@ -21,9 +23,9 @@ public class Servidor extends Usuario {
 
     private Servidor gestorSubstituto;
 
-    private LotacaoJpa lotacao;
+    private Lotacao lotacao;
 
-    public Servidor(Usuario usuario, String email, String funcao, String cargo, LotacaoJpa lotacao) {
+    public Servidor(Usuario usuario, String email, String funcao, String cargo, Lotacao lotacao) {
         super(usuario.getId(), usuario.getNome(), usuario.getMatricula(), usuario.getCracha(), usuario.getHoraDiaria());
         this.email = email;
         this.funcao = funcao;

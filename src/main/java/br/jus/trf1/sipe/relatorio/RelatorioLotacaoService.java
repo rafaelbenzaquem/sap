@@ -1,5 +1,6 @@
 package br.jus.trf1.sipe.relatorio;
 
+import br.jus.trf1.sipe.arquivo.domain.port.in.ArquivoServicePort;
 import br.jus.trf1.sipe.feriado.externo.jsarh.FeriadoJSarhClient;
 import br.jus.trf1.sipe.feriado.externo.jsarh.dto.FeriadoJSarhResponse;
 import br.jus.trf1.sipe.ponto.PontoService;
@@ -17,9 +18,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static br.jus.trf1.sipe.comum.util.ConstParamUtil.*;
 import static br.jus.trf1.sipe.relatorio.RelatorioUtil.mapeandoParametrosRelatorio;
 import static br.jus.trf1.sipe.relatorio.RelatorioUtil.processaDadosServidorParaRelatorio;
-import static br.jus.trf1.sipe.comum.util.ConstParamUtil.*;
 import static net.sf.jasperreports.engine.JasperExportManager.exportReportToPdf;
 import static net.sf.jasperreports.engine.JasperFillManager.fillReport;
 
@@ -34,7 +35,7 @@ public class RelatorioLotacaoService implements RelatorioService {
 
     private final FeriadoJSarhClient feriadoExternalClient;
     private final PontoService pontoService;
-    private final ArquivoRepository arquivoRepository;
+    private final ArquivoServicePort arquivoServicePort;
     private final ServidorServiceAdapter servidorService;
     private final UsuarioSecurityAdapter usuarioSecurityAdapter;
 
@@ -44,15 +45,15 @@ public class RelatorioLotacaoService implements RelatorioService {
      *
      * @param feriadoExternalClient Repositório de vínculos.
      * @param pontoService          Serviço que contrala pontos.
-     * @param arquivoRepository     Repositório de arquivos.
+     * @param arquivoServicePort     Repositório de arquivos.
      * @param servidorService       Serviço de acesso a dados do Servidor no Sarh
      */
     public RelatorioLotacaoService(FeriadoJSarhClient feriadoExternalClient, PontoService pontoService,
-                                   ArquivoRepository arquivoRepository, ServidorServiceAdapter servidorService,
+                                   ArquivoServicePort arquivoServicePort, ServidorServiceAdapter servidorService,
                                    UsuarioSecurityAdapter usuarioSecurityAdapter) {
         this.feriadoExternalClient = feriadoExternalClient;
         this.pontoService = pontoService;
-        this.arquivoRepository = arquivoRepository;
+        this.arquivoServicePort = arquivoServicePort;
         this.servidorService = servidorService;
         this.usuarioSecurityAdapter = usuarioSecurityAdapter;
     }
@@ -118,12 +119,9 @@ public class RelatorioLotacaoService implements RelatorioService {
         var relatorioModel = processaDadosServidorParaRelatorio(servidorPrincipal, pontos, feriados);
 
         log.info("Carregando arquivos do relatório...");
-        var arquivoLogoImagemEsquerdaSuperior = arquivoRepository.findByNome(LOGO_SUPERIOR_ESQUERDO).
-                orElseThrow(() -> new IllegalArgumentException(ATTRIB_NAO_ENCONTRADO.formatted(LOGO_SUPERIOR_ESQUERDO)));
-        var arquivoLogoImagemDireitaSuperior = arquivoRepository.findByNome(LOGO_SUPERIOR_DIREITO).
-                orElseThrow(() -> new IllegalArgumentException(ATTRIB_NAO_ENCONTRADO.formatted(LOGO_SUPERIOR_DIREITO)));
-        var arquivoRelatorioPonto = arquivoRepository.findByNome(TEMPLATE_RELATORIO_LOTACAO).
-                orElseThrow(() -> new IllegalArgumentException(ATTRIB_NAO_ENCONTRADO.formatted(TEMPLATE_RELATORIO_LOTACAO)));
+        var arquivoLogoImagemEsquerdaSuperior = arquivoServicePort.recuperaPorNome(LOGO_SUPERIOR_ESQUERDO);
+        var arquivoLogoImagemDireitaSuperior = arquivoServicePort.recuperaPorNome(LOGO_SUPERIOR_DIREITO);
+        var arquivoRelatorioPonto = arquivoServicePort.recuperaPorNome(TEMPLATE_RELATORIO_LOTACAO);
 
         log.info("Mapeando parâmetros para o relatório...");
         var parametrosRelatorio = mapeandoParametrosRelatorio(relatorioModel,

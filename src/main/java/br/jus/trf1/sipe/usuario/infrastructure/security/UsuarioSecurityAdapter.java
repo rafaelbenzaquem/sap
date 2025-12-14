@@ -4,6 +4,7 @@ import br.jus.trf1.sipe.usuario.application.web.UsuarioWebMapper;
 import br.jus.trf1.sipe.usuario.domain.model.Usuario;
 import br.jus.trf1.sipe.usuario.domain.port.out.UsuarioSecurityPort;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAutorizadoException;
+import br.jus.trf1.sipe.usuario.infrastructure.db.UsuarioJpaMapper;
 import br.jus.trf1.sipe.usuario.infrastructure.db.UsuarioJpaRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -30,7 +31,7 @@ public class UsuarioSecurityAdapter implements UsuarioSecurityPort {
         if (usuario == null) {
             var matricula = getMatricula();
             return usuarioRepository.findUsuarioByMatricula(matricula)
-                    .map(UsuarioWebMapper::toDomain)
+                    .map(UsuarioJpaMapper::toDomain)
                     .orElseThrow(() -> new RuntimeException("Token inválido."));
         }
         return usuario;

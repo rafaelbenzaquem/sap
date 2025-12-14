@@ -2,18 +2,15 @@ package br.jus.trf1.sipe.servidor.domain.service;
 
 import br.jus.trf1.sipe.ausencia.AusenciaRepository;
 import br.jus.trf1.sipe.ausencia.externo.jsrh.AusenciaExternaService;
-import br.jus.trf1.sipe.lotacao.application.jsarh.LotacaoJSarhMapper;
-import br.jus.trf1.sipe.lotacao.domain.service.LotacaoService;
+import br.jus.trf1.sipe.lotacao.domain.service.LotacaoServiceAdapter;
 import br.jus.trf1.sipe.lotacao.exceptions.LotacaoNaoTemDiretorException;
 import br.jus.trf1.sipe.servidor.domain.model.Servidor;
 import br.jus.trf1.sipe.servidor.domain.port.in.ServidorExternoPort;
 import br.jus.trf1.sipe.servidor.domain.port.in.ServidorServicePort;
 import br.jus.trf1.sipe.servidor.domain.port.out.ServidorRepositoryPort;
 import br.jus.trf1.sipe.servidor.exceptions.ServidorInexistenteException;
-import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
 import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpaMapper;
 import br.jus.trf1.sipe.usuario.domain.service.UsuarioServiceAdapter;
-import br.jus.trf1.sipe.usuario.infrastructure.db.UsuarioJpaMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static br.jus.trf1.sipe.servidor.ServidorCreator.createServidor;
+import static br.jus.trf1.sipe.servidor.domain.service.ServidorCreator.createServidor;
 
 @Slf4j
 @Service
@@ -33,31 +30,29 @@ public class ServidorServiceAdapter implements ServidorServicePort {
     private final ServidorExternoPort servidorExternoPort;
     private final AusenciaExternaService ausenciaExternaService;
     private final AusenciaRepository ausenciaRepository;
-    private final LotacaoService lotacaoService;
+    private final LotacaoServiceAdapter lotacaoServiceAdapter;
 
     public ServidorServiceAdapter(UsuarioServiceAdapter usuarioService, ServidorRepositoryPort servidorRepositoryPort,
                                   ServidorExternoPort servidorExternoPort, AusenciaExternaService ausenciaExternaService,
-                                  AusenciaRepository ausenciaRepository, LotacaoService lotacaoService) {
+                                  AusenciaRepository ausenciaRepository, LotacaoServiceAdapter lotacaoServiceAdapter) {
         this.usuarioService = usuarioService;
         this.servidorRepositoryPort = servidorRepositoryPort;
         this.servidorExternoPort = servidorExternoPort;
         this.ausenciaExternaService = ausenciaExternaService;
         this.ausenciaRepository = ausenciaRepository;
-        this.lotacaoService = lotacaoService;
+        this.lotacaoServiceAdapter = lotacaoServiceAdapter;
     }
 
     @Override
     public Servidor atualizaDadosDoSarh(String matricula) {
         log.info("Buscando usuário com matricula: {}", matricula);
         var usuario = usuarioService.buscaPorMatricula(matricula);
-        var servidorJpa = (ServidorJpa) UsuarioJpaMapper.toEntity(usuario);
+        var servidor = (Servidor) usuario;
         var servidorExternoOpt = servidorExternoPort.buscaServidorExterno(matricula);
         if (servidorExternoOpt.isPresent()) {
             var servidorExterno = servidorExternoOpt.get();
-            var lotacaoJSarh = LotacaoJSarhMapper.servidorExterno.getLotacao();
-            lotacaoService.atualizarLotacao(servidorJpa.getLotacao(), lotacaoJSarh);
-            servidorJpa = createServidor(servidorJpa, servidorExterno);
-            var servidor = ServidorJpaMapper.toDomain(servidorJpa);
+            lotacaoServiceAdapter.atualizarLotacao(servidor.getLotacao(), servidorExterno.getLotacao());
+            servidor = createServidor(servidor, servidorExterno);
             return servidorRepositoryPort.salva(servidor);
         }
         log.info("Não foi possível atualizar os dados do servidor : {}", matricula);
@@ -87,7 +82,7 @@ public class ServidorServiceAdapter implements ServidorServicePort {
         if (usuarioService.permissaoDiretor()) {
             log.info("listar por lotação do Diretor");
             var servidorAtual = servidorAtual();
-            var idsLotacoes = lotacaoService.getLotacaos(servidorAtual.getLotacao().getId());
+            var idsLotacoes = lotacaoServiceAdapter.getLotacaos(servidorAtual.getLotacao().getId());
             return servidorRepositoryPort.listarPorLotacoes(idsLotacoes);
         }
         log.info("listarAll: Outros");
@@ -100,10 +95,10 @@ public class ServidorServiceAdapter implements ServidorServicePort {
         if (usuarioService.permissaoDiretor()) {
             log.info("listar por lotação do Diretor");
             var servidorAtual = servidorAtual();
-            var idsLotacoes = lotacaoService.getLotacaos(servidorAtual.getLotacao().getId());
+            var idsLotacoes = lotacaoServiceAdapter.getLotacaos(servidorAtual.getLotacao().getId());
             return servidorRepositoryPort.listarPorLotacoes(idsLotacoes);
         }
-        var idsLotacoes = lotacaoService.getLotacaos(idLotacaoPai);
+        var idsLotacoes = lotacaoServiceAdapter.getLotacaos(idLotacaoPai);
         return servidorRepositoryPort.listarPorLotacoes(idsLotacoes);
     }
 
@@ -115,11 +110,11 @@ public class ServidorServiceAdapter implements ServidorServicePort {
         if (usuarioService.permissaoDiretor()) {
             log.info("Paginar filtrado: Diretor");
             var servidorAtual = servidorAtual();
-            var idsLotacoes = lotacaoService.getLotacaos(servidorAtual.getLotacao().getId());
+            var idsLotacoes = lotacaoServiceAdapter.getLotacaos(servidorAtual.getLotacao().getId());
             return servidorRepositoryPort.listarPorNomeOuCrachaOuMatriculaEeLotacoes(nome, cracha, matricula, idsLotacoes);
         }
         log.info("Paginar filtrado: Outros");
-        var idsLotacoes = lotacaoService.getLotacaos(idLotacao);
+        var idsLotacoes = lotacaoServiceAdapter.getLotacaos(idLotacao);
         return servidorRepositoryPort.listarPorNomeOuCrachaOuMatriculaEeLotacoes(nome, cracha, matricula, idsLotacoes);
     }
 
@@ -129,7 +124,7 @@ public class ServidorServiceAdapter implements ServidorServicePort {
         if (usuarioService.permissaoDiretor()) {
             log.info("listar por lotação do Diretor");
             var servidorAtual = servidorAtual();
-            var idsLotacoes = lotacaoService.getLotacaos(servidorAtual.getLotacao().getId());
+            var idsLotacoes = lotacaoServiceAdapter.getLotacaos(servidorAtual.getLotacao().getId());
             return servidorRepositoryPort.paginarPorLotacoes(idsLotacoes, page, size);
         }
         log.info("listarAll: Outros");

@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.relatorio;
 
-import br.jus.trf1.sipe.arquivo.db.ArquivoJpa;
+import br.jus.trf1.sipe.arquivo.domain.model.Arquivo;
 import br.jus.trf1.sipe.ausencia.Ausencia;
 import br.jus.trf1.sipe.feriado.externo.jsarh.FeriadoJSarh;
 import br.jus.trf1.sipe.ponto.Ponto;
@@ -24,8 +24,8 @@ public class RelatorioUtil {
     }
 
     public static Map<String, Object> mapeandoParametrosRelatorio(RelatorioModel relatorioModel,
-                                                                  ArquivoJpa arquivoLogoImagemEsquerdaSuperior,
-                                                                  ArquivoJpa arquivoLogoImagemDireitaSuperior,
+                                                                  Arquivo arquivoLogoImagemEsquerdaSuperior,
+                                                                  Arquivo arquivoLogoImagemDireitaSuperior,
                                                                   LocalDate inicio,
                                                                   LocalDate fim,
                                                                   JRBeanCollectionDataSource dataSource) {

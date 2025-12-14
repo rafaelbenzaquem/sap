@@ -6,10 +6,10 @@ import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.registro.RegistroRepository;
 import br.jus.trf1.sipe.registro.exceptions.RegistroInexistenteException;
 import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
-import br.jus.trf1.sipe.usuario.application.web.UsuarioWebMapper;
 import br.jus.trf1.sipe.usuario.domain.model.Usuario;
 import br.jus.trf1.sipe.usuario.domain.service.UsuarioServiceAdapter;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAprovadorException;
+import br.jus.trf1.sipe.usuario.infrastructure.db.UsuarioJpaMapper;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -36,7 +36,7 @@ public class PedidoAlteracaoService {
 
         var pedidoAlteracao = PedidoAlteracao.builder()
                 .ponto(ponto)
-                .usuarioJpaSolicitante(UsuarioWebMapper.toEntity(usuarioSolicitante))
+                .usuarioJpaSolicitante(UsuarioJpaMapper.toEntity(usuarioSolicitante))
                 .status(StatusPedido.PENDENTE)
                 .justificativa(justificativa)
                 .build();
@@ -63,7 +63,7 @@ public class PedidoAlteracaoService {
     public Registro aprovarRegistro(Long idRegistro) {
         var registro = registroRepository.findById(idRegistro).orElseThrow(() -> new RegistroInexistenteException(idRegistro));
         var usuario = usuarioService.getUsuarioAutenticado();
-        var usuarioJpa = UsuarioWebMapper.toEntity(usuario);
+        var usuarioJpa = UsuarioJpaMapper.toEntity(usuario);
         if (usuarioJpa instanceof ServidorJpa servidor) {
             registro.setServidorAprovador(servidor);
             registro.setDataAprovacao(Timestamp.valueOf(LocalDateTime.now()));

@@ -1,5 +1,6 @@
 package br.jus.trf1.sipe.servidor.infrastructure.persistence;
 
+import br.jus.trf1.sipe.lotacao.infrastructure.persistence.LotacaoJpaMapper;
 import br.jus.trf1.sipe.servidor.domain.model.Servidor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,7 +20,7 @@ public class ServidorJpaMapper {
                 .email(servidor.getEmail())
                 .funcao(servidor.getFuncao())
                 .cargo(servidor.getCargo())
-                .lotacao(servidor.getLotacao())
+                .lotacao(LotacaoJpaMapper.toEntity(servidor.getLotacao()))
                 .build();
     }
 
@@ -33,7 +34,7 @@ public class ServidorJpaMapper {
                 .email(servidorJpa.getEmail())
                 .funcao(servidorJpa.getFuncao())
                 .cargo(servidorJpa.getCargo())
-                .lotacao(servidorJpa.getLotacao())
+                .lotacao(LotacaoJpaMapper.toDomain(servidorJpa.getLotacao()))
                 .build();
     }
 

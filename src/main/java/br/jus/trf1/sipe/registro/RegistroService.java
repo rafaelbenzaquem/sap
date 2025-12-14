@@ -7,11 +7,13 @@ import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracaoService;
 import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.registro.exceptions.RegistroInexistenteException;
 import br.jus.trf1.sipe.registro.externo.coletor.RegistroExternalService;
+import br.jus.trf1.sipe.servidor.domain.model.Servidor;
 import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpa;
-import br.jus.trf1.sipe.usuario.application.web.UsuarioWebMapper;
+import br.jus.trf1.sipe.servidor.infrastructure.persistence.ServidorJpaMapper;
 import br.jus.trf1.sipe.usuario.domain.service.UsuarioServiceAdapter;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAprovadorException;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAutorizadoException;
+import br.jus.trf1.sipe.usuario.infrastructure.db.UsuarioJpaMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -114,9 +116,9 @@ public class RegistroService {
     public Registro aprovarRegistro(Long idRegistro) {
         var registro = registroRepository.findById(idRegistro).orElseThrow(() -> new RegistroInexistenteException(idRegistro));
         var usuario = usuarioService.getUsuarioAutenticado();
-        var usuarioJpa = UsuarioWebMapper.toEntity(usuario);
-        if (usuarioJpa instanceof ServidorJpa servidor) {
-            registro.setServidorAprovador(servidor);
+        if (usuario instanceof Servidor servidor) {
+            var servidorJpa = ServidorJpaMapper.toEntity(servidor);
+            registro.setServidorAprovador(servidorJpa);
             registro.setDataAprovacao(Timestamp.valueOf(LocalDateTime.now()));
             return registroRepository.save(registro);
         }
@@ -127,7 +129,7 @@ public class RegistroService {
     public List<Registro> addRegistros(PedidoAlteracao pedidoAlteracao, Ponto ponto, List<Registro> registros) {
         var usuarioAutenticado = usuarioService.getUsuarioAutenticado();
         usuarioService.temPermissaoRecurso(ponto);
-        var usuarioJpa = UsuarioWebMapper.toEntity(usuarioAutenticado);
+        var usuarioJpa = UsuarioJpaMapper.toEntity(usuarioAutenticado);
         var registrosNovos = registros.stream().
                 map(registro -> addPontoCriador(registro, ponto, (ServidorJpa) usuarioJpa)).toList();
         registrosNovos = registroRepository.saveAll(registrosNovos);
@@ -171,7 +173,7 @@ public class RegistroService {
     @Transactional
     public Registro atualizaRegistro(PedidoAlteracao pedidoAlteracao, Ponto ponto, Registro registroAtualizado) {
         var usuarioAutenticado = usuarioService.getUsuarioAutenticado();
-        var usuarioJpa = UsuarioWebMapper.toEntity(usuarioAutenticado);
+        var usuarioJpa = UsuarioJpaMapper.toEntity(usuarioAutenticado);
         usuarioService.temPermissaoRecurso(ponto);
         registroAtualizado.setServidorCriador((ServidorJpa) usuarioJpa);
         var id = registroAtualizado.getId();
