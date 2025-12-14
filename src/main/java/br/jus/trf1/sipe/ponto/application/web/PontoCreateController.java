@@ -1,8 +1,8 @@
-package br.jus.trf1.sipe.ponto.web;
+package br.jus.trf1.sipe.ponto.application.web;
 
-import br.jus.trf1.sipe.ponto.PontoService;
-import br.jus.trf1.sipe.ponto.web.dto.PontoNovoRequest;
-import br.jus.trf1.sipe.ponto.web.dto.PontoNovoResponse;
+import br.jus.trf1.sipe.ponto.domain.port.in.PontoServicePort;
+import br.jus.trf1.sipe.ponto.application.web.dto.PontoNovoRequest;
+import br.jus.trf1.sipe.ponto.application.web.dto.PontoNovoResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.EntityModel;
@@ -22,10 +22,10 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping("/v1/sipe/pontos")
 public class PontoCreateController {
 
-    private final PontoService pontoService;
+    private final PontoServicePort pontoServicePort;
 
-    public PontoCreateController(PontoService pontoService) {
-        this.pontoService = pontoService;
+    public PontoCreateController(PontoServicePort pontoServicePort) {
+        this.pontoServicePort = pontoServicePort;
     }
 
     /**
@@ -43,14 +43,14 @@ public class PontoCreateController {
         var dia = pontoNovoRequest.dia();
         var diaFormatado = paraString(dia, PADRAO_ENTRADA_DATA);
         var matricula = pontoNovoRequest.matricula();
-
-        var ponto = pontoService.criaPonto(pontoNovoRequest.toModel());
+        var ponto = PontoWebMapper.toDomain(pontoNovoRequest);
+         ponto = pontoServicePort.criaPonto(ponto);
 
         var uri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/{matricula}/{diaFormatado}")
                 .buildAndExpand(matricula, diaFormatado).
                 toUri();
 
-        var pontoModel = EntityModel.of(PontoNovoResponse.of(ponto),
+        var pontoModel = EntityModel.of(PontoWebMapper.toNovoResponse(ponto),
                 linkTo(methodOn(PontoReadController.class).buscaPonto(matricula, dia)).withSelfRel()
         );
         return ResponseEntity.created(uri).body(pontoModel);

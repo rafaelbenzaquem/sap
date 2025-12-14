@@ -1,7 +1,7 @@
 package br.jus.trf1.sipe.comum.util;
 
-import br.jus.trf1.sipe.ponto.Ponto;
 import br.jus.trf1.sipe.ausencia.Ausencia;
+import br.jus.trf1.sipe.ponto.domain.model.Ponto;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.DayOfWeek;

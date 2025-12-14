@@ -1,4 +1,4 @@
--- dataset for PontoRepository tests
+-- dataset for PontoJpaRepository tests
 CREATE SCHEMA IF NOT EXISTS SISPONTODB;
 SET SCHEMA SISPONTODB;
 

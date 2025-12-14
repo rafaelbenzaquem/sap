@@ -14,7 +14,7 @@ public class UsuarioJpaMapper {
                 .matricula(usuarioJpa.getMatricula())
                 .cracha(usuarioJpa.getCracha())
                 .horaDiaria(usuarioJpa.getHoraDiaria())
-                .pontos(usuarioJpa.getPontos())
+                .pontoJpas(usuarioJpa.getPontos())
                 .ausencias(usuarioJpa.getAusencias())
                 .build();
     }

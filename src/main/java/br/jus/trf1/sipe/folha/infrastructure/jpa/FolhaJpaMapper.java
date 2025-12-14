@@ -2,6 +2,7 @@ package br.jus.trf1.sipe.folha.infrastructure.jpa;
 
 import br.jus.trf1.sipe.folha.domain.model.Folha;
 import br.jus.trf1.sipe.folha.domain.model.FolhaId;
+import br.jus.trf1.sipe.ponto.infrastructure.jpa.PontoJpaMapper;
 import br.jus.trf1.sipe.servidor.infrastructure.jpa.ServidorJpaMapper;
 
 public class FolhaJpaMapper {
@@ -15,7 +16,7 @@ public class FolhaJpaMapper {
                 .dataAbertura(folha.getDataAbertura())
                 .servidorHomologador(ServidorJpaMapper.toEntity(folha.getServidorHomologador()))
                 .dataHomologacao(folha.getDataHomologacao())
-                .pontos(folha.getPontos())
+                .pontos(folha.getPontos().stream().map(PontoJpaMapper::toEntity).toList())
                 .build();
     }
 
@@ -33,7 +34,7 @@ public class FolhaJpaMapper {
                 .dataAbertura(folhaJpa.getDataAbertura())
                 .servidorHomologador(ServidorJpaMapper.toDomain(folhaJpa.getServidorHomologador()))
                 .dataHomologacao(folhaJpa.getDataHomologacao())
-                .pontos(folhaJpa.getPontos())
+                .pontos(folhaJpa.getPontos().stream().map(PontoJpaMapper::toDomain).toList())
                 .build();
     }
 

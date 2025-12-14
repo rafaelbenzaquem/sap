@@ -5,7 +5,7 @@ import br.jus.trf1.sipe.folha.domain.model.Mes;
 import br.jus.trf1.sipe.folha.domain.model.Folha;
 import br.jus.trf1.sipe.folha.domain.port.in.FolhaServicePort;
 import br.jus.trf1.sipe.folha.domain.port.out.FolhaPersistencePort;
-import br.jus.trf1.sipe.ponto.PontoService;
+import br.jus.trf1.sipe.ponto.domain.service.PontoServiceAdapter;
 import br.jus.trf1.sipe.servidor.domain.service.ServidorServiceAdapter;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +17,14 @@ import java.util.Optional;
 public class FolhaServiceAdapter implements FolhaServicePort {
 
     private final FolhaPersistencePort folhaPersistencePort;
-    private final PontoService pontoService;
+    private final PontoServiceAdapter pontoServiceAdapter;
     private final ServidorServiceAdapter servidorService;
 
     public FolhaServiceAdapter(FolhaPersistencePort folhaPersistencePort,
-                               PontoService pontoService,
+                               PontoServiceAdapter pontoServiceAdapter,
                                ServidorServiceAdapter servidorService) {
         this.folhaPersistencePort = folhaPersistencePort;
-        this.pontoService = pontoService;
+        this.pontoServiceAdapter = pontoServiceAdapter;
         this.servidorService = servidorService;
     }
 
@@ -33,7 +33,7 @@ public class FolhaServiceAdapter implements FolhaServicePort {
         var servidor = servidorService.buscaPorMatricula(matricula);
         var diaInicial = LocalDate.of(ano, mes.getValor(), 1);
         var diaFinal = YearMonth.of(ano, mes.getValor()).atEndOfMonth();
-        var pontos = pontoService.carregaPontos(matricula, diaInicial, diaFinal);
+        var pontos = pontoServiceAdapter.carregaPontos(matricula, diaInicial, diaFinal);
         var folha = Folha.builder()
                 .id(FolhaId.builder()
                         .servidor(servidor)

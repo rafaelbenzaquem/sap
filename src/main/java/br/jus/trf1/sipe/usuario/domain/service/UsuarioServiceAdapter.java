@@ -2,7 +2,7 @@ package br.jus.trf1.sipe.usuario.domain.service;
 
 import br.jus.trf1.sipe.comum.exceptions.CamposUnicosExistentesException;
 import br.jus.trf1.sipe.comum.exceptions.RecursoInvalidoException;
-import br.jus.trf1.sipe.ponto.Ponto;
+import br.jus.trf1.sipe.ponto.infrastructure.jpa.PontoJpa;
 import br.jus.trf1.sipe.usuario.domain.model.Usuario;
 import br.jus.trf1.sipe.usuario.domain.port.in.UsuarioServicePort;
 import br.jus.trf1.sipe.usuario.domain.port.out.UsuarioPersistencePort;
@@ -32,11 +32,11 @@ public class UsuarioServiceAdapter implements UsuarioServicePort {
 
     @Override
     public void temPermissaoRecurso(Object recurso) {
-        if(recurso instanceof Ponto ponto) {
-            Objects.requireNonNull(ponto);
-            Objects.requireNonNull(ponto.getId());
-            Objects.requireNonNull(ponto.getId().getUsuarioJPA().getMatricula());
-            usuarioSecurityPort.permissoesNivelUsuario(ponto.getId().getUsuarioJPA().getMatricula());
+        if(recurso instanceof PontoJpa pontoJpa) {
+            Objects.requireNonNull(pontoJpa);
+            Objects.requireNonNull(pontoJpa.getId());
+            Objects.requireNonNull(pontoJpa.getId().getUsuario().getMatricula());
+            usuarioSecurityPort.permissoesNivelUsuario(pontoJpa.getId().getUsuario().getMatricula());
         }
         throw new RecursoInvalidoException("O objeto %s não é um recurso válido!".formatted(recurso));
     }

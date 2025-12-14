@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.registro.exceptions;
 
-import br.jus.trf1.sipe.ponto.Ponto;
+import br.jus.trf1.sipe.ponto.infrastructure.jpa.PontoJpa;
 import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.comum.util.DataTempoUtil;
 
@@ -14,8 +14,8 @@ public class RegistroExistenteException extends RuntimeException {
         this(registro.getPonto());
     }
 
-    public RegistroExistenteException(Ponto ponto) {
-        this(ponto.getId().getUsuarioJPA().getMatricula(), ponto.getId().getDia());
+    public RegistroExistenteException(PontoJpa pontoJpa) {
+        this(pontoJpa.getId().getUsuario().getMatricula(), pontoJpa.getId().getDia());
     }
 
 

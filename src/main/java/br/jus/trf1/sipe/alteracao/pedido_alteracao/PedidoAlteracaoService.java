@@ -1,7 +1,8 @@
 package br.jus.trf1.sipe.alteracao.pedido_alteracao;
 
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.exceptions.PedidoAlteracaoInexistenteException;
-import br.jus.trf1.sipe.ponto.Ponto;
+import br.jus.trf1.sipe.ponto.domain.model.Ponto;
+import br.jus.trf1.sipe.ponto.infrastructure.jpa.PontoJpaMapper;
 import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.registro.RegistroRepository;
 import br.jus.trf1.sipe.registro.exceptions.RegistroInexistenteException;
@@ -35,8 +36,8 @@ public class PedidoAlteracaoService {
     public PedidoAlteracao criarPedidoAlteracao(Ponto ponto, String justificativa, Usuario usuarioSolicitante) {
 
         var pedidoAlteracao = PedidoAlteracao.builder()
-                .ponto(ponto)
-                .usuarioJpaSolicitante(UsuarioJpaMapper.toEntity(usuarioSolicitante))
+                .ponto(PontoJpaMapper.toEntity(ponto))
+                .usuarioSolicitante(UsuarioJpaMapper.toEntity(usuarioSolicitante))
                 .status(StatusPedido.PENDENTE)
                 .justificativa(justificativa)
                 .build();

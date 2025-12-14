@@ -7,7 +7,7 @@ import java.sql.Timestamp;
 import java.util.Objects;
 
 /**
- * Representa o fechamento mensal de folha de ponto de um servidor,
+ * Representa o fechamento mensal de folha de pontoJpa de um servidor,
  * armazenando saldo de horas a compensar ou pagar e prazos.
  */
 @Getter

@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.folha.infrastructure.jpa;
 
-import br.jus.trf1.sipe.ponto.Ponto;
+import br.jus.trf1.sipe.ponto.infrastructure.jpa.PontoJpa;
 import br.jus.trf1.sipe.servidor.infrastructure.jpa.ServidorJpa;
 import jakarta.persistence.*;
 import lombok.*;
@@ -33,5 +33,5 @@ public class FolhaJpa {
     private Timestamp dataHomologacao;
 
     @OneToMany(mappedBy = "folha", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<Ponto> pontos;
+    private List<PontoJpa> pontos;
 }

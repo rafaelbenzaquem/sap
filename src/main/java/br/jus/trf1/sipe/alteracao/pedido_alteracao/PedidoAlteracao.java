@@ -1,7 +1,7 @@
 package br.jus.trf1.sipe.alteracao.pedido_alteracao;
 
 import br.jus.trf1.sipe.alteracao.alteracao_registro.AlteracaoRegistro;
-import br.jus.trf1.sipe.ponto.Ponto;
+import br.jus.trf1.sipe.ponto.infrastructure.jpa.PontoJpa;
 import br.jus.trf1.sipe.usuario.infrastructure.jpa.UsuarioJpa;
 import jakarta.persistence.*;
 import lombok.*;
@@ -44,19 +44,19 @@ public class PedidoAlteracao {
     @ManyToOne
     @JoinColumn(name = "usuario_solicitante_id", referencedColumnName = "id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_pa_usuario_solicitante_id"))
-    private UsuarioJpa usuarioJpaSolicitante;
+    private UsuarioJpa usuarioSolicitante;
 
     @ManyToOne
     @JoinColumn(name = "usuario_aprovador_id", referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "fk_pa_usuario_aprovador_id"))
-    private UsuarioJpa usuarioJpaAprovador;
+    private UsuarioJpa usuarioAprovador;
 
     @ManyToOne
     @JoinColumns(value = {
             @JoinColumn(name = "ponto_matricula", referencedColumnName = "matricula", nullable = false),
             @JoinColumn(name = "ponto_dia", referencedColumnName = "dia", nullable = false)
     }, foreignKey = @ForeignKey(name = "fk_pa_ponto"))
-    private Ponto ponto;
+    private PontoJpa ponto;
 
     public void setJustificativa(String justificativa) {
         this.justificativa = this.justificativa ==null? justificativa: this.justificativa +" - "+justificativa;

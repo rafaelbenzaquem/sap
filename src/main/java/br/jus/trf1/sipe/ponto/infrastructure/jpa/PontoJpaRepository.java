@@ -1,4 +1,4 @@
-package br.jus.trf1.sipe.ponto;
+package br.jus.trf1.sipe.ponto.infrastructure.jpa;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -8,31 +8,31 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface PontoRepository extends JpaRepository<Ponto, PontoId> {
+public interface PontoJpaRepository extends JpaRepository<PontoJpa, PontoJpaId> {
 
     /**
-     * Busca pontos por matrícula e intervalo de datas.
+     * Busca pontoJpas por matrícula e intervalo de datas.
      *
      * @param matricula Matrícula (sigla seção subseção + codigo funcionário no SARH) do servidor com o prefixo.
      * @param inicio    Data inicial do intervalo.
      * @param fim       Data final do intervalo.
-     * @return Lista de pontos encontrados.
+     * @return Lista de pontoJpas encontrados.
      */
-    @Query("SELECT p FROM Ponto p WHERE LOWER(p.id.usuarioJPA.matricula) = LOWER(:matricula) AND p.id.dia BETWEEN :inicio AND :fim")
-    List<Ponto> buscaPontosPorPeriodo(@Param("matricula") String matricula,
-                                      @Param("inicio") LocalDate inicio,
-                                      @Param("fim") LocalDate fim
+    @Query("SELECT p FROM PontoJpa p WHERE LOWER(p.id.usuario.matricula) = LOWER(:matricula) AND p.id.dia BETWEEN :inicio AND :fim")
+    List<PontoJpa> buscaPontosPorPeriodo(@Param("matricula") String matricula,
+                                         @Param("inicio") LocalDate inicio,
+                                         @Param("fim") LocalDate fim
     );
 
     /**
-     * Busca um ponto por matrícula e data.
+     * Busca um pontoJpa por matrícula e data.
      *
-     * @param matricula Matrícula do ponto.
-     * @param dia       Data do ponto.
+     * @param matricula Matrícula do pontoJpa.
+     * @param dia       Data do pontoJpa.
      * @return Ponto encontrado, se existir.
      */
-    @Query("SELECT p FROM Ponto p WHERE p.id.usuarioJPA.matricula = :matricula AND p.id.dia = :dia")
-    Optional<Ponto> buscaPonto(
+    @Query("SELECT p FROM PontoJpa p WHERE p.id.usuario.matricula = :matricula AND p.id.dia = :dia")
+    Optional<PontoJpa> buscaPonto(
             @Param("matricula") String matricula,
             @Param("dia") LocalDate dia
     );
@@ -41,10 +41,10 @@ public interface PontoRepository extends JpaRepository<Ponto, PontoId> {
             SELECT
             CASE WHEN (COUNT(pa) > 0) THEN TRUE ELSE FALSE END
             FROM
-                 Ponto p
+                 PontoJpa p
                  JOIN p.pedidos pa
              WHERE
-                 p.id.usuarioJPA.matricula = :matricula
+                 p.id.usuario.matricula = :matricula
                  AND p.id.dia BETWEEN :dataInicio AND :dataFim
                  AND pa.dataAprovacao IS NULL
                  AND pa.alteracaoRegistros IS NOT EMPTY

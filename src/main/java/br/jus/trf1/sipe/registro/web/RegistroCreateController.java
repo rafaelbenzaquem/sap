@@ -1,7 +1,7 @@
 package br.jus.trf1.sipe.registro.web;
 
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracaoService;
-import br.jus.trf1.sipe.ponto.PontoService;
+import br.jus.trf1.sipe.ponto.domain.service.PontoServiceAdapter;
 import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.registro.RegistroService;
 import br.jus.trf1.sipe.registro.web.dto.RegistroNovoRequest;
@@ -29,13 +29,13 @@ import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_SAIDA_DATA
 public class RegistroCreateController {
 
     private final RegistroService registroService;
-    private final PontoService pontoService;
+    private final PontoServiceAdapter pontoServiceAdapter;
     private final PedidoAlteracaoService pedidoAlteracaoService;
 
 
-    public RegistroCreateController(RegistroService registroService, PontoService pontoService, PedidoAlteracaoService pedidoAlteracaoService) {
+    public RegistroCreateController(RegistroService registroService, PontoServiceAdapter pontoServiceAdapter, PedidoAlteracaoService pedidoAlteracaoService) {
         this.registroService = registroService;
-        this.pontoService = pontoService;
+        this.pontoServiceAdapter = pontoServiceAdapter;
         this.pedidoAlteracaoService = pedidoAlteracaoService;
     }
 
@@ -56,7 +56,7 @@ public class RegistroCreateController {
                 matricula, paraString(dia, PADRAO_SAIDA_DATA), registrosNovos.size());
 
         var pedidoAlteracao = pedidoAlteracaoService.buscaPedidoAlteracao(idPedidoAlteracao);
-        var ponto = pontoService.buscaPonto(matricula, dia);
+        var ponto = pontoServiceAdapter.buscaPonto(matricula, dia);
         List<Registro> registros = registroService.addRegistros(pedidoAlteracao,ponto,
                 registrosNovos.stream().map(RegistroNovoRequest::toModel).toList());
 

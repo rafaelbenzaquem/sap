@@ -1,4 +1,4 @@
-package br.jus.trf1.sipe.ponto;
+package br.jus.trf1.sipe.ponto.infrastructure.jpa;
 
 import br.jus.trf1.sipe.usuario.infrastructure.jpa.UsuarioJpa;
 import jakarta.persistence.*;
@@ -16,27 +16,27 @@ import static br.jus.trf1.sipe.comum.util.DataTempoUtil.paraString;
 @Getter
 @Setter
 @Embeddable
-public class PontoId {
+public class PontoJpaId {
 
 
     @OneToOne
     @JoinColumns(value = {
             @JoinColumn(name = "matricula", referencedColumnName = "matricula")
     }, foreignKey = @ForeignKey(name = "fk_servidor_ponto"))
-    private UsuarioJpa usuarioJPA;
+    private UsuarioJpa usuario;
 
     private LocalDate dia;
 
     @Override
     public final boolean equals(Object o) {
-        if (!(o instanceof PontoId pontoId)) return false;
+        if (!(o instanceof PontoJpaId pontoJpaId)) return false;
 
-        return Objects.equals(usuarioJPA.getMatricula(), pontoId.getUsuarioJPA().getMatricula()) && Objects.equals(dia, pontoId.dia);
+        return Objects.equals(usuario.getMatricula(), pontoJpaId.getUsuario().getMatricula()) && Objects.equals(dia, pontoJpaId.dia);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hashCode(this.usuarioJPA.getMatricula());
+        int result = Objects.hashCode(this.usuario.getMatricula());
         result = 31 * result + Objects.hashCode(dia);
         return result;
     }
@@ -44,7 +44,7 @@ public class PontoId {
     @Override
     public String toString() {
         return "{" +
-                "matricula=" + usuarioJPA.getMatricula() +
+                "matricula=" + usuario.getMatricula() +
                 ", dia=" + paraString(dia, PADRAO_SAIDA_DATA) +
                 '}';
     }

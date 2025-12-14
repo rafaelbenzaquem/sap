@@ -1,15 +1,19 @@
-package br.jus.trf1.sipe.ponto;
+package br.jus.trf1.sipe.ponto.domain.service;
 
 import br.jus.trf1.sipe.ausencia.externo.jsrh.AusenciaExterna;
 import br.jus.trf1.sipe.ausencia.externo.jsrh.AusenciaExternaService;
 import br.jus.trf1.sipe.feriado.externo.jsarh.FeriadoJSarhClient;
 import br.jus.trf1.sipe.feriado.externo.jsarh.dto.FeriadoJSarhResponse;
+import br.jus.trf1.sipe.ponto.domain.model.IndicePonto;
+import br.jus.trf1.sipe.ponto.domain.model.Ponto;
+import br.jus.trf1.sipe.ponto.domain.model.PontoId;
+import br.jus.trf1.sipe.ponto.domain.port.in.PontoServicePort;
+import br.jus.trf1.sipe.ponto.domain.port.out.PontoPersistencePort;
 import br.jus.trf1.sipe.ponto.exceptions.PontoExistenteException;
 import br.jus.trf1.sipe.ponto.exceptions.PontoInexistenteException;
 import br.jus.trf1.sipe.registro.RegistroService;
-import br.jus.trf1.sipe.usuario.infrastructure.jpa.UsuarioJpa;
-import br.jus.trf1.sipe.usuario.infrastructure.security.UsuarioSecurityAdapter;
-import jakarta.transaction.Transactional;
+import br.jus.trf1.sipe.usuario.domain.model.Usuario;
+import br.jus.trf1.sipe.usuario.domain.port.out.UsuarioSecurityPort;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -28,28 +32,31 @@ import static br.jus.trf1.sipe.comum.util.DataTempoUtil.*;
  */
 @Slf4j
 @Service
-public class PontoService {
+public class PontoServiceAdapter implements PontoServicePort {
 
-    private final PontoRepository pontoRepository;
+    private final PontoPersistencePort pontoPersistencePort;
     private final RegistroService registroService;
     private final AusenciaExternaService ausenciaService;
     private final FeriadoJSarhClient feriadoService;
-    private final UsuarioSecurityAdapter usuarioSecurityAdapter;
+    private final UsuarioSecurityPort usuarioSecurityPort;
 
-    public PontoService(PontoRepository pontoRepository,
-                        RegistroService registroService,
-                        AusenciaExternaService ausenciaService,
-                        FeriadoJSarhClient feriadoService,
-                        UsuarioSecurityAdapter usuarioSecurityAdapter) {
-        this.pontoRepository = pontoRepository;
+    public PontoServiceAdapter(PontoPersistencePort pontoJpaRepository,
+                               RegistroService registroService,
+                               AusenciaExternaService ausenciaService,
+                               FeriadoJSarhClient feriadoService,
+                               UsuarioSecurityPort usuarioSecurityPort) {
+        this.pontoPersistencePort = pontoJpaRepository;
         this.registroService = registroService;
         this.ausenciaService = ausenciaService;
         this.feriadoService = feriadoService;
-        this.usuarioSecurityAdapter = usuarioSecurityAdapter;
+        this.usuarioSecurityPort = usuarioSecurityPort;
     }
 
-    public  Boolean existePontoComPedidoAlteracaoPendenteNoPeriodo(String matricula, LocalDate inicio, LocalDate fim) {
-        return pontoRepository.existePontosComAlteracaoRegistroPendentePorData(matricula, inicio, fim);
+
+
+    @Override
+    public Boolean existePontoComPedidoAlteracaoPendenteNoPeriodo(String matricula, LocalDate inicio, LocalDate fim) {
+        return pontoPersistencePort.existePontosComAlteracaoRegistroPendentePorData(matricula, inicio, fim);
     }
 
     /**
@@ -59,13 +66,9 @@ public class PontoService {
      * @param dia       dia do ponto a verificar
      * @return {@code true} se o ponto existir, {@code false} caso contrário
      */
+    @Override
     public boolean existe(String matricula, LocalDate dia) {
-        return pontoRepository.existsById(PontoId.builder().
-                usuarioJPA(UsuarioJpa.builder()
-                        .matricula(matricula)
-                        .build()).
-                dia(dia).
-                build());
+        return pontoPersistencePort.existe(matricula, dia);
     }
 
     /**
@@ -74,21 +77,12 @@ public class PontoService {
      * @param matricula matrícula do servidor
      * @param dia       data do ponto a buscar
      * @return ponto encontrado
-     * @throws PontoInexistenteException se não existir ponto para os parâmetros
      */
+    @Override
     public Ponto buscaPonto(String matricula, LocalDate dia) {
         log.info("Buscando Ponto - {} - {} ", paraString(dia), matricula);
-        usuarioSecurityAdapter.permissoesNivelUsuario(matricula);
-        var pontoOpt = pontoRepository.findById(PontoId.builder().
-                usuarioJPA(UsuarioJpa.builder()
-                        .matricula(matricula)
-                        .build()).
-                dia(dia).
-                build()
-        );
-        return pontoOpt.orElseThrow(
-                () -> new PontoInexistenteException(matricula, dia)
-        );
+        usuarioSecurityPort.permissoesNivelUsuario(matricula);
+        return pontoPersistencePort.busca(matricula, dia);
     }
 
 
@@ -100,10 +94,11 @@ public class PontoService {
      * @param fim       data de fim do período
      * @return lista de pontos no período
      */
+    @Override
     public List<Ponto> buscarPontos(String matricula, LocalDate inicio, LocalDate fim) {
         log.info("Lista de Pontos - {} - {} - {} ", paraString(inicio), paraString(fim), matricula);
-        usuarioSecurityAdapter.permissoesNivelUsuario(matricula);
-        return pontoRepository.buscaPontosPorPeriodo(matricula, inicio, fim);
+        usuarioSecurityPort.permissoesNivelUsuario(matricula);
+        return pontoPersistencePort.buscaPontosPorPeriodo(matricula, inicio, fim);
     }
 
     /**
@@ -143,28 +138,21 @@ public class PontoService {
      *
      * @param ponto objeto a ser criado
      * @return ponto salvo
-     * @throws PontoExistenteException se já existir ponto para matrícula e dia informados
+     * @throws PontoExistenteException se já existir pontoJpa para matrícula e dia informados
      */
-    @Transactional
+    @Override
     public Ponto criaPonto(Ponto ponto) {
-        var matricula = ponto.getId().getUsuarioJPA().getMatricula();
-        usuarioSecurityAdapter.permissoesNivelUsuario(matricula);
+        var matricula = ponto.getId().getUsuario().getMatricula();
+        usuarioSecurityPort.permissoesNivelUsuario(matricula);
         var dia = ponto.getId().getDia();
         log.info("Salvando Ponto - {} - {} ", matricula, dia);
-        if (this.existe(matricula, dia)) {
-            throw new PontoExistenteException(matricula, dia);
-        }
-        // Persiste ponto com descrição e índice já definidos
-        var pontoSalvo = pontoRepository.save(defineDescricaoIndice(ponto));
-        // Atualiza registros associados e define no ponto retornado para permitir cálculo imediato
-        var registros = registroService.atualizaRegistrosSistemaDeAcesso(pontoSalvo);
-        pontoSalvo.setRegistros(registros);
+        var pontoSalvo = pontoPersistencePort.salva(defineDescricaoIndice(ponto));
         return pontoSalvo;
 
     }
 
     private Ponto defineDescricaoIndice(Ponto ponto) {
-        var matricula = ponto.getId().getUsuarioJPA().getMatricula();
+        var matricula = ponto.getId().getUsuario().getMatricula();
         var dia = ponto.getId().getDia();
         var ausencia = ausenciaService.buscaAusenciaServidorNoDia(matricula, dia);
         var feriadoResponse = feriadoService.buscaFeriadoDoDia(dia);
@@ -184,9 +172,10 @@ public class PontoService {
      * @return ponto atualizado
      * @throws PontoInexistenteException se não existir ponto para matrícula e dia informados
      */
+    @Override
     public Ponto atualizaPonto(Ponto ponto) {
-        var matricula = ponto.getId().getUsuarioJPA().getMatricula();
-        usuarioSecurityAdapter.permissoesNivelUsuario(matricula);
+        var matricula = ponto.getId().getUsuario().getMatricula();
+        usuarioSecurityPort.permissoesNivelUsuario(matricula);
         var dia = ponto.getId().getDia();
         log.info("Atualizando Ponto - {} - {} ", matricula, dia);
         if (this.existe(matricula, dia)) {
@@ -196,29 +185,30 @@ public class PontoService {
             var registros = registroService.atualizaRegistrosSistemaDeAcesso(ponto);
             ponto.setRegistros(registros);
             // Persiste alterações
-            var pontoAtualizado = pontoRepository.save(ponto);
+            var pontoAtualizado = pontoPersistencePort.salva(ponto);
             return pontoAtualizado;
         }
         throw new PontoInexistenteException(matricula, dia);
     }
 
     /**
-     * Carrega ou cria pontos em um intervalo de datas. Para cada dia do período:
+     * Carrega ou cria pontos num intervalo de datas. Para cada dia do período:
      * <ul>
      *   <li>Se existir ponto, atualiza os registros;</li>
-     *   <li>Se não existir, cria novo ponto;</li>
+     *   <li>Se não existir, cria um ponto;</li>
      * </ul>
      *
      * @param matricula matrícula do servidor
      * @param inicio    data inicial do período
      * @param fim       data final do período
-     * @return lista de pontos carregados ou criados
+     * @return lista de pontoJpas carregados ou criados
      */
+    @Override
     public List<Ponto> carregaPontos(String matricula, LocalDate inicio, LocalDate fim) {
 
-        usuarioSecurityAdapter.permissoesNivelUsuario(matricula);
+        usuarioSecurityPort.permissoesNivelUsuario(matricula);
 
-        List<Ponto> pontos = pontoRepository.buscaPontosPorPeriodo(matricula, inicio, fim);
+        List<Ponto> pontos = pontoPersistencePort.buscaPontosPorPeriodo(matricula, inicio, fim);
 
         pontos.forEach(ponto -> {
             var registros = registroService.atualizaRegistrosSistemaDeAcesso(ponto);
@@ -229,7 +219,7 @@ public class PontoService {
         while (!dataAtual.isAfter(fim)) {
             var id = PontoId.builder().
                     dia(dataAtual).
-                    usuarioJPA(UsuarioJpa.builder()
+                    usuario(Usuario.builder()
                             .matricula(matricula)
                             .build()).
                     build();

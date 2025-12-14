@@ -7,7 +7,7 @@ import br.jus.trf1.sipe.alteracao.pedido_alteracao.web.dto.PedidoAlteracaoReques
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.web.dto.PedidoAlteracaoResponse;
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.web.dto.PedidoAlteracaoUpdateRequest;
 import br.jus.trf1.sipe.comum.util.DataTempoUtil;
-import br.jus.trf1.sipe.ponto.PontoService;
+import br.jus.trf1.sipe.ponto.domain.service.PontoServiceAdapter;
 import br.jus.trf1.sipe.usuario.infrastructure.security.UsuarioSecurityAdapter;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -27,12 +27,12 @@ public class PedidoAlteracaoController {
 
     private final PedidoAlteracaoService pedidoAlteracaoService;
     private final UsuarioSecurityAdapter usuarioSecurityAdapter;
-    private final PontoService pontoService;
+    private final PontoServiceAdapter pontoServiceAdapter;
 
-    public PedidoAlteracaoController(PedidoAlteracaoService pedidoAlteracaoService, UsuarioSecurityAdapter usuarioSecurityAdapter, PontoService pontoService) {
+    public PedidoAlteracaoController(PedidoAlteracaoService pedidoAlteracaoService, UsuarioSecurityAdapter usuarioSecurityAdapter, PontoServiceAdapter pontoServiceAdapter) {
         this.pedidoAlteracaoService = pedidoAlteracaoService;
         this.usuarioSecurityAdapter = usuarioSecurityAdapter;
-        this.pontoService = pontoService;
+        this.pontoServiceAdapter = pontoServiceAdapter;
     }
 
 
@@ -72,7 +72,7 @@ public class PedidoAlteracaoController {
         log.info("Atualizando realizando Pedido de Alteracao de Ponto - {} - {}", matriculaPonto, diaPonto);
 
         var usuario = usuarioSecurityAdapter.getUsuarioAutenticado();
-        var ponto = pontoService.buscaPonto(matriculaPonto, diaPonto);
+        var ponto = pontoServiceAdapter.buscaPonto(matriculaPonto, diaPonto);
         var pedidoAlteracao = pedidoAlteracaoService.criarPedidoAlteracao(ponto, justificativa, usuario);
 
 

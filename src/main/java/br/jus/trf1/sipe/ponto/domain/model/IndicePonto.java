@@ -1,4 +1,4 @@
-package br.jus.trf1.sipe.ponto;
+package br.jus.trf1.sipe.ponto.domain.model;
 
 import lombok.Getter;
 

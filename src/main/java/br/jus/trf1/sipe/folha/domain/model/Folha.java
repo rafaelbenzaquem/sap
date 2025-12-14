@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.folha.domain.model;
 
-import br.jus.trf1.sipe.ponto.Ponto;
+import br.jus.trf1.sipe.ponto.domain.model.Ponto;
 import br.jus.trf1.sipe.servidor.domain.model.Servidor;
 import br.jus.trf1.sipe.usuario.domain.port.out.UsuarioSecurityPort;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAutorizadoException;

@@ -1,6 +1,7 @@
-package br.jus.trf1.sipe.ponto;
+package br.jus.trf1.sipe.ponto.domain.model;
 
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracao;
+import br.jus.trf1.sipe.folha.domain.model.Folha;
 import br.jus.trf1.sipe.folha.infrastructure.jpa.FolhaJpa;
 import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.registro.Sentido;
@@ -21,51 +22,30 @@ import java.util.Objects;
 @NoArgsConstructor
 @Getter
 @Setter
-@Entity
-@Table(name = "pontos", schema = "sispontodb")
 public class Ponto {
 
-    @EmbeddedId
     private PontoId id;
 
-    private Float indice;
+    private IndicePonto indice;
 
     private String descricao;
 
-    @Transient
+//    @Transient
     @Builder.Default
     private Integer numeroRegistrosCalculados = 0;
 
-    @Transient
+//    @Transient
     @Builder.Default
     private Duration horasPermanencia = Duration.ZERO;
 
-    @OneToMany(mappedBy = "ponto", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Registro> registros;
 
-    @OneToMany(mappedBy = "ponto", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<PedidoAlteracao> pedidos;
 
-
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumns(value = {
-            @JoinColumn(name = "id_servidor_folha", referencedColumnName = "id_servidor"),
-            @JoinColumn(name = "ano_folha", referencedColumnName = "ano"),
-            @JoinColumn(name = "mes_folha", referencedColumnName = "mes")
-    }, foreignKey = @ForeignKey(name = "fk_folha_ponto"))
-    private FolhaJpa folha;
-
-    public IndicePonto getIndice() {
-        return IndicePonto.toEnum(indice);
-    }
-
-    public void setIndice(IndicePonto indicePonto) {
-        this.indice = indicePonto.getValor();
-    }
-
+    private Folha folha;
 
     public Duration getHorasPermanencia() {
-        log.info("getHorasPermanencia - buscando registros do ponto id:{}", this.id);
+        log.info("getHorasPermanencia - buscando registros do pontoJpa id:{}", this.id);
         var registros = getRegistros();
         if (registros == null || registros.isEmpty()) {
             log.info("getHorasPermanencia - registros encontrados: 0");
@@ -96,14 +76,14 @@ public class Ponto {
 
 
     /**
-     * Calcula a permanência do ponto.
+     * Calcula a permanência do pontoJpa.
      *
      * @return Duração da permanência.
      */
     private Duration calculaHorasPermanencia() {
         log.info("calculaHorasPermanencia");
         Duration totalHoras = Duration.ZERO;
-        if (registros == null || registros.isEmpty() || indice == null || indice == 0) {
+        if (registros == null || registros.isEmpty() || indice == null || indice.getValor() == 0) {
             return totalHoras;
         }
         LocalTime entradaPendente = null;
@@ -117,7 +97,7 @@ public class Ponto {
                 entradaPendente = null;
             }
         }
-        return Duration.ofSeconds((long) (totalHoras.getSeconds() * indice));
+        return Duration.ofSeconds((long) (totalHoras.getSeconds() * indice.getValor()));
     }
 
     /**

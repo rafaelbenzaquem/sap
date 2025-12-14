@@ -33,7 +33,7 @@ public class UsuarioCreateController {
     @PostMapping()
     @PreAuthorize("hasAnyAuthority('GRP_SIPE_ADMIN', 'GRP_SIPE_RH')")
     public ResponseEntity<EntityModel<UsuarioResponse>> cadastraUsuario(@RequestBody @Valid UsuarioNovoRequest request) {
-        log.info("Criando usuarioJPA: {}", request);
+        log.info("Criando usuario: {}", request);
 
 
         var usuario = usuarioServicePort.salve(UsuarioWebMapper.toDomain(request));

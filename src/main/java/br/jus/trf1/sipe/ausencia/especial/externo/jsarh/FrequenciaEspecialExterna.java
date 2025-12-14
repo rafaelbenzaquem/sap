@@ -22,7 +22,7 @@ public class FrequenciaEspecialExterna extends AusenciaExterna {
 
 
     @Override
-    public Ausencia toModel(UsuarioJpa usuarioJPA) {
-        return new FrequenciaEspecial(super.toModel(usuarioJPA), this.sei);
+    public Ausencia toModel(UsuarioJpa usuarioJpa) {
+        return new FrequenciaEspecial(super.toModel(usuarioJpa), this.sei);
     }
 }

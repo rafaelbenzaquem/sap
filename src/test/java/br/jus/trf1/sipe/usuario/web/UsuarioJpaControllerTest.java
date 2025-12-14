@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.startsWith;
 class UsuarioJpaControllerTest extends AbstractWebTest {
 
     @Test
-    @Sql({"/data/usuarioJPA/usuario_test_existe.sql"})
+    @Sql({"/data/usuario/usuario_test_existe.sql"})
     void buscaUsuarioComSucesso200() {
         var path = "http://localhost:" + RestAssured.port + "/v1/sipe/usuarios/1";
 
@@ -32,7 +32,7 @@ class UsuarioJpaControllerTest extends AbstractWebTest {
     }
 
     @Test
-    @Sql("/data/usuarioJPA/usuario_test_nao_existe.sql")
+    @Sql("/data/usuario/usuario_test_nao_existe.sql")
     void buscaUsuarioInexistente404() {
         given().
                 expect().
@@ -42,7 +42,7 @@ class UsuarioJpaControllerTest extends AbstractWebTest {
     }
 
     @Test
-    @Sql("/data/usuarioJPA/usuario_test_lista.sql")
+    @Sql("/data/usuario/usuario_test_lista.sql")
     void listaUsuariosComSucesso200() {
         given().
                 expect().
@@ -53,7 +53,7 @@ class UsuarioJpaControllerTest extends AbstractWebTest {
     }
 
     @Test
-    @Sql("/data/usuarioJPA/usuario_test_existe.sql")
+    @Sql("/data/usuario/usuario_test_existe.sql")
     void apagaUsuarioComSucesso200() {
         given().
                 expect().
@@ -69,7 +69,7 @@ class UsuarioJpaControllerTest extends AbstractWebTest {
 
 
     @Test
-    @Sql("/data/usuarioJPA/usuario_test_existe.sql")
+    @Sql("/data/usuario/usuario_test_existe.sql")
     void apagaUsuarioException404() {
         given().
                 expect().
@@ -84,7 +84,7 @@ class UsuarioJpaControllerTest extends AbstractWebTest {
 
     // -- Testes de criação de usuário --
     @Test
-    @Sql("/data/usuarioJPA/usuario_test_nao_existe.sql")
+    @Sql("/data/usuario/usuario_test_nao_existe.sql")
     void criaUsuarioSucesso201() {
         var payload = """
             {
@@ -111,7 +111,7 @@ class UsuarioJpaControllerTest extends AbstractWebTest {
     }
 
     @Test
-    @Sql("/data/usuarioJPA/usuario_test_existe.sql")
+    @Sql("/data/usuario/usuario_test_existe.sql")
     void criaUsuarioFalhaMatriculaDuplicada() {
         var payload = """
             {
@@ -135,7 +135,7 @@ class UsuarioJpaControllerTest extends AbstractWebTest {
     }
 
     @Test
-    @Sql("/data/usuarioJPA/usuario_test_existe.sql")
+    @Sql("/data/usuario/usuario_test_existe.sql")
     void criaUsuarioFalhaCrachaDuplicado() {
         var payload = """
             {
@@ -160,7 +160,7 @@ class UsuarioJpaControllerTest extends AbstractWebTest {
 
     // -- Testes de atualização de usuário --
     @Test
-    @Sql("/data/usuarioJPA/usuario_test_existe.sql")
+    @Sql("/data/usuario/usuario_test_existe.sql")
     void atualizaUsuarioSucesso200() {
         var payload = """
             {
@@ -183,7 +183,7 @@ class UsuarioJpaControllerTest extends AbstractWebTest {
     }
 
     @Test
-    @Sql("/data/usuarioJPA/usuario_test_existe.sql")
+    @Sql("/data/usuario/usuario_test_existe.sql")
     void atualizaUsuarioFalhaValidacaoNomeVazio() {
         var payload = """
             {
@@ -207,7 +207,7 @@ class UsuarioJpaControllerTest extends AbstractWebTest {
     }
 
     @Test
-    @Sql("/data/usuarioJPA/usuario_test_nao_existe.sql")
+    @Sql("/data/usuario/usuario_test_nao_existe.sql")
     void atualizaUsuarioInexistente404() {
         var payload = """
             {
@@ -230,7 +230,7 @@ class UsuarioJpaControllerTest extends AbstractWebTest {
     }
 
     @Test
-    @Sql("/data/usuarioJPA/dataset-usuarios.sql")
+    @Sql("/data/usuario/dataset-usuarios.sql")
     void atualizaUsuarioFalhaDuplicataMatricula() {
         var payload = """
             {
@@ -254,7 +254,7 @@ class UsuarioJpaControllerTest extends AbstractWebTest {
     }
 
     @Test
-    @Sql("/data/usuarioJPA/dataset-usuarios.sql")
+    @Sql("/data/usuario/dataset-usuarios.sql")
     void atualizaUsuarioFalhaDuplicataCracha() {
         var payload = """
             {

@@ -22,7 +22,7 @@ spring:
 
 ponto:
   coletor:
-    url: localhost-ponto
+    url: localhost-pontoJpa
 servidor:
   jsarh:
     url: localhost-jsarh

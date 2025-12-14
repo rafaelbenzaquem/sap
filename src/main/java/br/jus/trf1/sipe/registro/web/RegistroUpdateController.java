@@ -1,8 +1,9 @@
 package br.jus.trf1.sipe.registro.web;
 
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracaoService;
-import br.jus.trf1.sipe.ponto.Ponto;
-import br.jus.trf1.sipe.ponto.PontoService;
+import br.jus.trf1.sipe.ponto.domain.model.Ponto;
+import br.jus.trf1.sipe.ponto.infrastructure.jpa.PontoJpa;
+import br.jus.trf1.sipe.ponto.domain.service.PontoServiceAdapter;
 import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.registro.RegistroService;
 import br.jus.trf1.sipe.registro.web.dto.RegistroAtualizadoRequest;
@@ -33,14 +34,14 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class RegistroUpdateController {
 
     private final RegistroService registroService;
-    private final PontoService pontoService;
+    private final PontoServiceAdapter pontoServiceAdapter;
     private final ServidorServiceAdapter servidorService;
     private final PedidoAlteracaoService pedidoAlteracaoService;
 
 
-    public RegistroUpdateController(RegistroService registroService, PontoService pontoService, ServidorServiceAdapter servidorService, PedidoAlteracaoService pedidoAlteracaoService) {
+    public RegistroUpdateController(RegistroService registroService, PontoServiceAdapter pontoServiceAdapter, ServidorServiceAdapter servidorService, PedidoAlteracaoService pedidoAlteracaoService) {
         this.registroService = registroService;
-        this.pontoService = pontoService;
+        this.pontoServiceAdapter = pontoServiceAdapter;
         this.servidorService = servidorService;
         this.pedidoAlteracaoService = pedidoAlteracaoService;
     }
@@ -56,7 +57,7 @@ public class RegistroUpdateController {
         log.info("Atualizando Registros do ponto - {} - {}", matricula, dia);
 
 
-        Ponto ponto = pontoService.buscaPonto(matricula, dia);
+        Ponto ponto = pontoServiceAdapter.buscaPonto(matricula, dia);
         List<Registro> registros = registroService.atualizaRegistrosSistemaDeAcesso(ponto);
 
         return ResponseEntity.ok(addLinksHATEOAS(registros));
@@ -91,7 +92,7 @@ public class RegistroUpdateController {
         log.info("Adiciona novo registro no Ponto - {} - {}",
                 matricula, paraString(dia, PADRAO_SAIDA_DATA));
         var pedidoAlteracao = pedidoAlteracaoService.buscaPedidoAlteracao(idPedidoAlteracao);
-        var ponto = pontoService.buscaPonto(matricula, dia);
+        var ponto = pontoServiceAdapter.buscaPonto(matricula, dia);
         var registroAtualizado = registroService.atualizaRegistro(pedidoAlteracao, ponto, registroAtualizadoRequest.toModel());
         var registroModel = EntityModel.of(RegistroResponse.of(registroAtualizado),
                 linkTo(methodOn(RegistroReadController.class).buscaRegistro(registroAtualizado.getId())).withSelfRel());

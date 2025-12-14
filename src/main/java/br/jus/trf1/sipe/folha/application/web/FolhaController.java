@@ -41,7 +41,7 @@ public class FolhaController {
                                                                  @RequestParam("ano")
                                                                  Integer ano) {
         var mes = Mes.getMes(valorMes);
-        log.info("Buscando FolhaJpa - {} - {} - {}", matricula, ano, mes.getNome());
+        log.info("Buscando Folha - {} - {} - {}", matricula, ano, mes.getNome());
 
         var folha = folhaServiceAdapter.buscarFolha(matricula, mes, ano).orElse(folhaServiceAdapter.abrirFolha(matricula, mes, ano));
 

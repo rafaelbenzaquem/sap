@@ -1,7 +1,7 @@
 package br.jus.trf1.sipe.relatorio.model;
 
 import br.jus.trf1.sipe.feriado.externo.jsarh.FeriadoJSarh;
-import br.jus.trf1.sipe.ponto.Ponto;
+import br.jus.trf1.sipe.ponto.domain.model.Ponto;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;

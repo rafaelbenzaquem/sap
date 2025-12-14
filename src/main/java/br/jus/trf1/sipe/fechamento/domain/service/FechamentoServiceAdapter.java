@@ -42,7 +42,7 @@ public class FechamentoServiceAdapter implements FechamentoServicePort {
         // valida se já foi fechado
         fechamentoPersistencePort.buscaPorMatriculaMesAno(matricula, valorMes, ano)
                 .ifPresent(f -> { throw new IllegalStateException(
-                    "FolhaJpa já fechada para " + matricula + " em " + valorMes + "/" + ano);
+                    "Folha fechada para " + matricula + " em " + valorMes + "/" + ano);
                 });
         // obtém servidor e folha
         Servidor servidor = servidorServicePort.buscaPorMatricula(matricula);

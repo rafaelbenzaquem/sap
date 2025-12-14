@@ -1,6 +1,5 @@
-package br.jus.trf1.sipe.ponto.web.dto;
+package br.jus.trf1.sipe.ponto.application.web.dto;
 
-import br.jus.trf1.sipe.ponto.Ponto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.server.core.Relation;
@@ -20,8 +19,5 @@ public record PontoNovoResponse(String matricula,
                                 Long totalSegundos,
                                 @JsonProperty("pedido_alteracao_pendente")
                                 Boolean pedidoAlteracaoPendente) {
-    public static PontoNovoResponse of(Ponto ponto) {
-        return new PontoNovoResponse(ponto.getId().getUsuarioJPA().getMatricula(), ponto.getId().getDia(),
-                ponto.getDescricao(), ponto.getIndice().getValor(), ponto.getHorasPermanencia().toSeconds(), ponto.pedidoAlteracaoPendente());
-    }
+
 }

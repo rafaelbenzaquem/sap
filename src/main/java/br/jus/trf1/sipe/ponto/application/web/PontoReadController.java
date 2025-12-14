@@ -1,8 +1,8 @@
-package br.jus.trf1.sipe.ponto.web;
+package br.jus.trf1.sipe.ponto.application.web;
 
-import br.jus.trf1.sipe.ponto.Ponto;
-import br.jus.trf1.sipe.ponto.PontoService;
-import br.jus.trf1.sipe.ponto.web.dto.PontoResponse;
+import br.jus.trf1.sipe.ponto.application.web.dto.PontoResponse;
+import br.jus.trf1.sipe.ponto.domain.model.Ponto;
+import br.jus.trf1.sipe.ponto.domain.port.in.PontoServicePort;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.CollectionModel;
@@ -25,11 +25,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping("/v1/sipe/pontos")
 public class PontoReadController {
 
-    private final PontoService pontoService;
+    private final PontoServicePort pontoServicePort;
 
 
-    public PontoReadController(PontoService pontoService) {
-        this.pontoService = pontoService;
+    public PontoReadController(PontoServicePort pontoServicePort) {
+        this.pontoServicePort = pontoServicePort;
     }
 
     @GetMapping("/{matricula}/{dia}")
@@ -41,11 +41,11 @@ public class PontoReadController {
                                                                  LocalDate dia) {
         var diaFormatado = paraString(dia);
         log.info("Buscando Ponto - {} - {}", matricula, diaFormatado);
-        var ponto = pontoService.buscaPonto(matricula, dia);
+        var ponto = pontoServicePort.buscaPonto(matricula, dia);
         var uri = ServletUriComponentsBuilder.fromCurrentContextPath().
                 path("/v1/sipe/registros/pontos?matricula={matricula}&dia={dia}").
                 buildAndExpand(matricula, diaFormatado).toUriString();
-        var pontoModel = EntityModel.of(PontoResponse.of(ponto),
+        var pontoModel = EntityModel.of(PontoWebMapper.toResponse(ponto),
                 linkTo(methodOn(PontoReadController.class).buscaPonto(matricula, dia)).withSelfRel(),
                 Link.of(uri).withRel("registros")
         );
@@ -63,10 +63,10 @@ public class PontoReadController {
                                                                                                      @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
                                                                                                      LocalDate fim,
                                                                                                      @RequestParam(defaultValue = "false")
-                                                                                                     Boolean pendente) {
+                                                                                                     boolean pendente) {
 
-        var pontos = pendente ? pontoService.buscarPontos(matricula, inicio, fim).stream().
-                filter(Ponto::pedidoAlteracaoPendente).toList() : pontoService.buscarPontos(matricula, inicio, fim);
+        var pontos = pendente ? pontoServicePort.buscarPontos(matricula, inicio, fim).stream().
+                filter(Ponto::pedidoAlteracaoPendente).toList() : pontoServicePort.buscarPontos(matricula, inicio, fim);
 
         if (pontos.isEmpty()) {
             return ResponseEntity.ok(CollectionModel.empty());
@@ -78,7 +78,7 @@ public class PontoReadController {
             var uri = ServletUriComponentsBuilder.fromCurrentContextPath().
                     path("/v1/sipe/registros/pontos?matricula={matricula}&dia={dia}").
                     buildAndExpand(matricula, diaFormatado).toUriString();
-            return EntityModel.of(PontoResponse.of(ponto),
+            return EntityModel.of(PontoWebMapper.toResponse(ponto),
                     linkTo(methodOn(PontoReadController.class).buscaPonto(matricula, dia)).withSelfRel(),
                     Link.of(uri).withRel("registros")
             );
@@ -105,7 +105,7 @@ public class PontoReadController {
                                                                 @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
                                                                 LocalDate fim){
 
-        Boolean temPontoPendente = pontoService.existePontoComPedidoAlteracaoPendenteNoPeriodo(matricula,inicio,fim);
+        Boolean temPontoPendente = pontoServicePort.existePontoComPedidoAlteracaoPendenteNoPeriodo(matricula,inicio,fim);
 
         return ResponseEntity.ok(temPontoPendente);
     }

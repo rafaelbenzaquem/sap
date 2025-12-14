@@ -1,7 +1,7 @@
 package br.jus.trf1.sipe.usuario.domain.model;
 
 import br.jus.trf1.sipe.ausencia.Ausencia;
-import br.jus.trf1.sipe.ponto.Ponto;
+import br.jus.trf1.sipe.ponto.infrastructure.jpa.PontoJpa;
 import br.jus.trf1.sipe.usuario.application.web.dto.UsuarioResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,7 +24,7 @@ public class Usuario {
     private String matricula;
     private Integer cracha;
     private Integer horaDiaria;
-    private List<Ponto> pontos;
+    private List<PontoJpa> pontoJpas;
     private List<Ausencia> ausencias;
 
     public Usuario(Integer id, String nome, String matricula, Integer cracha, Integer horaDiaria) {

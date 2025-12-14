@@ -1,8 +1,8 @@
 package br.jus.trf1.sipe.ponto.exceptions;
 
-import br.jus.trf1.sipe.ponto.Ponto;
-import br.jus.trf1.sipe.ponto.PontoId;
-import br.jus.trf1.sipe.usuario.infrastructure.jpa.UsuarioJpa;
+import br.jus.trf1.sipe.ponto.domain.model.Ponto;
+import br.jus.trf1.sipe.ponto.domain.model.PontoId;
+import br.jus.trf1.sipe.usuario.domain.model.Usuario;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
@@ -15,7 +15,7 @@ public class PontoExistenteException extends RuntimeException {
 
     public PontoExistenteException(String matricula, LocalDate dia) {
         this(MSG_ENTIDADE_EXISTENTE.formatted(Ponto.class.getSimpleName(), PontoId.builder()
-                .usuarioJPA(UsuarioJpa.builder()
+                .usuario(Usuario.builder()
                         .matricula(matricula)
                         .build()).
                 dia(dia).

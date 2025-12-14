@@ -1,4 +1,4 @@
-package br.jus.trf1.sipe.ponto.web.dto;
+package br.jus.trf1.sipe.ponto.application.web.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -1,8 +1,9 @@
 package br.jus.trf1.sipe.comum.util;
 
-import br.jus.trf1.sipe.ponto.Ponto;
-import br.jus.trf1.sipe.ponto.web.PontoReadController;
-import br.jus.trf1.sipe.ponto.web.dto.PontoNovoResponse;
+import br.jus.trf1.sipe.ponto.application.web.PontoWebMapper;
+import br.jus.trf1.sipe.ponto.domain.model.Ponto;
+import br.jus.trf1.sipe.ponto.application.web.PontoReadController;
+import br.jus.trf1.sipe.ponto.application.web.dto.PontoNovoResponse;
 import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.registro.web.RegistroReadController;
 import br.jus.trf1.sipe.registro.web.dto.RegistroResponse;
@@ -26,7 +27,7 @@ public class HATEOASUtil {
         if (registros.isEmpty()) {
             return CollectionModel.empty();
         }
-        var matricula = registros.getFirst().getPonto().getId().getUsuarioJPA().getMatricula();
+        var matricula = registros.getFirst().getPonto().getId().getUsuario().getMatricula();
         var dia = registros.getFirst().getPonto().getId().getDia();
 
         var registrosEntityModelList = registros.stream().map(registro ->
@@ -46,12 +47,12 @@ public class HATEOASUtil {
         if (pontos.isEmpty()) {
             return CollectionModel.empty();
         }
-        var matricula = pontos.getFirst().getId().getUsuarioJPA().getMatricula();
+        var matricula = pontos.getFirst().getId().getUsuario().getMatricula();
 
         var registrosEntityModelList = pontos.stream().map(ponto ->
                 EntityModel.of(
-                        PontoNovoResponse.of(ponto),
-                        linkTo(methodOn(PontoReadController.class).buscaPonto(ponto.getId().getUsuarioJPA().getMatricula(),
+                        PontoWebMapper.toNovoResponse(ponto),
+                        linkTo(methodOn(PontoReadController.class).buscaPonto(ponto.getId().getUsuario().getMatricula(),
                                 ponto.getId().getDia())).withSelfRel()
                 )
         ).toList();

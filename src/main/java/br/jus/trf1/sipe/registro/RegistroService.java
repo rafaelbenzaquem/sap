@@ -4,7 +4,9 @@ import br.jus.trf1.sipe.alteracao.alteracao_registro.Acao;
 import br.jus.trf1.sipe.alteracao.alteracao_registro.AlteracaoRegistroService;
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracao;
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracaoService;
-import br.jus.trf1.sipe.ponto.Ponto;
+import br.jus.trf1.sipe.ponto.domain.model.Ponto;
+import br.jus.trf1.sipe.ponto.infrastructure.jpa.PontoJpa;
+import br.jus.trf1.sipe.ponto.infrastructure.jpa.PontoJpaMapper;
 import br.jus.trf1.sipe.registro.exceptions.RegistroInexistenteException;
 import br.jus.trf1.sipe.registro.externo.coletor.RegistroExternalService;
 import br.jus.trf1.sipe.servidor.domain.model.Servidor;
@@ -62,7 +64,7 @@ public class RegistroService {
 
     public List<Registro> atualizaRegistrosSistemaDeAcesso(Ponto ponto) {
 
-        var matricula = ponto.getId().getUsuarioJPA().getMatricula();
+        var matricula = ponto.getId().getUsuario().getMatricula();
         var dia = ponto.getId().getDia();
 
         var registrosAtuais = registroRepository.listarRegistrosHistoricosDoPonto(matricula, dia);
@@ -78,7 +80,7 @@ public class RegistroService {
     }
 
     private List<Registro> filtraNovosRegistros(Ponto ponto, List<Registro> registrosAtuais) {
-        var matricula = ponto.getId().getUsuarioJPA().getMatricula();
+        var matricula = ponto.getId().getUsuario().getMatricula();
         var dia = ponto.getId().getDia();
 
         var vinculo = usuarioService.buscaPorMatricula(matricula);
@@ -106,7 +108,7 @@ public class RegistroService {
                                 .hora(hr.dataHora().toLocalTime())
                                 .sentido(hr.sentido())
                                 .ativo(true)
-                                .ponto(ponto)
+                                .ponto(PontoJpaMapper.toEntity(ponto))
                                 .build()
                 )
                 .toList();
@@ -131,7 +133,7 @@ public class RegistroService {
         usuarioService.temPermissaoRecurso(ponto);
         var usuarioJpa = UsuarioJpaMapper.toEntity(usuarioAutenticado);
         var registrosNovos = registros.stream().
-                map(registro -> addPontoCriador(registro, ponto, (ServidorJpa) usuarioJpa)).toList();
+                map(registro -> addPontoCriador(registro, PontoJpaMapper.toEntity(ponto), (ServidorJpa) usuarioJpa)).toList();
         registrosNovos = registroRepository.saveAll(registrosNovos);
 
         registrosNovos.forEach(registroNovo -> {
@@ -143,8 +145,8 @@ public class RegistroService {
 
 
     @Transactional
-    public void removeRegistro(PedidoAlteracao pedidoAlteracao, Ponto ponto, Registro registro) {
-        usuarioService.temPermissaoRecurso(ponto);
+    public void removeRegistro(PedidoAlteracao pedidoAlteracao, PontoJpa pontoJpa, Registro registro) {
+        usuarioService.temPermissaoRecurso(pontoJpa);
 
         var alteracaoRegistroOpt = pedidoAlteracao.getAlteracaoRegistros().stream().
                 filter(pa -> registro.equals(pa.getRegistroOriginal()) || registro.equals(pa.getRegistroNovo())).findFirst();
@@ -154,7 +156,7 @@ public class RegistroService {
 
     }
 
-    public Registro addPontoCriador(Registro registro, Ponto ponto, ServidorJpa servidor) {
+    public Registro addPontoCriador(Registro registro, PontoJpa pontoJpa, ServidorJpa servidor) {
         return Registro.builder()
                 .id(registro.getId())
                 .hora(registro.getHora())
@@ -162,7 +164,7 @@ public class RegistroService {
                 .servidorCriador(servidor)
                 .ativo(true)
                 .codigoAcesso(registro.getCodigoAcesso() == null ? 0 : registro.getCodigoAcesso())
-                .ponto(ponto)
+                .ponto(pontoJpa)
                 .build();
     }
 
@@ -180,7 +182,7 @@ public class RegistroService {
             var registro = opt.get();
             if (registro.getPonto().equals(ponto)) {
                 registroAtualizado.setId(null);
-                registroAtualizado.setPonto(ponto);
+                registroAtualizado.setPonto(PontoJpaMapper.toEntity(ponto));
                 registroAtualizado = registroRepository.save(registroAtualizado);
                 registro.setRegistroNovo(registroAtualizado);
                 registroRepository.save(registro);
@@ -189,7 +191,7 @@ public class RegistroService {
 
                 return registroAtualizado;
             }
-            throw new IllegalArgumentException("Registro não pertence ao ponto: " + ponto.getId());
+            throw new IllegalArgumentException("Registro não pertence ao pontoJpa: " + ponto.getId());
         }
         throw new RegistroInexistenteException(id);
     }
@@ -212,7 +214,6 @@ public class RegistroService {
                 alteracaoRegistroService.apagar(alteracaoRegistro.getId());
             });
             registroRepository.apagarRegistroPorId(idRegistro);
-
 
             return registro;
         }

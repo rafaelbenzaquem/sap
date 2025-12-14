@@ -35,7 +35,7 @@ public record PedidoAlteracaoUpdateRequest(
 
         return PedidoAlteracaoUpdateRequest.builder()
                 .id(pedidoAlteracao.getId())
-                .matriculaPonto(pedidoAlteracao.getPonto().getId().getUsuarioJPA().getMatricula())
+                .matriculaPonto(pedidoAlteracao.getPonto().getId().getUsuario().getMatricula())
                 .diaPonto(pedidoAlteracao.getPonto().getId().getDia())
                 .status(pedidoAlteracao.getStatus().name())
                 .justificativa(pedidoAlteracao.getJustificativa())

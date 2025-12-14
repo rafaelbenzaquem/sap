@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.registro;
 
-import br.jus.trf1.sipe.ponto.Ponto;
+import br.jus.trf1.sipe.ponto.infrastructure.jpa.PontoJpa;
 import br.jus.trf1.sipe.servidor.infrastructure.jpa.ServidorJpa;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -65,7 +65,7 @@ public final class Registro implements Comparable<Registro> {
             @JoinColumn(name = "ponto_matricula", referencedColumnName = "matricula", nullable = false),
             @JoinColumn(name = "ponto_dia", referencedColumnName = "dia", nullable = false)
     }, foreignKey = @ForeignKey(name = "fk_registro_ponto"))
-    private Ponto ponto;
+    private PontoJpa ponto;
 
 
     public Sentido getSentido() {
