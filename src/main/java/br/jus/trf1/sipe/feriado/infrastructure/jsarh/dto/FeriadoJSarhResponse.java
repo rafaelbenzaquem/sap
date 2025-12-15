@@ -1,6 +1,6 @@
-package br.jus.trf1.sipe.feriado.externo.jsarh.dto;
+package br.jus.trf1.sipe.feriado.infrastructure.jsarh.dto;
 
-import br.jus.trf1.sipe.feriado.externo.jsarh.FeriadoJSarh;
+import br.jus.trf1.sipe.feriado.domain.model.Feriado;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 
@@ -14,7 +14,7 @@ public record FeriadoJSarhResponse(
         @JsonFormat(pattern = PADRAO_SAIDA_DATA, shape = JsonFormat.Shape.STRING) LocalDate data, String descricao,
         Integer abrangencia, Integer tipo) {
 
-    public FeriadoJSarh toModel() {
-        return new FeriadoJSarh(data, descricao, abrangencia, tipo);
+    public Feriado toModel() {
+        return new Feriado(data, descricao, abrangencia, tipo);
     }
 }

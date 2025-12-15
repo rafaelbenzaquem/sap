@@ -1,8 +1,8 @@
 package br.jus.trf1.sipe.relatorio;
 
 import br.jus.trf1.sipe.arquivo.domain.port.in.ArquivoServicePort;
-import br.jus.trf1.sipe.feriado.externo.jsarh.FeriadoJSarhClient;
-import br.jus.trf1.sipe.feriado.externo.jsarh.dto.FeriadoJSarhResponse;
+import br.jus.trf1.sipe.feriado.infrastructure.jsarh.FeriadoJSarhClient;
+import br.jus.trf1.sipe.feriado.infrastructure.jsarh.dto.FeriadoJSarhResponse;
 import br.jus.trf1.sipe.ponto.domain.service.PontoServiceAdapter;
 import br.jus.trf1.sipe.servidor.domain.service.ServidorServiceAdapter;
 import br.jus.trf1.sipe.usuario.infrastructure.security.UsuarioSecurityAdapter;

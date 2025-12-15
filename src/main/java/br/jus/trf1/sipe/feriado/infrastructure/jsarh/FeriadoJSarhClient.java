@@ -1,6 +1,6 @@
-package br.jus.trf1.sipe.feriado.externo.jsarh;
+package br.jus.trf1.sipe.feriado.infrastructure.jsarh;
 
-import br.jus.trf1.sipe.feriado.externo.jsarh.dto.FeriadoJSarhResponse;
+import br.jus.trf1.sipe.feriado.infrastructure.jsarh.dto.FeriadoJSarhResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;

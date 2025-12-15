@@ -2,8 +2,8 @@ package br.jus.trf1.sipe.ponto.domain.service;
 
 import br.jus.trf1.sipe.ausencia.externo.jsrh.AusenciaExterna;
 import br.jus.trf1.sipe.ausencia.externo.jsrh.AusenciaExternaService;
-import br.jus.trf1.sipe.feriado.externo.jsarh.FeriadoJSarhClient;
-import br.jus.trf1.sipe.feriado.externo.jsarh.dto.FeriadoJSarhResponse;
+import br.jus.trf1.sipe.feriado.infrastructure.jsarh.FeriadoJSarhClient;
+import br.jus.trf1.sipe.feriado.infrastructure.jsarh.dto.FeriadoJSarhResponse;
 import br.jus.trf1.sipe.ponto.domain.model.IndicePonto;
 import br.jus.trf1.sipe.ponto.domain.model.Ponto;
 import br.jus.trf1.sipe.ponto.domain.model.PontoId;
