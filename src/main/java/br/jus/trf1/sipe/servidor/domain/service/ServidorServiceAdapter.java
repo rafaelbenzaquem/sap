@@ -47,6 +47,7 @@ public class ServidorServiceAdapter implements ServidorServicePort {
     public Servidor atualizaDadosDoSarh(String matricula) {
         log.info("Buscando usuário com matricula: {}", matricula);
         var usuario = usuarioService.buscaPorMatricula(matricula);
+
         var servidor = (Servidor) usuario;
         var servidorExternoOpt = servidorExternoPort.buscaServidorExterno(matricula);
         if (servidorExternoOpt.isPresent()) {

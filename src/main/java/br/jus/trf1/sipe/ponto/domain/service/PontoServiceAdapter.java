@@ -208,7 +208,9 @@ public class PontoServiceAdapter implements PontoServicePort {
 
         usuarioSecurityPort.permissoesNivelUsuario(matricula);
 
-        List<Ponto> pontos = pontoPersistencePort.buscaPontosPorPeriodo(matricula, inicio, fim);
+        List<Ponto> pontosImutaveis = pontoPersistencePort.buscaPontosPorPeriodo(matricula, inicio, fim);
+
+        List<Ponto> pontos = new ArrayList<>(pontosImutaveis);
 
         pontos.forEach(ponto -> {
             var registros = registroService.atualizaRegistrosSistemaDeAcesso(ponto);

@@ -7,19 +7,20 @@ public class UsuarioJpaMapper {
     private UsuarioJpaMapper() {
     }
 
-    public static Usuario toDomain(UsuarioJpa usuarioJpa){
+    public static Usuario toDomain(UsuarioJpa usuarioJpa) {
         return Usuario.builder()
                 .id(usuarioJpa.getId())
                 .nome(usuarioJpa.getNome())
                 .matricula(usuarioJpa.getMatricula())
                 .cracha(usuarioJpa.getCracha())
                 .horaDiaria(usuarioJpa.getHoraDiaria())
-                .pontoJpas(usuarioJpa.getPontos())
                 .ausencias(usuarioJpa.getAusencias())
                 .build();
     }
 
-    public static UsuarioJpa toEntity(Usuario usuario){
+
+
+    public static UsuarioJpa toEntity(Usuario usuario) {
         return new UsuarioJpa(usuario.getId(), usuario.getNome(), usuario.getMatricula(), usuario.getCracha(), usuario.getHoraDiaria());
     }
 

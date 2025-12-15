@@ -17,7 +17,7 @@ public class PontoJpaMapper {
                 .descricao(pontoJpa.getDescricao())
                 .registros(pontoJpa.getRegistros())
                 .pedidos(pontoJpa.getPedidos())
-                .folha(FolhaJpaMapper.toDomain(pontoJpa.getFolha()))
+                .folha(pontoJpa.getFolha() == null ? null : FolhaJpaMapper.toDomain(pontoJpa.getFolha()))
                 .build();
     }
 
@@ -36,7 +36,7 @@ public class PontoJpaMapper {
                 .descricao(ponto.getDescricao())
                 .registros(ponto.getRegistros())
                 .pedidos(ponto.getPedidos())
-                .folha(FolhaJpaMapper.toEntity(ponto.getFolha()))
+                .folha(ponto.getFolha() == null ? null : FolhaJpaMapper.toEntity(ponto.getFolha()))
                 .build();
     }
 
