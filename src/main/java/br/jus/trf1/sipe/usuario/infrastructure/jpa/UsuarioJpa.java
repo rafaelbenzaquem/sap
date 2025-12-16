@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.usuario.infrastructure.jpa;
 
-import br.jus.trf1.sipe.ausencia.Ausencia;
+import br.jus.trf1.sipe.ausencia.ausencia.domain.model.Ausencia;
 import br.jus.trf1.sipe.ponto.infrastructure.jpa.PontoJpa;
 import br.jus.trf1.sipe.usuario.application.web.dto.UsuarioResponse;
 import jakarta.persistence.*;

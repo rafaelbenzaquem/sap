@@ -1,0 +1,36 @@
+package br.jus.trf1.sipe.ausencia.especial.infrastructure.jsarh;
+
+import br.jus.trf1.sipe.ausencia.especial.infrastructure.jsarh.dto.EspecialJSarhResponse;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+import static br.jus.trf1.sipe.comum.util.PadroesParaDataTempo.PADRAO_ENTRADA_DATA;
+
+@Service
+@FeignClient(url = "${jsarh.api.url}", fallback = EspecialJSarhClientFallBackImpl.class, name = "especiais")
+public interface EspecialJSarhClient {
+
+    @GetMapping(value = "/v1/sarh/servidores/{matricula}/ausencias/especiais", produces = "application/json")
+    List<EspecialJSarhResponse> buscaAusenciasEspeciaisServidorPorPeriodo(
+            @PathVariable("matricula") String matricula,
+            @RequestParam(name = "inicio", required = false) @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
+            LocalDate inicio,
+            @RequestParam(name = "fim", required = false) @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
+            LocalDate fim);
+
+    @GetMapping(value = "/v1/sarh/servidores/{matricula}/ausencias/especiais/{dia}", produces = "application/json")
+    Optional<EspecialJSarhResponse> buscaAusenciaEspecialServidorNoDia(
+            @PathVariable("matricula") String matricula,
+            @PathVariable("dia")
+            @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
+            LocalDate dia);
+
+}

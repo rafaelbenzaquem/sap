@@ -1,7 +1,7 @@
 package br.jus.trf1.sipe.ponto.domain.service;
 
-import br.jus.trf1.sipe.ausencia.externo.jsrh.AusenciaExterna;
-import br.jus.trf1.sipe.ausencia.externo.jsrh.AusenciaExternaService;
+import br.jus.trf1.sipe.ausencia.ausencia.domain.model.Ausencia;
+import br.jus.trf1.sipe.ausencia.ausencia.infrastructure.jsarh.AusenciaJSarhServiceAdapter;
 import br.jus.trf1.sipe.feriado.infrastructure.jsarh.FeriadoJSarhClient;
 import br.jus.trf1.sipe.feriado.infrastructure.jsarh.dto.FeriadoJSarhResponse;
 import br.jus.trf1.sipe.ponto.domain.model.IndicePonto;
@@ -19,9 +19,12 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.TextStyle;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 
-import static br.jus.trf1.sipe.comum.util.DataTempoUtil.*;
+import static br.jus.trf1.sipe.comum.util.DataTempoUtil.paraString;
 
 /**
  * Serviço para gerenciamento de pontos de registro de servidores.
@@ -36,13 +39,13 @@ public class PontoServiceAdapter implements PontoServicePort {
 
     private final PontoPersistencePort pontoPersistencePort;
     private final RegistroService registroService;
-    private final AusenciaExternaService ausenciaService;
+    private final AusenciaJSarhServiceAdapter ausenciaService;
     private final FeriadoJSarhClient feriadoService;
     private final UsuarioSecurityPort usuarioSecurityPort;
 
     public PontoServiceAdapter(PontoPersistencePort pontoJpaRepository,
                                RegistroService registroService,
-                               AusenciaExternaService ausenciaService,
+                               AusenciaJSarhServiceAdapter ausenciaService,
                                FeriadoJSarhClient feriadoService,
                                UsuarioSecurityPort usuarioSecurityPort) {
         this.pontoPersistencePort = pontoJpaRepository;
@@ -109,7 +112,7 @@ public class PontoServiceAdapter implements PontoServicePort {
      * @param feriado  optional com dados de feriado externo
      * @return descrição completa formatada
      */
-    private String defineDescricao(LocalDate dia, Optional<AusenciaExterna> ausencia, Optional<FeriadoJSarhResponse> feriado) {
+    private String defineDescricao(LocalDate dia, Optional<Ausencia> ausencia, Optional<FeriadoJSarhResponse> feriado) {
         return dia.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.of("pt", "BR")) + "\n" +
                 ausencia.map(a -> ", " + a.getDescricao()).orElse("") + "\n" +
                 feriado.map(f -> ", " + f.descricao()).orElse("");
@@ -123,7 +126,7 @@ public class PontoServiceAdapter implements PontoServicePort {
      * @param feriado  optional com dados de feriado externo
      * @return índice do ponto (AUSENCIA, DOMINGO_E_FERIADOS, SABADO ou DIA_UTIL)
      */
-    private IndicePonto defineIndice(LocalDate dia, Optional<AusenciaExterna> ausencia, Optional<FeriadoJSarhResponse> feriado) {
+    private IndicePonto defineIndice(LocalDate dia, Optional<Ausencia> ausencia, Optional<FeriadoJSarhResponse> feriado) {
         return ausencia.map(a -> IndicePonto.AUSENCIA).
                 orElseGet(() -> feriado.map(f -> IndicePonto.DOMINGO_E_FERIADOS).
                         orElse(dia.getDayOfWeek().getValue() == 7 ? IndicePonto.DOMINGO_E_FERIADOS :

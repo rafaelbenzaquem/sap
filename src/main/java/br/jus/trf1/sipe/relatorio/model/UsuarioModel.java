@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.relatorio.model;
 
-import br.jus.trf1.sipe.ausencia.Ausencia;
+import br.jus.trf1.sipe.ausencia.ausencia.domain.model.Ausencia;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,7 +1,7 @@
 package br.jus.trf1.sipe.servidor.domain.service;
 
-import br.jus.trf1.sipe.ausencia.AusenciaRepository;
-import br.jus.trf1.sipe.ausencia.externo.jsrh.AusenciaExternaService;
+import br.jus.trf1.sipe.ausencia.ausencia.domain.port.in.AusenciaServicePort;
+import br.jus.trf1.sipe.ausencia.ausencia.infrastructure.jpa.AusenciaJpaRepository;
 import br.jus.trf1.sipe.lotacao.domain.service.LotacaoServiceAdapter;
 import br.jus.trf1.sipe.lotacao.exceptions.LotacaoNaoTemDiretorException;
 import br.jus.trf1.sipe.servidor.domain.model.Servidor;
@@ -10,6 +10,7 @@ import br.jus.trf1.sipe.servidor.domain.port.in.ServidorServicePort;
 import br.jus.trf1.sipe.servidor.domain.port.out.ServidorPersistencePort;
 import br.jus.trf1.sipe.servidor.exceptions.ServidorInexistenteException;
 import br.jus.trf1.sipe.servidor.infrastructure.jpa.ServidorJpaMapper;
+import br.jus.trf1.sipe.usuario.domain.port.in.UsuarioServicePort;
 import br.jus.trf1.sipe.usuario.domain.service.UsuarioServiceAdapter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,20 +26,23 @@ import static br.jus.trf1.sipe.servidor.domain.service.ServidorCreator.createSer
 @Service
 public class ServidorServiceAdapter implements ServidorServicePort {
 
-    private final UsuarioServiceAdapter usuarioService;
+    private final UsuarioServicePort usuarioServicePort;
     private final ServidorPersistencePort servidorPersistencePort;
     private final ServidorExternoPort servidorExternoPort;
-    private final AusenciaExternaService ausenciaExternaService;
-    private final AusenciaRepository ausenciaRepository;
+    private final AusenciaServicePort ausenciaServicePort;
+    private final AusenciaJpaRepository ausenciaRepository;
     private final LotacaoServiceAdapter lotacaoServiceAdapter;
 
-    public ServidorServiceAdapter(UsuarioServiceAdapter usuarioService, ServidorPersistencePort servidorPersistencePort,
-                                  ServidorExternoPort servidorExternoPort, AusenciaExternaService ausenciaExternaService,
-                                  AusenciaRepository ausenciaRepository, LotacaoServiceAdapter lotacaoServiceAdapter) {
-        this.usuarioService = usuarioService;
+    public ServidorServiceAdapter(UsuarioServicePort usuarioServicePort,
+                                  ServidorPersistencePort servidorPersistencePort,
+                                  ServidorExternoPort servidorExternoPort,
+                                  AusenciaServicePort ausenciaServicePort,
+                                  AusenciaJpaRepository ausenciaRepository,
+                                  LotacaoServiceAdapter lotacaoServiceAdapter) {
+        this.usuarioServicePort = usuarioServicePort;
         this.servidorPersistencePort = servidorPersistencePort;
         this.servidorExternoPort = servidorExternoPort;
-        this.ausenciaExternaService = ausenciaExternaService;
+        this.ausenciaServicePort = ausenciaServicePort;
         this.ausenciaRepository = ausenciaRepository;
         this.lotacaoServiceAdapter = lotacaoServiceAdapter;
     }
@@ -46,7 +50,7 @@ public class ServidorServiceAdapter implements ServidorServicePort {
     @Override
     public Servidor atualizaDadosDoSarh(String matricula) {
         log.info("Buscando usuário com matricula: {}", matricula);
-        var usuario = usuarioService.buscaPorMatricula(matricula);
+        var usuario = usuarioServicePort.buscaPorMatricula(matricula);
 
         var servidor = (Servidor) usuario;
         var servidorExternoOpt = servidorExternoPort.buscaServidorExterno(matricula);
@@ -63,7 +67,7 @@ public class ServidorServiceAdapter implements ServidorServicePort {
 
     @Override
     public Servidor servidorAtual() {
-        var usuarioAtual = usuarioService.getUsuarioAutenticado();
+        var usuarioAtual = usuarioServicePort.getUsuarioAutenticado();
         var servidorAtualOpt = servidorPersistencePort.buscaPorId(usuarioAtual.getId());
         if (servidorAtualOpt.isPresent()) {
             return servidorAtualOpt.get();
@@ -80,7 +84,7 @@ public class ServidorServiceAdapter implements ServidorServicePort {
 
     @Override
     public List<Servidor> listar() {
-        if (usuarioService.permissaoDiretor()) {
+        if (usuarioServicePort.permissaoDiretor()) {
             log.info("listar por lotação do Diretor");
             var servidorAtual = servidorAtual();
             var idsLotacoes = lotacaoServiceAdapter.getLotacaos(servidorAtual.getLotacao().getId());
@@ -93,7 +97,7 @@ public class ServidorServiceAdapter implements ServidorServicePort {
     @Override
     public List<Servidor> listar(Integer idLotacaoPai) {
         log.info("listar Por Lotação id: {}", idLotacaoPai);
-        if (usuarioService.permissaoDiretor()) {
+        if (usuarioServicePort.permissaoDiretor()) {
             log.info("listar por lotação do Diretor");
             var servidorAtual = servidorAtual();
             var idsLotacoes = lotacaoServiceAdapter.getLotacaos(servidorAtual.getLotacao().getId());
@@ -108,7 +112,7 @@ public class ServidorServiceAdapter implements ServidorServicePort {
                                  Integer cracha,
                                  String matricula,
                                  Integer idLotacao) {
-        if (usuarioService.permissaoDiretor()) {
+        if (usuarioServicePort.permissaoDiretor()) {
             log.info("Paginar filtrado: Diretor");
             var servidorAtual = servidorAtual();
             var idsLotacoes = lotacaoServiceAdapter.getLotacaos(servidorAtual.getLotacao().getId());
@@ -122,7 +126,7 @@ public class ServidorServiceAdapter implements ServidorServicePort {
 
     @Override
     public List<Servidor> paginar(int page, int size) {
-        if (usuarioService.permissaoDiretor()) {
+        if (usuarioServicePort.permissaoDiretor()) {
             log.info("listar por lotação do Diretor");
             var servidorAtual = servidorAtual();
             var idsLotacoes = lotacaoServiceAdapter.getLotacaos(servidorAtual.getLotacao().getId());
@@ -137,7 +141,7 @@ public class ServidorServiceAdapter implements ServidorServicePort {
                                   Integer cracha,
                                   String matricula,
                                   int page, int size) {
-        if (usuarioService.permissaoDiretor()) {
+        if (usuarioServicePort.permissaoDiretor()) {
             log.info("Paginar filtrado: Diretor");
             var servidorAtual = servidorAtual();
             return servidorPersistencePort.paginarPorNomeOuCrachaOuMatriculaEeIdLotacao(nome, cracha, matricula, servidorAtual.getLotacao().getId(), page, size);
@@ -150,9 +154,9 @@ public class ServidorServiceAdapter implements ServidorServicePort {
     public Servidor vinculaAusenciasServidorNoPeriodo(Servidor servidor, LocalDate dataInicio, LocalDate dataFim) {
         log.info("Vinculando ausencias do servidor {}", servidor);
 
-        var ausenciasExternas = ausenciaExternaService.
+        var ausencias = ausenciaServicePort.
                 buscaAusenciasServidorPorPeriodo(servidor.getMatricula(), dataInicio, dataFim);
-        var novasAusencias = ausenciasExternas.stream().map(auEx -> auEx.toModel(ServidorJpaMapper.toEntity(servidor))).toList();
+        var novasAusencias = ausencias.stream().map(auEx -> auEx.toModel(ServidorJpaMapper.toEntity(servidor))).toList();
 
         var ausenciasExistentes = ausenciaRepository.listaAusenciasPorServidorMaisPeriodo(ServidorJpaMapper.toEntity(servidor), dataInicio, dataFim);
 

@@ -1,7 +1,7 @@
 package br.jus.trf1.sipe.relatorio;
 
 import br.jus.trf1.sipe.arquivo.domain.model.Arquivo;
-import br.jus.trf1.sipe.ausencia.Ausencia;
+import br.jus.trf1.sipe.ausencia.ausencia.domain.model.Ausencia;
 import br.jus.trf1.sipe.feriado.domain.model.Feriado;
 import br.jus.trf1.sipe.ponto.domain.model.Ponto;
 import br.jus.trf1.sipe.relatorio.model.PontoModel;

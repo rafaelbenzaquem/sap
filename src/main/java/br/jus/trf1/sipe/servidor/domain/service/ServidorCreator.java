@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.servidor.domain.service;
 
-import br.jus.trf1.sipe.ausencia.Ausencia;
+import br.jus.trf1.sipe.ausencia.ausencia.domain.model.Ausencia;
 import br.jus.trf1.sipe.servidor.domain.model.Servidor;
 import br.jus.trf1.sipe.usuario.domain.model.Usuario;
 import lombok.extern.slf4j.Slf4j;
