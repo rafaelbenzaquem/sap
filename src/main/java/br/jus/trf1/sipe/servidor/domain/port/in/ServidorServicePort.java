@@ -23,7 +23,7 @@ public interface ServidorServicePort {
 
     List<Servidor> paginar(int page, int size);
 
-    Servidor vinculaAusenciasServidorNoPeriodo(Servidor servidor, LocalDate dataInicio, LocalDate dataFim);
+    Servidor atualizaAusenciasServidorNoPeriodo(Servidor servidor, LocalDate dataInicio, LocalDate dataFim);
 
     Servidor buscaDiretorLotacao(Integer idLotacao);
 }

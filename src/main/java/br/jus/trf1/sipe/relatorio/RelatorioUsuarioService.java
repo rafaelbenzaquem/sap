@@ -77,7 +77,7 @@ public class RelatorioUsuarioService implements RelatorioService {
         var servidor = servidorService.atualizaDadosDoSarh(matricula);
 
         log.info("Consultando licenças, férias e ausências especiais do servidor no SARH...");
-        servidor = servidorService.vinculaAusenciasServidorNoPeriodo(servidor, inicio, fim);
+        servidor = servidorService.atualizaAusenciasServidorNoPeriodo(servidor, inicio, fim);
         log.info("Ausencias: {}", servidor.getAusencias().size());
 
 

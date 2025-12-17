@@ -15,13 +15,13 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-public class AusenciaJSarhServiceAdapter implements AusenciaExternaPort {
+public class AusenciaJSarhAdapter implements AusenciaExternaPort {
 
     private final EspecialExternaPort especialExternaPort;
     private final FeriasExternaPort feriasExternaPort;
     private final LicencaExternaPort licencaExternaPort;
 
-    public AusenciaJSarhServiceAdapter(EspecialExternaPort especialExternaPort, FeriasExternaPort feriasExternaPort, LicencaExternaPort licencaExternaPort) {
+    public AusenciaJSarhAdapter(EspecialExternaPort especialExternaPort, FeriasExternaPort feriasExternaPort, LicencaExternaPort licencaExternaPort) {
         this.especialExternaPort = especialExternaPort;
         this.feriasExternaPort = feriasExternaPort;
         this.licencaExternaPort = licencaExternaPort;

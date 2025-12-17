@@ -1,7 +1,7 @@
 package br.jus.trf1.sipe.servidor.domain.service;
 
+import br.jus.trf1.sipe.ausencia.ausencia.domain.model.Ausencia;
 import br.jus.trf1.sipe.ausencia.ausencia.domain.port.in.AusenciaServicePort;
-import br.jus.trf1.sipe.ausencia.ausencia.infrastructure.jpa.AusenciaJpaRepository;
 import br.jus.trf1.sipe.lotacao.domain.service.LotacaoServiceAdapter;
 import br.jus.trf1.sipe.lotacao.exceptions.LotacaoNaoTemDiretorException;
 import br.jus.trf1.sipe.servidor.domain.model.Servidor;
@@ -9,9 +9,7 @@ import br.jus.trf1.sipe.servidor.domain.port.in.ServidorExternoPort;
 import br.jus.trf1.sipe.servidor.domain.port.in.ServidorServicePort;
 import br.jus.trf1.sipe.servidor.domain.port.out.ServidorPersistencePort;
 import br.jus.trf1.sipe.servidor.exceptions.ServidorInexistenteException;
-import br.jus.trf1.sipe.servidor.infrastructure.jpa.ServidorJpaMapper;
 import br.jus.trf1.sipe.usuario.domain.port.in.UsuarioServicePort;
-import br.jus.trf1.sipe.usuario.domain.service.UsuarioServiceAdapter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -30,20 +28,16 @@ public class ServidorServiceAdapter implements ServidorServicePort {
     private final ServidorPersistencePort servidorPersistencePort;
     private final ServidorExternoPort servidorExternoPort;
     private final AusenciaServicePort ausenciaServicePort;
-    private final AusenciaJpaRepository ausenciaRepository;
     private final LotacaoServiceAdapter lotacaoServiceAdapter;
 
-    public ServidorServiceAdapter(UsuarioServicePort usuarioServicePort,
-                                  ServidorPersistencePort servidorPersistencePort,
-                                  ServidorExternoPort servidorExternoPort,
-                                  AusenciaServicePort ausenciaServicePort,
-                                  AusenciaJpaRepository ausenciaRepository,
+
+    public ServidorServiceAdapter(UsuarioServicePort usuarioServicePort, ServidorPersistencePort servidorPersistencePort,
+                                  ServidorExternoPort servidorExternoPort, AusenciaServicePort ausenciaServicePort,
                                   LotacaoServiceAdapter lotacaoServiceAdapter) {
         this.usuarioServicePort = usuarioServicePort;
         this.servidorPersistencePort = servidorPersistencePort;
         this.servidorExternoPort = servidorExternoPort;
         this.ausenciaServicePort = ausenciaServicePort;
-        this.ausenciaRepository = ausenciaRepository;
         this.lotacaoServiceAdapter = lotacaoServiceAdapter;
     }
 
@@ -151,28 +145,10 @@ public class ServidorServiceAdapter implements ServidorServicePort {
     }
 
     @Override
-    public Servidor vinculaAusenciasServidorNoPeriodo(Servidor servidor, LocalDate dataInicio, LocalDate dataFim) {
+    public Servidor atualizaAusenciasServidorNoPeriodo(Servidor servidor, LocalDate dataInicio, LocalDate dataFim) {
         log.info("Vinculando ausencias do servidor {}", servidor);
-
-        var ausencias = ausenciaServicePort.
-                buscaAusenciasServidorPorPeriodo(servidor.getMatricula(), dataInicio, dataFim);
-        var novasAusencias = ausencias.stream().map(auEx -> auEx.toModel(ServidorJpaMapper.toEntity(servidor))).toList();
-
-        var ausenciasExistentes = ausenciaRepository.listaAusenciasPorServidorMaisPeriodo(ServidorJpaMapper.toEntity(servidor), dataInicio, dataFim);
-
-        var ausenciasParaDelete = ausenciasExistentes.stream().filter(ae -> !novasAusencias.contains(ae)).toList();
-        var ausenciasParaSalve = novasAusencias.stream().filter(ae -> !ausenciasExistentes.contains(ae)).toList();
-
-        if (!ausenciasParaDelete.isEmpty()) {
-            ausenciaRepository.deleteAll(ausenciasParaDelete);
-        }
-
-        if (!ausenciasParaSalve.isEmpty()) {
-            ausenciasParaSalve.forEach(ausenciaRepository::save);
-        }
-
-        var todasAusenciasDoPeriodo = ausenciaRepository.listaAusenciasPorServidorMaisPeriodo(ServidorJpaMapper.toEntity(servidor), dataInicio, dataFim);
-        servidor.setAusencias(new ArrayList<>(todasAusenciasDoPeriodo));
+        List<Ausencia> ausenciasAtulizadas = ausenciaServicePort.atualizaAusencias(servidor.getMatricula(), dataInicio, dataFim);
+        servidor.setAusencias(new ArrayList<>(ausenciasAtulizadas));
         return servidor;
     }
 

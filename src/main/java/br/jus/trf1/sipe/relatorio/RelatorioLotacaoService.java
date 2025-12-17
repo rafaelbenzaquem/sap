@@ -92,7 +92,7 @@ public class RelatorioLotacaoService implements RelatorioService {
                     servidorService.atualizaDadosDoSarh(matriculaSubordinado);
 
             log.info("Consultando ausenciais(licenças, férias e ausências especiais) do servidor no SARH...");
-            subordinado = servidorService.vinculaAusenciasServidorNoPeriodo(subordinado, inicio, fim);
+            subordinado = servidorService.atualizaAusenciasServidorNoPeriodo(subordinado, inicio, fim);
             log.info("Ausencias: {}", subordinado.getAusencias().size());
 
             log.info("Carregando pontos para o período especificado...");

@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.ausencia.licenca.domain.port.out;
 
-import br.jus.trf1.sipe.ausencia.licenca.domain.domain.Licenca;
+import br.jus.trf1.sipe.ausencia.licenca.domain.model.Licenca;
 
 import java.time.LocalDate;
 import java.util.List;

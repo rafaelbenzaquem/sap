@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.ausencia.licenca.infrastructure.jsarh.dto;
 
-import br.jus.trf1.sipe.ausencia.licenca.domain.domain.Licenca;
+import br.jus.trf1.sipe.ausencia.licenca.domain.model.Licenca;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDate;

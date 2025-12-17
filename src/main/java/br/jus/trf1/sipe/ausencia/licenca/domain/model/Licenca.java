@@ -1,4 +1,4 @@
-package br.jus.trf1.sipe.ausencia.licenca.domain.domain;
+package br.jus.trf1.sipe.ausencia.licenca.domain.model;
 
 import br.jus.trf1.sipe.ausencia.ausencia.domain.model.Ausencia;
 import lombok.AllArgsConstructor;

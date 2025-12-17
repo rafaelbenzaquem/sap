@@ -12,11 +12,11 @@ public interface AusenciaJpaRepository extends JpaRepository<AusenciaJpa, Long> 
 
 
     @Query("""
-            SELECT a FROM AusenciaJpa a WHERE a.usuario = :usuario
+            SELECT a FROM AusenciaJpa a WHERE a.usuario.matricula = :matricula
             AND (a.inicio BETWEEN :inicio AND :fim
             OR a.fim BETWEEN :inicio AND :fim)
             """)
-    List<AusenciaJpa> listaAusenciasPorServidorMaisPeriodo(@Param("usuario") UsuarioJpa usuario,
+    List<AusenciaJpa> listaAusenciasPorServidorMaisPeriodo(@Param("matricula") String matricula,
                                   @Param("inicio") LocalDate inicio,
                                   @Param("fim") LocalDate fim);
 

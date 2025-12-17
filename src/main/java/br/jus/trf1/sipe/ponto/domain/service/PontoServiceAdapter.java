@@ -1,7 +1,7 @@
 package br.jus.trf1.sipe.ponto.domain.service;
 
 import br.jus.trf1.sipe.ausencia.ausencia.domain.model.Ausencia;
-import br.jus.trf1.sipe.ausencia.ausencia.infrastructure.jsarh.AusenciaJSarhServiceAdapter;
+import br.jus.trf1.sipe.ausencia.ausencia.infrastructure.jsarh.AusenciaJSarhAdapter;
 import br.jus.trf1.sipe.feriado.infrastructure.jsarh.FeriadoJSarhClient;
 import br.jus.trf1.sipe.feriado.infrastructure.jsarh.dto.FeriadoJSarhResponse;
 import br.jus.trf1.sipe.ponto.domain.model.IndicePonto;
@@ -39,13 +39,13 @@ public class PontoServiceAdapter implements PontoServicePort {
 
     private final PontoPersistencePort pontoPersistencePort;
     private final RegistroService registroService;
-    private final AusenciaJSarhServiceAdapter ausenciaService;
+    private final AusenciaJSarhAdapter ausenciaService;
     private final FeriadoJSarhClient feriadoService;
     private final UsuarioSecurityPort usuarioSecurityPort;
 
     public PontoServiceAdapter(PontoPersistencePort pontoJpaRepository,
                                RegistroService registroService,
-                               AusenciaJSarhServiceAdapter ausenciaService,
+                               AusenciaJSarhAdapter ausenciaService,
                                FeriadoJSarhClient feriadoService,
                                UsuarioSecurityPort usuarioSecurityPort) {
         this.pontoPersistencePort = pontoJpaRepository;

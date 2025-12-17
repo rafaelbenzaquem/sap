@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.ausencia.licenca.infrastructure.jsarh;
 
-import br.jus.trf1.sipe.ausencia.licenca.domain.domain.Licenca;
+import br.jus.trf1.sipe.ausencia.licenca.domain.model.Licenca;
 import br.jus.trf1.sipe.ausencia.licenca.domain.port.out.LicencaExternaPort;
 import br.jus.trf1.sipe.ausencia.licenca.infrastructure.jsarh.dto.LicencaExternoResponse;
 import org.springframework.stereotype.Service;
