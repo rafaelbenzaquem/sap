@@ -1,5 +1,6 @@
 package br.jus.trf1.sipe.registro.web;
 
+import br.jus.trf1.sipe.alteracao.alteracao_registro.domain.port.in.AlteracaoRegistroServicePort;
 import br.jus.trf1.sipe.registro.RegistroService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -12,10 +13,12 @@ import org.springframework.web.bind.annotation.*;
 public class RegistroDeleteController {
 
     private final RegistroService registroService;
+    private final AlteracaoRegistroServicePort alteracaoRegistroServicePort;
 
 
-    public RegistroDeleteController(RegistroService registroService) {
+    public RegistroDeleteController(RegistroService registroService, AlteracaoRegistroServicePort alteracaoRegistroServicePort) {
         this.registroService = registroService;
+        this.alteracaoRegistroServicePort = alteracaoRegistroServicePort;
     }
 
     @DeleteMapping("/{id}")
@@ -23,7 +26,8 @@ public class RegistroDeleteController {
     public ResponseEntity<String> apagar(@PathVariable("id") Long idRegistro, @RequestParam("id_pedido_alteracao") Long idPedidoAlteracao) {
 
         log.info("Apagando registro {}", idRegistro);
-        registroService.apagar(idRegistro, idPedidoAlteracao);
+        alteracaoRegistroServicePort.apagarPorIdPedidoAlteracao(idPedidoAlteracao);
+        registroService.apagar(idRegistro);
         return ResponseEntity.ok("Registro id :" + idRegistro + " apagado com sucesso!");
     }
 

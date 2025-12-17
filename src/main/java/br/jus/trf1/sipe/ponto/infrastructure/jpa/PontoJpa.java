@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.ponto.infrastructure.jpa;
 
-import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracao;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.model.PedidoAlteracao;
 import br.jus.trf1.sipe.folha.infrastructure.jpa.FolhaJpa;
 import br.jus.trf1.sipe.ponto.domain.model.IndicePonto;
 import br.jus.trf1.sipe.registro.Registro;

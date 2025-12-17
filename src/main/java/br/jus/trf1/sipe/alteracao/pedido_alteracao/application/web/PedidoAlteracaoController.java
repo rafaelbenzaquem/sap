@@ -1,11 +1,11 @@
-package br.jus.trf1.sipe.alteracao.pedido_alteracao.web;
+package br.jus.trf1.sipe.alteracao.pedido_alteracao.application.web;
 
-import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracaoService;
-import br.jus.trf1.sipe.alteracao.pedido_alteracao.StatusPedido;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.service.PedidoAlteracaoService;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.model.StatusPedido;
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.exceptions.PedidoAlteracaoInexistenteException;
-import br.jus.trf1.sipe.alteracao.pedido_alteracao.web.dto.PedidoAlteracaoRequest;
-import br.jus.trf1.sipe.alteracao.pedido_alteracao.web.dto.PedidoAlteracaoResponse;
-import br.jus.trf1.sipe.alteracao.pedido_alteracao.web.dto.PedidoAlteracaoUpdateRequest;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.application.web.dto.PedidoAlteracaoRequest;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.application.web.dto.PedidoAlteracaoResponse;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.application.web.dto.PedidoAlteracaoUpdateRequest;
 import br.jus.trf1.sipe.comum.util.DataTempoUtil;
 import br.jus.trf1.sipe.ponto.domain.service.PontoServiceAdapter;
 import br.jus.trf1.sipe.usuario.infrastructure.security.UsuarioSecurityAdapter;

@@ -1,9 +1,10 @@
 package br.jus.trf1.sipe.registro;
 
-import br.jus.trf1.sipe.alteracao.alteracao_registro.Acao;
-import br.jus.trf1.sipe.alteracao.alteracao_registro.AlteracaoRegistroService;
-import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracao;
-import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracaoService;
+import br.jus.trf1.sipe.alteracao.alteracao_registro.domain.model.Acao;
+import br.jus.trf1.sipe.alteracao.alteracao_registro.domain.port.in.AlteracaoRegistroServicePort;
+import br.jus.trf1.sipe.alteracao.alteracao_registro.domain.service.AlteracaoRegistroService;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.model.PedidoAlteracao;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.port.in.PedidoAlteracaoServicePort;
 import br.jus.trf1.sipe.ponto.domain.model.Ponto;
 import br.jus.trf1.sipe.ponto.infrastructure.jpa.PontoJpa;
 import br.jus.trf1.sipe.ponto.infrastructure.jpa.PontoJpaMapper;
@@ -12,7 +13,7 @@ import br.jus.trf1.sipe.registro.externo.coletor.RegistroExternalService;
 import br.jus.trf1.sipe.servidor.domain.model.Servidor;
 import br.jus.trf1.sipe.servidor.infrastructure.jpa.ServidorJpa;
 import br.jus.trf1.sipe.servidor.infrastructure.jpa.ServidorJpaMapper;
-import br.jus.trf1.sipe.usuario.domain.service.UsuarioServiceAdapter;
+import br.jus.trf1.sipe.usuario.domain.port.in.UsuarioServicePort;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAprovadorException;
 import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAutorizadoException;
 import br.jus.trf1.sipe.usuario.infrastructure.jpa.UsuarioJpaMapper;
@@ -30,20 +31,24 @@ import java.util.Objects;
 @Service
 public class RegistroService {
 
-    private final UsuarioServiceAdapter usuarioService;
+    private final UsuarioServicePort usuarioServicePort;
+
     private final RegistroExternalService registroExternalService;
     private final RegistroRepository registroRepository;
-    private final PedidoAlteracaoService pedidoAlteracaoService;
-    private final AlteracaoRegistroService alteracaoRegistroService;
 
-    public RegistroService(UsuarioServiceAdapter usuarioService, RegistroExternalService registroExternalService,
-                           RegistroRepository registroRepository, PedidoAlteracaoService pedidoAlteracaoService,
-                           AlteracaoRegistroService alteracaoRegistroService) {
-        this.usuarioService = usuarioService;
+    private final PedidoAlteracaoServicePort pedidoAlteracaoServicePort;
+    private final AlteracaoRegistroServicePort alteracaoRegistroServicePort;
+
+    public RegistroService(UsuarioServicePort usuarioServicePort,
+                           RegistroExternalService registroExternalService,
+                           RegistroRepository registroRepository,
+                           PedidoAlteracaoServicePort pedidoAlteracaoServicePort,
+                           AlteracaoRegistroServicePort alteracaoRegistroServicePort) {
+        this.usuarioServicePort = usuarioServicePort;
         this.registroExternalService = registroExternalService;
         this.registroRepository = registroRepository;
-        this.pedidoAlteracaoService = pedidoAlteracaoService;
-        this.alteracaoRegistroService = alteracaoRegistroService;
+        this.pedidoAlteracaoServicePort = pedidoAlteracaoServicePort;
+        this.alteracaoRegistroServicePort = alteracaoRegistroServicePort;
     }
 
     public Registro buscaRegistroPorId(Long id) {
@@ -83,7 +88,7 @@ public class RegistroService {
         var matricula = ponto.getId().getUsuario().getMatricula();
         var dia = ponto.getId().getDia();
 
-        var vinculo = usuarioService.buscaPorMatricula(matricula);
+        var vinculo = usuarioServicePort.buscaPorMatricula(matricula);
 
         var registros = registroExternalService.buscaRegistrosDoDiaPorCracha(dia, vinculo.getCracha());
 
@@ -117,7 +122,7 @@ public class RegistroService {
 
     public Registro aprovarRegistro(Long idRegistro) {
         var registro = registroRepository.findById(idRegistro).orElseThrow(() -> new RegistroInexistenteException(idRegistro));
-        var usuario = usuarioService.getUsuarioAutenticado();
+        var usuario = usuarioServicePort.getUsuarioAutenticado();
         if (usuario instanceof Servidor servidor) {
             var servidorJpa = ServidorJpaMapper.toEntity(servidor);
             registro.setServidorAprovador(servidorJpa);
@@ -127,17 +132,18 @@ public class RegistroService {
         throw new UsuarioNaoAprovadorException(usuario.getMatricula());
     }
 
+
     @Transactional
     public List<Registro> addRegistros(PedidoAlteracao pedidoAlteracao, Ponto ponto, List<Registro> registros) {
-        var usuarioAutenticado = usuarioService.getUsuarioAutenticado();
-        usuarioService.temPermissaoRecurso(ponto);
+        var usuarioAutenticado = usuarioServicePort.getUsuarioAutenticado();
+        usuarioServicePort.temPermissaoRecurso(ponto);
         var usuarioJpa = UsuarioJpaMapper.toEntity(usuarioAutenticado);
         var registrosNovos = registros.stream().
                 map(registro -> addPontoCriador(registro, PontoJpaMapper.toEntity(ponto), (ServidorJpa) usuarioJpa)).toList();
         registrosNovos = registroRepository.saveAll(registrosNovos);
 
         registrosNovos.forEach(registroNovo -> {
-            alteracaoRegistroService.salvarAlteracaoNoRegistroDePonto(pedidoAlteracao.getId(), null, registroNovo.getId(), Acao.CRIAR);
+            alteracaoRegistroServicePort.salvarAlteracaoNoRegistroDePonto(pedidoAlteracao.getId(), null, registroNovo.getId(), Acao.CRIAR);
         });
 
         return registrosNovos;
@@ -146,12 +152,12 @@ public class RegistroService {
 
     @Transactional
     public void removeRegistro(PedidoAlteracao pedidoAlteracao, PontoJpa pontoJpa, Registro registro) {
-        usuarioService.temPermissaoRecurso(pontoJpa);
+        usuarioServicePort.temPermissaoRecurso(pontoJpa);
 
         var alteracaoRegistroOpt = pedidoAlteracao.getAlteracaoRegistros().stream().
                 filter(pa -> registro.equals(pa.getRegistroOriginal()) || registro.equals(pa.getRegistroNovo())).findFirst();
 
-        alteracaoRegistroOpt.ifPresent(alteracaoRegistro -> alteracaoRegistroService.apagar(alteracaoRegistro.getId()));
+        alteracaoRegistroOpt.ifPresent(alteracaoRegistro -> alteracaoRegistroServicePort.apagar(alteracaoRegistro.getId()));
 
 
     }
@@ -170,9 +176,9 @@ public class RegistroService {
 
     @Transactional
     public Registro atualizaRegistro(PedidoAlteracao pedidoAlteracao, Ponto ponto, Registro registroAtualizado) {
-        var usuarioAutenticado = usuarioService.getUsuarioAutenticado();
+        var usuarioAutenticado = usuarioServicePort.getUsuarioAutenticado();
         var usuarioJpa = UsuarioJpaMapper.toEntity(usuarioAutenticado);
-        usuarioService.temPermissaoRecurso(ponto);
+        usuarioServicePort.temPermissaoRecurso(ponto);
         registroAtualizado.setServidorCriador((ServidorJpa) usuarioJpa);
         var id = registroAtualizado.getId();
         log.info("Atualiza registro {}", id);
@@ -187,7 +193,7 @@ public class RegistroService {
                 registro.setRegistroNovo(registroAtualizado);
                 registroRepository.save(registro);
 
-                alteracaoRegistroService.salvarAlteracaoNoRegistroDePonto(pedidoAlteracao.getId(), registro.getId(), registroAtualizado.getId(), Acao.ALTERAR);
+                alteracaoRegistroServicePort.salvarAlteracaoNoRegistroDePonto(pedidoAlteracao.getId(), registro.getId(), registroAtualizado.getId(), Acao.ALTERAR);
 
                 return registroAtualizado;
             }
@@ -197,26 +203,28 @@ public class RegistroService {
     }
 
     @Transactional
-    public Registro apagar(Long idRegistro, Long idPedidoAlteracao) {
+    public Registro apagar(Long idRegistro) {
 
-        var usuarioAtual = usuarioService.getUsuarioAutenticado();
+        var usuarioAtual = usuarioServicePort.getUsuarioAutenticado();
         var registro = buscaRegistroPorId(idRegistro);
         var ponto = registro.getPonto();
         if (registro.getServidorAprovador() == null || registro.getServidorAprovador().equals(usuarioAtual)) {
 
-            usuarioService.temPermissaoRecurso(ponto);
-            var pedidoAlteracao = pedidoAlteracaoService.buscaPedidoAlteracao(idPedidoAlteracao);
+            usuarioServicePort.temPermissaoRecurso(ponto);
+//            var pedidoAlteracao = pedidoAlteracaoServicePort.buscaPedidoAlteracao(idPedidoAlteracao);
+//
+//            var alteracaoRegistroOptional = pedidoAlteracao.getAlteracaoRegistros().
+//                    stream().filter(ar -> registro.equals(ar.getRegistroOriginal()) || registro.equals(ar.getRegistroNovo()))
+//                    .findFirst();
+//            alteracaoRegistroOptional.ifPresent(alteracaoRegistro -> {
+//                alteracaoRegistroServicePort.apagar(alteracaoRegistro.getId());
+//            });
 
-            var alteracaoRegistroOptional = pedidoAlteracao.getAlteracaoRegistros().
-                    stream().filter(ar -> registro.equals(ar.getRegistroOriginal()) || registro.equals(ar.getRegistroNovo()))
-                    .findFirst();
-            alteracaoRegistroOptional.ifPresent(alteracaoRegistro -> {
-                alteracaoRegistroService.apagar(alteracaoRegistro.getId());
-            });
             registroRepository.apagarRegistroPorId(idRegistro);
-
             return registro;
         }
         throw new UsuarioNaoAutorizadoException("Usuário %s não autorizado a manipular o recurso".formatted(usuarioAtual.getMatricula()));
     }
+
+
 }

@@ -1,4 +1,4 @@
-package br.jus.trf1.sipe.alteracao.alteracao_registro;
+package br.jus.trf1.sipe.alteracao.alteracao_registro.domain.model;
 
 public enum Acao {
 

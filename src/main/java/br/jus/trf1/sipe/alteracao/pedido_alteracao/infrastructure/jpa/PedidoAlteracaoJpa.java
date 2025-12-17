@@ -1,10 +1,14 @@
-package br.jus.trf1.sipe.alteracao.pedido_alteracao;
+package br.jus.trf1.sipe.alteracao.pedido_alteracao.infrastructure.jpa;
 
-import br.jus.trf1.sipe.alteracao.alteracao_registro.AlteracaoRegistro;
+import br.jus.trf1.sipe.alteracao.alteracao_registro.infrastructure.jpa.AlteracaoRegistroJpa;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.model.StatusPedido;
 import br.jus.trf1.sipe.ponto.infrastructure.jpa.PontoJpa;
 import br.jus.trf1.sipe.usuario.infrastructure.jpa.UsuarioJpa;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
@@ -17,7 +21,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "pedidos_alteracoes", schema = "sispontodb")
-public class PedidoAlteracao {
+public class PedidoAlteracaoJpa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +43,7 @@ public class PedidoAlteracao {
     private String justificativaAprovador;
 
     @OneToMany(mappedBy = "peidoAlteracao", orphanRemoval = true)
-    private List<AlteracaoRegistro> alteracaoRegistros;
+    private List<AlteracaoRegistroJpa> alteracaoRegistros;
 
     @ManyToOne
     @JoinColumn(name = "usuario_solicitante_id", referencedColumnName = "id", nullable = false,

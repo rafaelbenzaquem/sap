@@ -1,11 +1,9 @@
 package br.jus.trf1.sipe.ponto.domain.model;
 
-import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracao;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.model.PedidoAlteracao;
 import br.jus.trf1.sipe.folha.domain.model.Folha;
-import br.jus.trf1.sipe.folha.infrastructure.jpa.FolhaJpa;
 import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.registro.Sentido;
-import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 

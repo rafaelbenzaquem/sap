@@ -1,7 +1,7 @@
-package br.jus.trf1.sipe.alteracao.pedido_alteracao.web.dto;
+package br.jus.trf1.sipe.alteracao.pedido_alteracao.application.web.dto;
 
-import br.jus.trf1.sipe.alteracao.alteracao_registro.web.dto.AlteracaoRegistroResponse;
-import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracao;
+import br.jus.trf1.sipe.alteracao.alteracao_registro.application.web.dto.AlteracaoRegistroResponse;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.model.PedidoAlteracao;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import org.springframework.format.annotation.DateTimeFormat;

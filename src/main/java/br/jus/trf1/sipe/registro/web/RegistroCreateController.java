@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.registro.web;
 
-import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracaoService;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.service.PedidoAlteracaoService;
 import br.jus.trf1.sipe.ponto.domain.service.PontoServiceAdapter;
 import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.registro.RegistroService;

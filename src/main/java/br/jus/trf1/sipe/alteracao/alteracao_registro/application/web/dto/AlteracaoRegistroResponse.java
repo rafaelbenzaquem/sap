@@ -1,6 +1,6 @@
-package br.jus.trf1.sipe.alteracao.alteracao_registro.web.dto;
+package br.jus.trf1.sipe.alteracao.alteracao_registro.application.web.dto;
 
-import br.jus.trf1.sipe.alteracao.alteracao_registro.AlteracaoRegistro;
+import br.jus.trf1.sipe.alteracao.alteracao_registro.domain.model.AlteracaoRegistro;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import org.springframework.hateoas.server.core.Relation;

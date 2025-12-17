@@ -1,6 +1,7 @@
-package br.jus.trf1.sipe.alteracao.alteracao_registro;
+package br.jus.trf1.sipe.alteracao.alteracao_registro.infrastructure.jpa;
 
-import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracao;
+import br.jus.trf1.sipe.alteracao.alteracao_registro.domain.model.Acao;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.infrastructure.jpa.PedidoAlteracaoJpa;
 import br.jus.trf1.sipe.registro.Registro;
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "alteracoes_registros", schema = "sispontodb")
-public class AlteracaoRegistro {
+public class AlteracaoRegistroJpa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +27,7 @@ public class AlteracaoRegistro {
     @JoinColumns(value = {
             @JoinColumn(name = "pedido_alteracao_id", referencedColumnName = "id", nullable = false)
     }, foreignKey = @ForeignKey(name = "fk_ar_pedido_alteracao_id"))
-    private PedidoAlteracao peidoAlteracao;
+    private PedidoAlteracaoJpa peidoAlteracao;
 
     @ManyToOne
     @JoinColumns(value = {
