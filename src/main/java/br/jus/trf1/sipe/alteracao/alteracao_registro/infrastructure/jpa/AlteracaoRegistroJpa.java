@@ -2,7 +2,7 @@ package br.jus.trf1.sipe.alteracao.alteracao_registro.infrastructure.jpa;
 
 import br.jus.trf1.sipe.alteracao.alteracao_registro.domain.model.Acao;
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.infrastructure.jpa.PedidoAlteracaoJpa;
-import br.jus.trf1.sipe.registro.Registro;
+import br.jus.trf1.sipe.registro.infrastructure.jpa.RegistroJpa;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,12 +33,12 @@ public class AlteracaoRegistroJpa {
     @JoinColumns(value = {
             @JoinColumn(name = "registro_original_id", referencedColumnName = "id")
     }, foreignKey = @ForeignKey(name = "fk_ar_registro_original_id"))
-    private Registro registroOriginal;
+    private RegistroJpa registroOriginal;
 
     @ManyToOne
     @JoinColumns(value = {
             @JoinColumn(name = "registro_novo_id", referencedColumnName = "id")
     }, foreignKey = @ForeignKey(name = "fk_ar_registro_novo_id"))
-    private Registro registroNovo;
+    private RegistroJpa registroNovo;
 
 }

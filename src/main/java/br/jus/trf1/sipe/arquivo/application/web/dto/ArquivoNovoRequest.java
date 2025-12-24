@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.arquivo.application.web.dto;
 
-import br.jus.trf1.sipe.arquivo.infrastructure.db.ArquivoJpa;
+import br.jus.trf1.sipe.arquivo.infrastructure.jpa.ArquivoJpa;
 import br.jus.trf1.sipe.comum.validadores.Unico;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;

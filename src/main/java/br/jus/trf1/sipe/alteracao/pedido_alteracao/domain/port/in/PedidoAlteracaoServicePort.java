@@ -2,7 +2,6 @@ package br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.port.in;
 
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.model.PedidoAlteracao;
 import br.jus.trf1.sipe.ponto.domain.model.Ponto;
-import br.jus.trf1.sipe.registro.Registro;
 import br.jus.trf1.sipe.usuario.domain.model.Usuario;
 
 import java.time.LocalDate;
@@ -14,7 +13,7 @@ public interface PedidoAlteracaoServicePort {
 
     PedidoAlteracao atualizaPedidoAlteracao(PedidoAlteracao pedidoAlteracao);
 
-//    Registro aprovarRegistro(Long idRegistro);
+//    RegistroJpa aprovarRegistro(Long idRegistro);
 
     PedidoAlteracao buscaPedidoAlteracao(Long idPedidoAlteracao);
 

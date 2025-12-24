@@ -19,7 +19,7 @@ import static br.jus.trf1.sipe.comum.util.DataTempoUtil.paraString;
 public class PontoJpaId {
 
 
-    @OneToOne
+    @ManyToOne
     @JoinColumns(value = {
             @JoinColumn(name = "matricula", referencedColumnName = "matricula")
     }, foreignKey = @ForeignKey(name = "fk_servidor_ponto"))

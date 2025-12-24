@@ -6,19 +6,11 @@ import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.port.in.PedidoAlteraca
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.port.out.PedidoAlteracaoPersistencePort;
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.exceptions.PedidoAlteracaoInexistenteException;
 import br.jus.trf1.sipe.ponto.domain.model.Ponto;
-import br.jus.trf1.sipe.registro.Registro;
-import br.jus.trf1.sipe.registro.RegistroRepository;
-import br.jus.trf1.sipe.registro.exceptions.RegistroInexistenteException;
-import br.jus.trf1.sipe.servidor.infrastructure.jpa.ServidorJpa;
 import br.jus.trf1.sipe.usuario.domain.model.Usuario;
 import br.jus.trf1.sipe.usuario.domain.port.in.UsuarioServicePort;
-import br.jus.trf1.sipe.usuario.exceptions.UsuarioNaoAprovadorException;
-import br.jus.trf1.sipe.usuario.infrastructure.jpa.UsuarioJpaMapper;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -65,7 +57,7 @@ public class PedidoAlteracaoService implements PedidoAlteracaoServicePort {
 
     //TODO mover para o domínio de regisgtro
 //    @Override
-//    public Registro aprovarRegistro(Long idRegistro) {
+//    public RegistroJpa aprovarRegistro(Long idRegistro) {
 //        var registro = registroRepository.findById(idRegistro).orElseThrow(() -> new RegistroInexistenteException(idRegistro));
 //        var usuario = usuarioServicePort.getUsuarioAutenticado();
 //        var usuarioJpa = UsuarioJpaMapper.toEntity(usuario);

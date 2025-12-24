@@ -4,7 +4,7 @@ import br.jus.trf1.sipe.ponto.domain.model.Ponto;
 import br.jus.trf1.sipe.ponto.domain.port.out.PontoPersistencePort;
 import br.jus.trf1.sipe.ponto.exceptions.PontoExistenteException;
 import br.jus.trf1.sipe.ponto.exceptions.PontoInexistenteException;
-import br.jus.trf1.sipe.registro.RegistroService;
+import br.jus.trf1.sipe.registro.domain.port.in.RegistroServicePort;
 import br.jus.trf1.sipe.usuario.infrastructure.jpa.UsuarioJpa;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,11 +17,11 @@ public class PontoJpaPersistenceAdapter implements PontoPersistencePort {
 
 
     private final PontoJpaRepository pontoJpaRepository;
-    private final RegistroService registroService;
+    private final RegistroServicePort registroServicePort;
 
-    public PontoJpaPersistenceAdapter(PontoJpaRepository pontoJpaRepository,RegistroService registroService) {
+    public PontoJpaPersistenceAdapter(PontoJpaRepository pontoJpaRepository, RegistroServicePort registroServicePort) {
         this.pontoJpaRepository = pontoJpaRepository;
-        this.registroService = registroService;
+        this.registroServicePort = registroServicePort;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class PontoJpaPersistenceAdapter implements PontoPersistencePort {
             throw new PontoExistenteException(id.getUsuario().getMatricula(), id.getDia());
         }
         var pontoSalvo = PontoJpaMapper.toDomain(pontoJpaRepository.save(pontoJpa));
-        var registros = registroService.atualizaRegistrosSistemaDeAcesso(pontoSalvo);
+        var registros = registroServicePort.atualizaRegistrosSistemaDeAcesso(pontoSalvo);
         pontoSalvo.setRegistros(registros);
         return pontoSalvo;
     }

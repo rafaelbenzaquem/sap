@@ -1,8 +1,10 @@
 package br.jus.trf1.sipe.ponto.infrastructure.jpa;
 
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.infrastructure.jpa.PedidoAlteracaoJpaMapper;
 import br.jus.trf1.sipe.folha.infrastructure.jpa.FolhaJpaMapper;
 import br.jus.trf1.sipe.ponto.domain.model.Ponto;
 import br.jus.trf1.sipe.ponto.domain.model.PontoId;
+import br.jus.trf1.sipe.registro.infrastructure.jpa.RegistroJpaMapper;
 import br.jus.trf1.sipe.usuario.infrastructure.jpa.UsuarioJpaMapper;
 
 public class PontoJpaMapper {
@@ -15,8 +17,8 @@ public class PontoJpaMapper {
                 .id(toDomainId(pontoJpa.getId()))
                 .indice(pontoJpa.getIndice())
                 .descricao(pontoJpa.getDescricao())
-                .registros(pontoJpa.getRegistros())
-                .pedidos(pontoJpa.getPedidos())
+                .registros(pontoJpa.getRegistros().stream().map(RegistroJpaMapper::toDomain).toList())
+                .pedidos(pontoJpa.getPedidos().stream().map(PedidoAlteracaoJpaMapper::toDomain).toList())
                 .folha(pontoJpa.getFolha() == null ? null : FolhaJpaMapper.toDomain(pontoJpa.getFolha()))
                 .build();
     }
@@ -34,8 +36,8 @@ public class PontoJpaMapper {
                 .id(toEntityId(ponto.getId()))
                 .indice(ponto.getIndice().getValor())
                 .descricao(ponto.getDescricao())
-                .registros(ponto.getRegistros())
-                .pedidos(ponto.getPedidos())
+                .registros(ponto.getRegistros().stream().map(RegistroJpaMapper::toEntity).toList())
+                .pedidos(ponto.getPedidos().stream().map(PedidoAlteracaoJpaMapper::toEntity).toList())
                 .folha(ponto.getFolha() == null ? null : FolhaJpaMapper.toEntity(ponto.getFolha()))
                 .build();
     }

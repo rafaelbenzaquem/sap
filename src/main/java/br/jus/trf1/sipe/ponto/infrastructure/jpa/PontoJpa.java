@@ -1,10 +1,10 @@
 package br.jus.trf1.sipe.ponto.infrastructure.jpa;
 
-import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.model.PedidoAlteracao;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.infrastructure.jpa.PedidoAlteracaoJpa;
 import br.jus.trf1.sipe.folha.infrastructure.jpa.FolhaJpa;
 import br.jus.trf1.sipe.ponto.domain.model.IndicePonto;
-import br.jus.trf1.sipe.registro.Registro;
-import br.jus.trf1.sipe.registro.Sentido;
+import br.jus.trf1.sipe.registro.domain.model.Sentido;
+import br.jus.trf1.sipe.registro.infrastructure.jpa.RegistroJpa;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -42,10 +42,10 @@ public class PontoJpa {
     private Duration horasPermanencia = Duration.ZERO;
 
     @OneToMany(mappedBy = "ponto", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<Registro> registros;
+    private List<RegistroJpa> registros;
 
     @OneToMany(mappedBy = "ponto", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<PedidoAlteracao> pedidos;
+    private List<PedidoAlteracaoJpa> pedidos;
 
 
     @ManyToOne(cascade = CascadeType.PERSIST)
@@ -110,7 +110,7 @@ public class PontoJpa {
         LocalTime entradaPendente = null;
         var registrosClassificados = new ArrayList<>(registros);
         Collections.sort(registrosClassificados);
-        for (Registro registro : registrosClassificados) {
+        for (RegistroJpa registro : registrosClassificados) {
             if (registro.getSentido() == Sentido.ENTRADA) {
                 entradaPendente = registro.getHora();
             } else if (registro.getSentido() == Sentido.SAIDA && entradaPendente != null) {
@@ -133,7 +133,7 @@ public class PontoJpa {
         LocalTime entradaPendente = null;
         var registrosClassificados = new ArrayList<>(pontoJpa.getRegistros());
         Collections.sort(registrosClassificados);
-        for (Registro registro : registrosClassificados) {
+        for (RegistroJpa registro : registrosClassificados) {
             if (registro.getSentido() == Sentido.ENTRADA) {
                 entradaPendente = registro.getHora();
             } else if (registro.getSentido() == Sentido.SAIDA && entradaPendente != null) {

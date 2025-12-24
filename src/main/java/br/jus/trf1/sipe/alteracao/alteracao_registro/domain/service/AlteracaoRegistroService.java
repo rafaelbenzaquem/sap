@@ -6,7 +6,7 @@ import br.jus.trf1.sipe.alteracao.alteracao_registro.domain.port.in.AlteracaoReg
 import br.jus.trf1.sipe.alteracao.alteracao_registro.domain.port.out.AlteracaoRegistroPersistencePort;
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.model.PedidoAlteracao;
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.port.in.PedidoAlteracaoServicePort;
-import br.jus.trf1.sipe.registro.Registro;
+import br.jus.trf1.sipe.registro.domain.model.Registro;
 import org.springframework.stereotype.Service;
 
 @Service

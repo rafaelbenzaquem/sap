@@ -1,5 +1,6 @@
 package br.jus.trf1.sipe.usuario.infrastructure.jpa;
 
+import br.jus.trf1.sipe.ausencia.ausencia.infrastructure.jpa.AusenciaJpaMapper;
 import br.jus.trf1.sipe.usuario.domain.model.Usuario;
 
 public class UsuarioJpaMapper {
@@ -14,7 +15,7 @@ public class UsuarioJpaMapper {
                 .matricula(usuarioJpa.getMatricula())
                 .cracha(usuarioJpa.getCracha())
                 .horaDiaria(usuarioJpa.getHoraDiaria())
-                .ausencias(usuarioJpa.getAusencias())
+                .ausencias(usuarioJpa.getAusencias().stream().map(AusenciaJpaMapper::toDomain).toList())
                 .build();
     }
 

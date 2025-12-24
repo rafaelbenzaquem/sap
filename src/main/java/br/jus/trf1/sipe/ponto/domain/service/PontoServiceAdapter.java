@@ -11,7 +11,7 @@ import br.jus.trf1.sipe.ponto.domain.port.in.PontoServicePort;
 import br.jus.trf1.sipe.ponto.domain.port.out.PontoPersistencePort;
 import br.jus.trf1.sipe.ponto.exceptions.PontoExistenteException;
 import br.jus.trf1.sipe.ponto.exceptions.PontoInexistenteException;
-import br.jus.trf1.sipe.registro.RegistroService;
+import br.jus.trf1.sipe.registro.domain.port.in.RegistroServicePort;
 import br.jus.trf1.sipe.usuario.domain.model.Usuario;
 import br.jus.trf1.sipe.usuario.domain.port.out.UsuarioSecurityPort;
 import lombok.extern.slf4j.Slf4j;
@@ -38,18 +38,18 @@ import static br.jus.trf1.sipe.comum.util.DataTempoUtil.paraString;
 public class PontoServiceAdapter implements PontoServicePort {
 
     private final PontoPersistencePort pontoPersistencePort;
-    private final RegistroService registroService;
+    private final RegistroServicePort registroServicePort;
     private final AusenciaJSarhAdapter ausenciaService;
     private final FeriadoJSarhClient feriadoService;
     private final UsuarioSecurityPort usuarioSecurityPort;
 
     public PontoServiceAdapter(PontoPersistencePort pontoJpaRepository,
-                               RegistroService registroService,
+                               RegistroServicePort registroServicePort,
                                AusenciaJSarhAdapter ausenciaService,
                                FeriadoJSarhClient feriadoService,
                                UsuarioSecurityPort usuarioSecurityPort) {
         this.pontoPersistencePort = pontoJpaRepository;
-        this.registroService = registroService;
+        this.registroServicePort = registroServicePort;
         this.ausenciaService = ausenciaService;
         this.feriadoService = feriadoService;
         this.usuarioSecurityPort = usuarioSecurityPort;
@@ -185,7 +185,7 @@ public class PontoServiceAdapter implements PontoServicePort {
             // Recalcula descrição e índice
             defineDescricaoIndice(ponto);
             // Atualiza registros e define no ponto
-            var registros = registroService.atualizaRegistrosSistemaDeAcesso(ponto);
+            var registros = registroServicePort.atualizaRegistrosSistemaDeAcesso(ponto);
             ponto.setRegistros(registros);
             // Persiste alterações
             var pontoAtualizado = pontoPersistencePort.salva(ponto);
@@ -216,7 +216,7 @@ public class PontoServiceAdapter implements PontoServicePort {
         List<Ponto> pontos = new ArrayList<>(pontosImutaveis);
 
         pontos.forEach(ponto -> {
-            var registros = registroService.atualizaRegistrosSistemaDeAcesso(ponto);
+            var registros = registroServicePort.atualizaRegistrosSistemaDeAcesso(ponto);
             ponto.setRegistros(registros);
         });
 

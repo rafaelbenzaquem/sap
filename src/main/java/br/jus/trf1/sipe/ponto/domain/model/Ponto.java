@@ -2,8 +2,9 @@ package br.jus.trf1.sipe.ponto.domain.model;
 
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.model.PedidoAlteracao;
 import br.jus.trf1.sipe.folha.domain.model.Folha;
-import br.jus.trf1.sipe.registro.Registro;
-import br.jus.trf1.sipe.registro.Sentido;
+import br.jus.trf1.sipe.registro.domain.model.Registro;
+import br.jus.trf1.sipe.registro.infrastructure.jpa.RegistroJpa;
+import br.jus.trf1.sipe.registro.domain.model.Sentido;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -80,14 +81,14 @@ public class Ponto {
      */
     private Duration calculaHorasPermanencia() {
         log.info("calculaHorasPermanencia");
-        Duration totalHoras = Duration.ZERO;
+        var totalHoras = Duration.ZERO;
         if (registros == null || registros.isEmpty() || indice == null || indice.getValor() == 0) {
             return totalHoras;
         }
         LocalTime entradaPendente = null;
         var registrosClassificados = new ArrayList<>(registros);
         Collections.sort(registrosClassificados);
-        for (Registro registro : registrosClassificados) {
+        for (var registro : registrosClassificados) {
             if (registro.getSentido() == Sentido.ENTRADA) {
                 entradaPendente = registro.getHora();
             } else if (registro.getSentido() == Sentido.SAIDA && entradaPendente != null) {
@@ -106,11 +107,11 @@ public class Ponto {
      */
     public static Duration calculaHorasPermanencia(Ponto ponto) {
         log.debug("Calculando horas permanencia...");
-        Duration totalHoras = Duration.ZERO;
+        var totalHoras = Duration.ZERO;
         LocalTime entradaPendente = null;
         var registrosClassificados = new ArrayList<>(ponto.getRegistros());
         Collections.sort(registrosClassificados);
-        for (Registro registro : registrosClassificados) {
+        for (var registro : registrosClassificados) {
             if (registro.getSentido() == Sentido.ENTRADA) {
                 entradaPendente = registro.getHora();
             } else if (registro.getSentido() == Sentido.SAIDA && entradaPendente != null) {

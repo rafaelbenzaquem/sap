@@ -1,6 +1,6 @@
 package br.jus.trf1.sipe.registro.exceptions;
 
-import br.jus.trf1.sipe.registro.Registro;
+import br.jus.trf1.sipe.registro.infrastructure.jpa.RegistroJpa;
 
 import static br.jus.trf1.sipe.comum.util.PadroesDeMensagem.MSG_ENTIDADE_INEXISTENTE;
 
@@ -12,10 +12,10 @@ public class RegistroInexistenteException extends RuntimeException {
     }
 
     public RegistroInexistenteException(Long id) {
-        this(MSG_ENTIDADE_INEXISTENTE.formatted(Registro.class.getSimpleName(), id.toString()));
+        this(MSG_ENTIDADE_INEXISTENTE.formatted(RegistroJpa.class.getSimpleName(), id.toString()));
     }
 
-    public RegistroInexistenteException(Registro registro) {
+    public RegistroInexistenteException(RegistroJpa registro) {
         this(registro.getId());
     }
 }

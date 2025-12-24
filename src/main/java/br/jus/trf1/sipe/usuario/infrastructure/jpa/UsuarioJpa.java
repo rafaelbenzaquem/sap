@@ -1,6 +1,7 @@
 package br.jus.trf1.sipe.usuario.infrastructure.jpa;
 
 import br.jus.trf1.sipe.ausencia.ausencia.domain.model.Ausencia;
+import br.jus.trf1.sipe.ausencia.ausencia.infrastructure.jpa.AusenciaJpa;
 import br.jus.trf1.sipe.ponto.infrastructure.jpa.PontoJpa;
 import br.jus.trf1.sipe.usuario.application.web.dto.UsuarioResponse;
 import jakarta.persistence.*;
@@ -44,7 +45,7 @@ public class UsuarioJpa {
     private List<PontoJpa> pontos;
 
     @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Ausencia> ausencias;
+    private List<AusenciaJpa> ausencias;
 
     public UsuarioJpa(Integer id, String nome, String matricula, Integer cracha, Integer horaDiaria) {
         this.id = id;

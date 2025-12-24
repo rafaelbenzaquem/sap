@@ -29,7 +29,7 @@ public class PontoModel {
     /**
      * Constrói o modelo de ponto com base em um registro de ponto.
      *
-     * @param ponto Registro de ponto.
+     * @param ponto RegistroJpa de ponto.
      */
     public PontoModel(Ponto ponto) {
         this.dia = ponto.getId().getDia();
