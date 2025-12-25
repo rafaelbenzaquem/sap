@@ -36,7 +36,7 @@ public class UsuarioCreateController {
         log.info("Criando usuario: {}", request);
 
 
-        var usuario = usuarioServicePort.salve(UsuarioWebMapper.toDomain(request));
+        var usuario = usuarioServicePort.salva(UsuarioWebMapper.toDomain(request));
 
         servidorService.atualizaDadosDoSarh(usuario.getMatricula());
 

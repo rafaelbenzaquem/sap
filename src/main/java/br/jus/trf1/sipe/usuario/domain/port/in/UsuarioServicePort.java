@@ -24,7 +24,7 @@ public interface UsuarioServicePort {
 
     Usuario buscaPorId(Integer id);
 
-    Usuario salve(Usuario usuario);
+    Usuario salva(Usuario usuario);
 
     Usuario apagaPorId(Integer id);
 

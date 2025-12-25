@@ -89,7 +89,7 @@ public class UsuarioServiceAdapter implements UsuarioServicePort {
 
 
     @Override
-    public Usuario salve(Usuario usuario) {
+    public Usuario salva(Usuario usuario) {
         var mapCampoMensagem = new HashMap<String, String>();
 
         var existeCracha = usuarioPersistencePort.checaSeExisteUsuarioComCracha(usuario.getCracha(), usuario.getId());
