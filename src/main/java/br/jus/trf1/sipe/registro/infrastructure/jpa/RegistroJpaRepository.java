@@ -12,12 +12,7 @@ import java.util.Optional;
 
 public interface RegistroJpaRepository extends JpaRepository<RegistroJpa, Long> {
 
-    @Query("""
-            SELECT r FROM RegistroJpa r WHERE r.ponto.id.usuario.matricula =:matricula AND r.ponto.id.dia =:dia
-            AND r.registroNovo IS NULL AND r.ativo IS TRUE ORDER BY r.hora ASC
-            """)
-    List<RegistroJpa> listaRegistrosAtuaisAtivosDoPonto(@Param("matricula") String matricula,
-                                                        @Param("dia") LocalDate dia);
+
 
     @Query("""
             SELECT r FROM RegistroJpa r WHERE r.id =:id
@@ -31,7 +26,12 @@ public interface RegistroJpaRepository extends JpaRepository<RegistroJpa, Long> 
     List<RegistroJpa> listaAtuaisDoPonto(@Param("matricula") String matricula,
                                          @Param("dia") LocalDate dia);
 
-
+    @Query("""
+            SELECT r FROM RegistroJpa r WHERE r.ponto.id.usuario.matricula =:matricula AND r.ponto.id.dia =:dia
+            AND r.registroNovo IS NULL AND r.ativo IS TRUE ORDER BY r.hora ASC
+            """)
+    List<RegistroJpa> listaRegistrosAtuaisAtivosDoPonto(@Param("matricula") String matricula,
+                                                        @Param("dia") LocalDate dia);
     @Query("""
             SELECT r FROM RegistroJpa r WHERE r.ponto.id.usuario.matricula =:matricula AND r.ponto.id.dia =:dia
             AND r.codigoAcesso IS NOT NULL ORDER BY r.hora ASC

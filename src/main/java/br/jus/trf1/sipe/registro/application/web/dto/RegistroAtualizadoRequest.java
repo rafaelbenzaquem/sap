@@ -3,6 +3,7 @@ package br.jus.trf1.sipe.registro.application.web.dto;
 import br.jus.trf1.sipe.registro.domain.model.Registro;
 import br.jus.trf1.sipe.registro.domain.model.Sentido;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -18,13 +19,15 @@ public record RegistroAtualizadoRequest(@NotNull(message = "O campo 'id' não po
                                         @NotBlank(message = "O campo 'sentido' não pode ser branco ou nulo!")
                                         String sentido,
                                         @NotNull(message = "O campo 'ativo' não pode ser nulo!")
-                                        Boolean ativo) {
+                                        Boolean ativo,
+                                        @JsonProperty(value = "codigo_acesso")
+                                        Integer codigoAcesso) {
     public Registro toModel() {
         return Registro.builder()
                 .id(id)
                 .hora(hora)
                 .sentido(Sentido.toEnum(sentido))
-                .codigoAcesso(0)
+                .codigoAcesso(codigoAcesso)
                 .ativo(ativo)
                 .build();
     }

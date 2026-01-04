@@ -3,7 +3,6 @@ package br.jus.trf1.sipe.registro.domain.service;
 import br.jus.trf1.sipe.alteracao.alteracao_registro.domain.model.Acao;
 import br.jus.trf1.sipe.alteracao.alteracao_registro.domain.port.in.AlteracaoRegistroServicePort;
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.model.PedidoAlteracao;
-import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.port.in.PedidoAlteracaoServicePort;
 import br.jus.trf1.sipe.ponto.domain.model.Ponto;
 import br.jus.trf1.sipe.registro.domain.model.Registro;
 import br.jus.trf1.sipe.registro.domain.port.in.RegistroServicePort;
@@ -32,18 +31,15 @@ public class RegistroServiceAdapter implements RegistroServicePort {
     private final RegistroExternoPort registroExternoPort;
     private final RegistroPersistencePort registroPersistencePort;
 
-    private final PedidoAlteracaoServicePort pedidoAlteracaoServicePort;
     private final AlteracaoRegistroServicePort alteracaoRegistroServicePort;
 
     public RegistroServiceAdapter(UsuarioServicePort usuarioServicePort,
                                   RegistroExternoPort registroExternoPort,
                                   RegistroPersistencePort registroPersistencePort,
-                                  PedidoAlteracaoServicePort pedidoAlteracaoServicePort,
                                   AlteracaoRegistroServicePort alteracaoRegistroServicePort) {
         this.usuarioServicePort = usuarioServicePort;
         this.registroExternoPort = registroExternoPort;
         this.registroPersistencePort = registroPersistencePort;
-        this.pedidoAlteracaoServicePort = pedidoAlteracaoServicePort;
         this.alteracaoRegistroServicePort = alteracaoRegistroServicePort;
     }
 
@@ -59,41 +55,46 @@ public class RegistroServiceAdapter implements RegistroServicePort {
 
 
     @Override
-    public List<Registro> listarRegistrosAtivosPonto(String matricula, LocalDate dia, boolean apenasAtivos) {
+    public List<Registro> listaAtuaisDoPonto(String matricula, LocalDate dia, boolean apenasAtivos) {
         return registroPersistencePort.listaAtuaisDoPonto(matricula, dia, apenasAtivos);
     }
 
     @Override
-    public List<Registro> atualizaRegistrosSistemaDeAcesso(Ponto ponto) {
+    public List<Registro> salvaNovosDeSistemaExternoEmBaseInterna(Ponto ponto) {
 
         var matricula = ponto.getId().getUsuario().getMatricula();
         var dia = ponto.getId().getDia();
 
-        var registrosAtuais = registroPersistencePort.listaRegistrosProvenientesDoSistemaExternoPorPonto(matricula, dia);
+        var novosRegistros = buscaNovosEmSistemaExterno(matricula, dia).
+                stream().peek(registro -> registro.setPonto(ponto)).toList();
 
-        var novosRegistros = filtraNovosRegistros(ponto, registrosAtuais);
+        return registroPersistencePort.salvaTodos(novosRegistros);
 
-        registroPersistencePort.salvaTodos(novosRegistros);
-
-        return registroPersistencePort.listaAtuaisDoPonto(matricula, dia, false);
+//        return registroPersistencePort.listaAtuaisDoPonto(matricula, dia, false);
 
     }
 
-    private List<Registro> filtraNovosRegistros(Ponto ponto, List<Registro> registrosAtuais) {
-        var matricula = ponto.getId().getUsuario().getMatricula();
-        var dia = ponto.getId().getDia();
+    @Override
+    public List<Registro> buscaNovosEmSistemaExterno(String matricula, LocalDate dia) {
+        var registrosAtuais = registroPersistencePort.listaRegistrosProvenientesDoSistemaExternoPorPonto(matricula, dia);
+        return filtraNovosRegistros(matricula, dia, registrosAtuais);
+    }
 
-        var vinculo = usuarioServicePort.buscaPorMatricula(matricula);
 
-        var registros = registroExternoPort.buscaRegistrosDoDiaPorCracha(dia, vinculo.getCracha());
+    private List<Registro> filtraNovosRegistros(String matricula, LocalDate dia, List<Registro> registrosAtuais) {
+        var cracha = usuarioServicePort.buscaPorMatricula(matricula).getCracha();
+        var registros = registroExternoPort.buscaRegistrosDoDiaPorCracha(dia, cracha);
+
+        if (registrosAtuais.isEmpty())
+            return registros;
 
         return registros.stream().
-                filter(registroExternal ->
+                filter(registro ->
                         {
-                            log.debug("Historico de registros {}", registroExternal);
+                            log.debug("Historico de registros {}", registro);
                             return registrosAtuais.stream().noneMatch(r ->
                                     {
-                                        var filtered = Objects.equals(registroExternal.getCodigoAcesso(), r.getCodigoAcesso());
+                                        var filtered = Objects.equals(registro.getCodigoAcesso(), r.getCodigoAcesso());
                                         log.debug("registro {} - {}",
                                                 !filtered ? "foi filtrado" : "não foi filtrado", r);
                                         return filtered;
@@ -105,12 +106,12 @@ public class RegistroServiceAdapter implements RegistroServicePort {
     }
 
 
+
     @Override
-    public Registro aprovarRegistro(Long idRegistro) {
+    public Registro aprova(Long idRegistro) {
         var registro = registroPersistencePort.buscaPorId(idRegistro);
         var usuario = usuarioServicePort.getUsuarioAutenticado();
         if (usuario instanceof Servidor servidor) {
-
             registro.setServidorAprovador(servidor);
             registro.setDataAprovacao(Timestamp.valueOf(LocalDateTime.now()));
             return registroPersistencePort.salvar(registro);
@@ -120,49 +121,40 @@ public class RegistroServiceAdapter implements RegistroServicePort {
 
 
     @Override
-    public List<Registro> addRegistros(PedidoAlteracao pedidoAlteracao, Ponto ponto, List<Registro> registros) {
+    public List<Registro> salva(PedidoAlteracao pedidoAlteracao, Ponto ponto, List<Registro> registros) {
         var usuarioAutenticado = usuarioServicePort.getUsuarioAutenticado();
-        usuarioServicePort.temPermissaoRecurso(ponto);
+//        usuarioServicePort.temPermissaoRecurso(ponto); TODO criar um interceptador que valida a segurança
         var registrosNovos = registros.stream().
-                map(registro -> addPontoCriador(registro, ponto, (Servidor) usuarioAutenticado)).toList();
+                peek(registro -> {
+                            registro.setPonto(ponto);
+                            registro.setServidorCriador((Servidor) usuarioAutenticado);
+                        }
+                ).toList();
         registrosNovos = registroPersistencePort.salvaTodos(registrosNovos);
 
-        registrosNovos.forEach(registroNovo -> {
-            alteracaoRegistroServicePort.salvarAlteracaoNoRegistroDePonto(pedidoAlteracao.getId(), null, registroNovo.getId(), Acao.CRIAR);
-        });
+        registrosNovos.forEach(registroNovo ->
+                alteracaoRegistroServicePort.salvarAlteracaoNoRegistroDePonto(pedidoAlteracao.getId(),
+                        null,
+                        registroNovo.getId(),
+                        Acao.CRIAR));
 
         return registrosNovos;
     }
 
 
-    @Transactional
     @Override
-    public void removeRegistro(PedidoAlteracao pedidoAlteracao, Ponto ponto, Registro registro) {
+    public void remove(PedidoAlteracao pedidoAlteracao, Ponto ponto, Registro registro) {
         usuarioServicePort.temPermissaoRecurso(ponto);
 
         var alteracaoRegistroOpt = pedidoAlteracao.getAlteracaoRegistros().stream().
                 filter(pa -> registro.equals(pa.getRegistroOriginal()) || registro.equals(pa.getRegistroNovo())).findFirst();
 
         alteracaoRegistroOpt.ifPresent(alteracaoRegistro -> alteracaoRegistroServicePort.apagar(alteracaoRegistro.getId()));
-
-
     }
 
-    @Override
-    public Registro addPontoCriador(Registro registro, Ponto ponto, Servidor servidor) {
-        return Registro.builder()
-                .id(registro.getId())
-                .hora(registro.getHora())
-                .sentido(registro.getSentido())
-                .servidorCriador(servidor)
-                .ativo(true)
-                .codigoAcesso(registro.getCodigoAcesso() == null ? 0 : registro.getCodigoAcesso())
-                .ponto(ponto)
-                .build();
-    }
 
     @Override
-    public Registro atualizaRegistro(PedidoAlteracao pedidoAlteracao, Ponto ponto, Registro registroAtualizado) {
+    public Registro atualiza(PedidoAlteracao pedidoAlteracao, Ponto ponto, Registro registroAtualizado) {
         var usuarioAutenticado = usuarioServicePort.getUsuarioAutenticado();
         usuarioServicePort.temPermissaoRecurso(ponto);
         registroAtualizado.setServidorCriador((Servidor) usuarioAutenticado);
@@ -176,24 +168,19 @@ public class RegistroServiceAdapter implements RegistroServicePort {
             registroAtualizado = registroPersistencePort.salvar(registroAtualizado);
             registro.setRegistroNovo(registroAtualizado);
             registroPersistencePort.salvar(registro);
-
             alteracaoRegistroServicePort.salvarAlteracaoNoRegistroDePonto(pedidoAlteracao.getId(), registro.getId(), registroAtualizado.getId(), Acao.ALTERAR);
-
             return registroAtualizado;
         }
-        throw new IllegalArgumentException("RegistroJpa não pertence ao pontoJpa: " + ponto.getId());
+        throw new IllegalArgumentException("Registro não pertence ao ponto: " + ponto.getId());
     }
 
     @Override
     public Registro apaga(Long idRegistro) {
-
         var usuarioAtual = usuarioServicePort.getUsuarioAutenticado();
         var registro = buscaRegistroPorId(idRegistro);
         var ponto = registro.getPonto();
         if (registro.getServidorAprovador() == null || registro.getServidorAprovador().equals(usuarioAtual)) {
-
             usuarioServicePort.temPermissaoRecurso(ponto);
-
             registroPersistencePort.apagarPorId(idRegistro);
             return registro;
         }

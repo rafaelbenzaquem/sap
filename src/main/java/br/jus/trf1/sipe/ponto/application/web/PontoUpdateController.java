@@ -5,6 +5,7 @@ import br.jus.trf1.sipe.ponto.application.web.dto.PontoAtualizadoResponse;
 import br.jus.trf1.sipe.ponto.application.web.dto.PontoNovoResponse;
 import br.jus.trf1.sipe.ponto.domain.model.Ponto;
 import br.jus.trf1.sipe.ponto.domain.port.in.PontoServicePort;
+import br.jus.trf1.sipe.registro.domain.port.in.RegistroServicePort;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -13,6 +14,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -31,9 +33,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class PontoUpdateController {
 
     private final PontoServicePort pontoServicePort;
+    private final RegistroServicePort registroServicePort;
 
-    public PontoUpdateController(PontoServicePort pontoServicePort) {
+    public PontoUpdateController(PontoServicePort pontoServicePort,RegistroServicePort registroServicePort) {
         this.pontoServicePort = pontoServicePort;
+        this.registroServicePort =registroServicePort;
     }
 
 
@@ -46,17 +50,13 @@ public class PontoUpdateController {
         var dia = pontoAtualizadoRequest.dia();
         var diaFormatado = paraString(dia, PADRAO_ENTRADA_DATA);
         var matricula = pontoAtualizadoRequest.matricula();
-        var descricao = pontoAtualizadoRequest.descricao();
-        var ponto = pontoServicePort.buscaPonto(matricula, dia);
 
-        ponto.setDescricao(descricao);
-
-        pontoServicePort.atualizaPonto(ponto);
+       var pontoAualizado = pontoServicePort.atualizaPonto(pontoAtualizadoRequest.toDomain());
 
         var uri = ServletUriComponentsBuilder.fromCurrentContextPath().
                 path("/v1/sap/pontos?matricula={matricula}&dia={dia}").
                 buildAndExpand(matricula, diaFormatado).toUri();
-        var pontoModel = EntityModel.of(PontoWebMapper.toAtualizadoReponse(ponto),
+        var pontoModel = EntityModel.of(PontoWebMapper.toAtualizadoReponse(pontoAualizado),
                 linkTo(methodOn(PontoReadController.class).buscaPonto(matricula, dia)).withSelfRel()
         );
 
@@ -75,6 +75,7 @@ public class PontoUpdateController {
      * @param fim       LocalDate que representa o fim do período, pode ser nulo
      * @return Coleção com pontos criados formatado para restfull
      */
+    @Transactional
     @PostMapping("/usuarios")
     @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
     public ResponseEntity<CollectionModel<EntityModel<PontoNovoResponse>>> carregaPontosPorPeriodo(@RequestParam
@@ -91,6 +92,7 @@ public class PontoUpdateController {
             throw new IllegalArgumentException("Data de início não pode ser posterior à data de fim.");
         }
         List<Ponto> pontos = pontoServicePort.carregaPontos(matricula, inicio, fim);
+        pontos.forEach(registroServicePort::salvaNovosDeSistemaExternoEmBaseInterna);
         return ResponseEntity.status(HttpStatus.CREATED).body(addLinksHATEOAS(inicio, fim, false, pontos));
     }
 

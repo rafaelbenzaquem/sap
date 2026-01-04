@@ -61,7 +61,7 @@ public final class RegistroJpa implements Comparable<RegistroJpa> {
 
     private Timestamp dataAprovacao;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumns(value = {
             @JoinColumn(name = "ponto_matricula", referencedColumnName = "matricula", nullable = false),
             @JoinColumn(name = "ponto_dia", referencedColumnName = "dia", nullable = false)

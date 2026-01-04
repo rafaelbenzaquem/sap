@@ -17,8 +17,8 @@ public class PontoJpaMapper {
                 .id(toDomainId(pontoJpa.getId()))
                 .indice(pontoJpa.getIndice())
                 .descricao(pontoJpa.getDescricao())
-                .registros(pontoJpa.getRegistros().stream().map(RegistroJpaMapper::toDomain).toList())
-                .pedidos(pontoJpa.getPedidos().stream().map(PedidoAlteracaoJpaMapper::toDomain).toList())
+                .registros(pontoJpa.getRegistros() == null ? null :pontoJpa.getRegistros().stream().map(RegistroJpaMapper::toDomain).toList())
+                .pedidos(pontoJpa.getPedidos() == null ? null :pontoJpa.getPedidos().stream().map(PedidoAlteracaoJpaMapper::toDomain).toList())
                 .folha(pontoJpa.getFolha() == null ? null : FolhaJpaMapper.toDomain(pontoJpa.getFolha()))
                 .build();
     }
@@ -36,8 +36,8 @@ public class PontoJpaMapper {
                 .id(toEntityId(ponto.getId()))
                 .indice(ponto.getIndice().getValor())
                 .descricao(ponto.getDescricao())
-                .registros(ponto.getRegistros().stream().map(RegistroJpaMapper::toEntity).toList())
-                .pedidos(ponto.getPedidos().stream().map(PedidoAlteracaoJpaMapper::toEntity).toList())
+                .registros(ponto.getRegistros() == null ? null : ponto.getRegistros().stream().map(RegistroJpaMapper::toEntity).toList())
+                .pedidos(ponto.getPedidos() == null ? null :ponto.getPedidos().stream().map(PedidoAlteracaoJpaMapper::toEntity).toList())
                 .folha(ponto.getFolha() == null ? null : FolhaJpaMapper.toEntity(ponto.getFolha()))
                 .build();
     }

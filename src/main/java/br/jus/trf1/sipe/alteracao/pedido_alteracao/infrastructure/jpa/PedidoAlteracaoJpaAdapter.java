@@ -20,7 +20,6 @@ public class PedidoAlteracaoJpaAdapter implements PedidoAlteracaoPersistencePort
     public PedidoAlteracao salva(PedidoAlteracao pedidoAlteracao) {
         var pedidoAlteracaoJpa = PedidoAlteracaoJpaMapper.toEntity(pedidoAlteracao);
         pedidoAlteracaoJpa = repository.save(pedidoAlteracaoJpa);
-
         return PedidoAlteracaoJpaMapper.toDomain(pedidoAlteracaoJpa);
     }
 
@@ -30,8 +29,8 @@ public class PedidoAlteracaoJpaAdapter implements PedidoAlteracaoPersistencePort
     }
 
     @Override
-    public Optional<PedidoAlteracao> buscaPorPonto(String matricula, LocalDate dia, boolean somenteEmAprovacao) {
-        if (somenteEmAprovacao)
+    public Optional<PedidoAlteracao> buscaPorPonto(String matricula, LocalDate dia, boolean emAprovacao) {
+        if (emAprovacao)
             return repository.buscaPorPontoEmAprovacao(matricula, dia).map(PedidoAlteracaoJpaMapper::toDomain);
         return repository.buscaPorPonto(matricula, dia).map(PedidoAlteracaoJpaMapper::toDomain);
     }

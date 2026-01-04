@@ -65,7 +65,7 @@ public class UsuarioServiceAdapter implements UsuarioServicePort {
     }
 
     @Override
-    public long conta() {
+    public long contaTodos() {
         return usuarioPersistencePort.conta();
     }
 

@@ -1,9 +1,11 @@
 package br.jus.trf1.sipe.ponto.domain.service;
 
+import br.jus.trf1.sipe.alteracao.alteracao_registro.domain.port.in.AlteracaoRegistroServicePort;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.port.in.PedidoAlteracaoServicePort;
 import br.jus.trf1.sipe.ausencia.ausencia.domain.model.Ausencia;
-import br.jus.trf1.sipe.ausencia.ausencia.infrastructure.jsarh.AusenciaJSarhAdapter;
-import br.jus.trf1.sipe.feriado.infrastructure.jsarh.FeriadoJSarhClient;
-import br.jus.trf1.sipe.feriado.infrastructure.jsarh.dto.FeriadoJSarhResponse;
+import br.jus.trf1.sipe.ausencia.ausencia.domain.port.in.AusenciaServicePort;
+import br.jus.trf1.sipe.feriado.domain.model.Feriado;
+import br.jus.trf1.sipe.feriado.domain.port.in.FeriadoServicePort;
 import br.jus.trf1.sipe.ponto.domain.model.IndicePonto;
 import br.jus.trf1.sipe.ponto.domain.model.Ponto;
 import br.jus.trf1.sipe.ponto.domain.model.PontoId;
@@ -39,23 +41,27 @@ public class PontoServiceAdapter implements PontoServicePort {
 
     private final PontoPersistencePort pontoPersistencePort;
     private final RegistroServicePort registroServicePort;
-    private final AusenciaJSarhAdapter ausenciaService;
-    private final FeriadoJSarhClient feriadoService;
+    private final AusenciaServicePort ausenciaServicePort;
+    private final FeriadoServicePort feriadoServicePort;
+    private final AlteracaoRegistroServicePort alteracaoRegistroServicePort;
+    private final PedidoAlteracaoServicePort pedidoAlteracaoServicePort;
     private final UsuarioSecurityPort usuarioSecurityPort;
 
-    public PontoServiceAdapter(PontoPersistencePort pontoJpaRepository,
+    public PontoServiceAdapter(PontoPersistencePort pontoPersistencePort,
                                RegistroServicePort registroServicePort,
-                               AusenciaJSarhAdapter ausenciaService,
-                               FeriadoJSarhClient feriadoService,
+                               AusenciaServicePort ausenciaServicePort,
+                               FeriadoServicePort feriadoServicePort,
+                               AlteracaoRegistroServicePort alteracaoRegistroServicePort,
+                               PedidoAlteracaoServicePort pedidoAlteracaoServicePort,
                                UsuarioSecurityPort usuarioSecurityPort) {
-        this.pontoPersistencePort = pontoJpaRepository;
+        this.pontoPersistencePort = pontoPersistencePort;
         this.registroServicePort = registroServicePort;
-        this.ausenciaService = ausenciaService;
-        this.feriadoService = feriadoService;
+        this.ausenciaServicePort = ausenciaServicePort;
+        this.feriadoServicePort = feriadoServicePort;
+        this.alteracaoRegistroServicePort = alteracaoRegistroServicePort;
+        this.pedidoAlteracaoServicePort = pedidoAlteracaoServicePort;
         this.usuarioSecurityPort = usuarioSecurityPort;
     }
-
-
 
     @Override
     public Boolean existePontoComPedidoAlteracaoPendenteNoPeriodo(String matricula, LocalDate inicio, LocalDate fim) {
@@ -101,7 +107,7 @@ public class PontoServiceAdapter implements PontoServicePort {
     public List<Ponto> buscarPontos(String matricula, LocalDate inicio, LocalDate fim) {
         log.info("Lista de Pontos - {} - {} - {} ", paraString(inicio), paraString(fim), matricula);
         usuarioSecurityPort.permissoesNivelUsuario(matricula);
-        return pontoPersistencePort.buscaPontosPorPeriodo(matricula, inicio, fim);
+        return pontoPersistencePort.listaPorPeriodo(matricula, inicio, fim);
     }
 
     /**
@@ -112,10 +118,10 @@ public class PontoServiceAdapter implements PontoServicePort {
      * @param feriado  optional com dados de feriado externo
      * @return descrição completa formatada
      */
-    private String defineDescricao(LocalDate dia, Optional<Ausencia> ausencia, Optional<FeriadoJSarhResponse> feriado) {
+    private String defineDescricao(LocalDate dia, Optional<Ausencia> ausencia, Optional<Feriado> feriado) {
         return dia.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.of("pt", "BR")) + "\n" +
                 ausencia.map(a -> ", " + a.getDescricao()).orElse("") + "\n" +
-                feriado.map(f -> ", " + f.descricao()).orElse("");
+                feriado.map(f -> ", " + f.getDescricao()).orElse("");
     }
 
     /**
@@ -126,7 +132,7 @@ public class PontoServiceAdapter implements PontoServicePort {
      * @param feriado  optional com dados de feriado externo
      * @return índice do ponto (AUSENCIA, DOMINGO_E_FERIADOS, SABADO ou DIA_UTIL)
      */
-    private IndicePonto defineIndice(LocalDate dia, Optional<Ausencia> ausencia, Optional<FeriadoJSarhResponse> feriado) {
+    private IndicePonto defineIndice(LocalDate dia, Optional<Ausencia> ausencia, Optional<Feriado> feriado) {
         return ausencia.map(a -> IndicePonto.AUSENCIA).
                 orElseGet(() -> feriado.map(f -> IndicePonto.DOMINGO_E_FERIADOS).
                         orElse(dia.getDayOfWeek().getValue() == 7 ? IndicePonto.DOMINGO_E_FERIADOS :
@@ -144,23 +150,24 @@ public class PontoServiceAdapter implements PontoServicePort {
      * @throws PontoExistenteException se já existir pontoJpa para matrícula e dia informados
      */
     @Override
-    public Ponto criaPonto(Ponto ponto) {
+    public Ponto
+    criaPonto(Ponto ponto) {
         var matricula = ponto.getId().getUsuario().getMatricula();
-        usuarioSecurityPort.permissoesNivelUsuario(matricula);
+//        usuarioSecurityPort.permissoesNivelUsuario(matricula); TODO corrigir segurança
         var dia = ponto.getId().getDia();
+        var registros = registroServicePort.buscaNovosEmSistemaExterno(matricula, dia);
         log.info("Salvando Ponto - {} - {} ", matricula, dia);
-        var pontoSalvo = pontoPersistencePort.salva(defineDescricaoIndice(ponto));
-        return pontoSalvo;
+        return pontoPersistencePort.salva(defineDescricaoIndice(ponto), registros);
 
     }
 
     private Ponto defineDescricaoIndice(Ponto ponto) {
         var matricula = ponto.getId().getUsuario().getMatricula();
         var dia = ponto.getId().getDia();
-        var ausencia = ausenciaService.buscaAusenciaServidorNoDia(matricula, dia);
-        var feriadoResponse = feriadoService.buscaFeriadoDoDia(dia);
-        var descricao = defineDescricao(dia, ausencia, feriadoResponse);
-        var indice = defineIndice(dia, ausencia, feriadoResponse);
+        var ausenciaOpt = ausenciaServicePort.buscaNoDia(matricula, dia);
+        var feriadoOpt = feriadoServicePort.buscaFeriadoDoDia(dia);
+        var descricao = defineDescricao(dia, ausenciaOpt, feriadoOpt);
+        var indice = defineIndice(dia, ausenciaOpt, feriadoOpt);
         ponto.setDescricao(descricao);
         ponto.setIndice(indice);
         return ponto;
@@ -178,18 +185,13 @@ public class PontoServiceAdapter implements PontoServicePort {
     @Override
     public Ponto atualizaPonto(Ponto ponto) {
         var matricula = ponto.getId().getUsuario().getMatricula();
-        usuarioSecurityPort.permissoesNivelUsuario(matricula);
+//        usuarioSecurityPort.permissoesNivelUsuario(matricula);
         var dia = ponto.getId().getDia();
         log.info("Atualizando Ponto - {} - {} ", matricula, dia);
         if (this.existe(matricula, dia)) {
-            // Recalcula descrição e índice
-            defineDescricaoIndice(ponto);
-            // Atualiza registros e define no ponto
-            var registros = registroServicePort.atualizaRegistrosSistemaDeAcesso(ponto);
-            ponto.setRegistros(registros);
-            // Persiste alterações
-            var pontoAtualizado = pontoPersistencePort.salva(ponto);
-            return pontoAtualizado;
+
+            var registros = registroServicePort.buscaNovosEmSistemaExterno(matricula, dia);
+            return pontoPersistencePort.atualiza(defineDescricaoIndice(ponto), registros);
         }
         throw new PontoInexistenteException(matricula, dia);
     }
@@ -209,16 +211,11 @@ public class PontoServiceAdapter implements PontoServicePort {
     @Override
     public List<Ponto> carregaPontos(String matricula, LocalDate inicio, LocalDate fim) {
 
-        usuarioSecurityPort.permissoesNivelUsuario(matricula);
+//        usuarioSecurityPort.permissoesNivelUsuario(matricula);
 
-        List<Ponto> pontosImutaveis = pontoPersistencePort.buscaPontosPorPeriodo(matricula, inicio, fim);
+        List<Ponto> pontosImutaveis = pontoPersistencePort.listaPorPeriodo(matricula, inicio, fim);
 
         List<Ponto> pontos = new ArrayList<>(pontosImutaveis);
-
-        pontos.forEach(ponto -> {
-            var registros = registroServicePort.atualizaRegistrosSistemaDeAcesso(ponto);
-            ponto.setRegistros(registros);
-        });
 
         LocalDate dataAtual = inicio;
         while (!dataAtual.isAfter(fim)) {
@@ -237,6 +234,13 @@ public class PontoServiceAdapter implements PontoServicePort {
             pontos.add(ponto);
             dataAtual = dataAtual.plusDays(1); // Avança para o próximo dia
         }
+
+//        pontos.forEach(ponto -> {
+//            var registros = registroServicePort.atualizaRegistrosSistemaDeAcesso(ponto);
+//            ponto.setRegistros(registros);
+//        });
+
+
         return pontos;
     }
 }

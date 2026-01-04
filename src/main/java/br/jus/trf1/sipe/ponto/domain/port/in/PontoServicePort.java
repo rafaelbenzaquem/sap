@@ -1,8 +1,6 @@
 package br.jus.trf1.sipe.ponto.domain.port.in;
 
 import br.jus.trf1.sipe.ponto.domain.model.Ponto;
-import br.jus.trf1.sipe.ponto.infrastructure.jpa.PontoJpa;
-import jakarta.transaction.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;

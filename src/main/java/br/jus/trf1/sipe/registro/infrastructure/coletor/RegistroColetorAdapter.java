@@ -20,6 +20,6 @@ public class RegistroColetorAdapter implements RegistroExternoPort {
     public List<Registro> buscaRegistrosDoDiaPorCracha(LocalDate dia, Integer cracha) {
         return registroColetorClient.buscarRegistrosDeAcesso(
                         dia, null, String.format("%016d", cracha), null, null).stream()
-                .map(RegistroColetorResponse::toModel).toList();
+                .map(RegistroColetorResponse::toDomain).toList();
     }
 }

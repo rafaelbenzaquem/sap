@@ -1,7 +1,6 @@
 package br.jus.trf1.sipe.registro.application.web.dto;
 
 import br.jus.trf1.sipe.registro.domain.model.Registro;
-import br.jus.trf1.sipe.registro.infrastructure.jpa.RegistroJpa;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;

@@ -36,7 +36,7 @@ public class PontoCreateController {
      */
     @PostMapping
     @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
-    public ResponseEntity<EntityModel<PontoNovoResponse>> criaPonto(@RequestBody
+    public ResponseEntity<EntityModel<PontoNovoResponse>> salvaPonto(@RequestBody
                                                                     @Valid
                                                                     PontoNovoRequest pontoNovoRequest) {
         log.info("CriaPonto - {}", pontoNovoRequest);

@@ -35,7 +35,7 @@ public class RegistroReadController {
                                                                                                  LocalDate dia,
                                                                                                  @RequestParam(required = false, defaultValue = "false")
                                                                                                  boolean todos) {
-        var registros = registroServicePort.listarRegistrosAtivosPonto(matricula, dia, todos);
+        var registros = registroServicePort.listaAtuaisDoPonto(matricula, dia, todos);
         return ResponseEntity.ok(addLinksHATEOAS(registros));
     }
 

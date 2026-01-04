@@ -147,7 +147,7 @@ public class ServidorServiceAdapter implements ServidorServicePort {
     @Override
     public Servidor atualizaAusenciasServidorNoPeriodo(Servidor servidor, LocalDate dataInicio, LocalDate dataFim) {
         log.info("Vinculando ausencias do servidor {}", servidor);
-        List<Ausencia> ausenciasAtulizadas = ausenciaServicePort.atualizaAusencias(servidor.getMatricula(), dataInicio, dataFim);
+        List<Ausencia> ausenciasAtulizadas = ausenciaServicePort.atualizaNoPeriodo(servidor.getMatricula(), dataInicio, dataFim);
         servidor.setAusencias(new ArrayList<>(ausenciasAtulizadas));
         return servidor;
     }

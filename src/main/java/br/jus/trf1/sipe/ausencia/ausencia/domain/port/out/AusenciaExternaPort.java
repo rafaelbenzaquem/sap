@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface AusenciaExternaPort {
 
-    List<Ausencia> buscaAusenciasServidorPorPeriodo(String matricula, LocalDate inicio, LocalDate fim);
+    List<Ausencia> listaPorPeriodo(String matricula, LocalDate inicio, LocalDate fim);
 
-    Optional<Ausencia> buscaAusenciaServidorNoDia(String matricula, LocalDate dia);
+    Optional<Ausencia> buscaNoDia(String matricula, LocalDate dia);
 }

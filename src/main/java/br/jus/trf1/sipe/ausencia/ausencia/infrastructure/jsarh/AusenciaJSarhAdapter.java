@@ -28,7 +28,7 @@ public class AusenciaJSarhAdapter implements AusenciaExternaPort {
     }
 
     @Override
-    public List<Ausencia> buscaAusenciasServidorPorPeriodo(String matricula, LocalDate inicio, LocalDate fim) {
+    public List<Ausencia> listaPorPeriodo(String matricula, LocalDate inicio, LocalDate fim) {
         log.info("Consultando licenças, férias e ausências especiais do servidor no SARH...");
         var licencas = licencaExternaPort.buscaLicencaServidorPorPeriodo(matricula, inicio, fim);
 
@@ -45,7 +45,7 @@ public class AusenciaJSarhAdapter implements AusenciaExternaPort {
     }
 
     @Override
-    public Optional<Ausencia> buscaAusenciaServidorNoDia(String matricula, LocalDate dia) {
+    public Optional<Ausencia> buscaNoDia(String matricula, LocalDate dia) {
         log.info("Consultando licença, dia de férias ou ausência especial do servidor no SARH...");
 
         var ferias = feriasExternaPort.buscaFeriasServidorNoDia(matricula, dia);

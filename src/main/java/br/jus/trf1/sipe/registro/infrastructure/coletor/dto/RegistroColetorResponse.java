@@ -11,8 +11,9 @@ public record RegistroColetorResponse(@JsonProperty("acesso") Integer acesso,
                                       @JsonProperty("id_pedestre") Integer idPedestre,
                                       @JsonProperty("cracha") String cracha,
                                       @JsonProperty("sentido") Character sentido) {
-    public Registro toModel() {
+    public Registro toDomain() {
         return Registro.builder().
+                ativo(true).
                 codigoAcesso(acesso).
                 hora(dataHora.toLocalTime()).
                 sentido(Sentido.toEnum(sentido)).

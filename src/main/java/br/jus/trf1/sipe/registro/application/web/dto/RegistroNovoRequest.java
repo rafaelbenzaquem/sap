@@ -1,7 +1,6 @@
 package br.jus.trf1.sipe.registro.application.web.dto;
 
 import br.jus.trf1.sipe.registro.domain.model.Registro;
-import br.jus.trf1.sipe.registro.infrastructure.jpa.RegistroJpa;
 import br.jus.trf1.sipe.registro.domain.model.Sentido;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -22,7 +21,7 @@ public record RegistroNovoRequest(@NotNull(message = "O campo 'hora' não pode s
                                   @JsonProperty(value = "codigo_acesso")
                                   Integer codigoAcesso) {
 
-    public Registro toModel() {
+    public Registro toDomain() {
         return Registro.builder()
                 .hora(hora)
                 .sentido(Sentido.toEnum(sentido))

@@ -4,12 +4,16 @@ import br.jus.trf1.sipe.ponto.domain.model.Ponto;
 import br.jus.trf1.sipe.ponto.domain.port.out.PontoPersistencePort;
 import br.jus.trf1.sipe.ponto.exceptions.PontoExistenteException;
 import br.jus.trf1.sipe.ponto.exceptions.PontoInexistenteException;
-import br.jus.trf1.sipe.registro.domain.port.in.RegistroServicePort;
+import br.jus.trf1.sipe.registro.domain.model.Registro;
+import br.jus.trf1.sipe.registro.infrastructure.jpa.RegistroJpa;
+import br.jus.trf1.sipe.registro.infrastructure.jpa.RegistroJpaMapper;
+import br.jus.trf1.sipe.registro.infrastructure.jpa.RegistroJpaRepository;
 import br.jus.trf1.sipe.usuario.infrastructure.jpa.UsuarioJpa;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,11 +21,11 @@ public class PontoJpaPersistenceAdapter implements PontoPersistencePort {
 
 
     private final PontoJpaRepository pontoJpaRepository;
-    private final RegistroServicePort registroServicePort;
+    private final RegistroJpaRepository registroJpaRepository;
 
-    public PontoJpaPersistenceAdapter(PontoJpaRepository pontoJpaRepository, RegistroServicePort registroServicePort) {
+    public PontoJpaPersistenceAdapter(PontoJpaRepository pontoJpaRepository, RegistroJpaRepository registroJpaRepository) {
         this.pontoJpaRepository = pontoJpaRepository;
-        this.registroServicePort = registroServicePort;
+        this.registroJpaRepository = registroJpaRepository;
     }
 
     @Override
@@ -32,10 +36,10 @@ public class PontoJpaPersistenceAdapter implements PontoPersistencePort {
     @Override
     public boolean existe(String matricula, LocalDate dia) {
         return pontoJpaRepository.existsById(PontoJpaId.builder()
-                        .usuario(UsuarioJpa.builder()
-                                .matricula(matricula)
-                                .build())
-                        .dia(dia)
+                .usuario(UsuarioJpa.builder()
+                        .matricula(matricula)
+                        .build())
+                .dia(dia)
                 .build());
     }
 
@@ -46,22 +50,44 @@ public class PontoJpaPersistenceAdapter implements PontoPersistencePort {
     }
 
     @Override
-    public List<Ponto> buscaPontosPorPeriodo(String matricula, LocalDate inicio, LocalDate fim) {
+    public List<Ponto> listaPorPeriodo(String matricula, LocalDate inicio, LocalDate fim) {
         return pontoJpaRepository.buscaPontosPorPeriodo(matricula, inicio, fim)
                 .stream().map(PontoJpaMapper::toDomain).toList();
     }
 
     @Transactional
     @Override
-    public Ponto salva(Ponto ponto) {
+    public Ponto salva(Ponto ponto, List<Registro> registros) {
         var pontoJpa = PontoJpaMapper.toEntity(ponto);
         var id = pontoJpa.getId();
         if (pontoJpaRepository.existsById(id)) {
             throw new PontoExistenteException(id.getUsuario().getMatricula(), id.getDia());
         }
-        var pontoSalvo = PontoJpaMapper.toDomain(pontoJpaRepository.save(pontoJpa));
-        var registros = registroServicePort.atualizaRegistrosSistemaDeAcesso(pontoSalvo);
-        pontoSalvo.setRegistros(registros);
-        return pontoSalvo;
+        return salvaPontoComRegistros(pontoJpa, registros);
+    }
+
+    @Transactional
+    @Override
+    public Ponto atualiza(Ponto ponto, List<Registro> registros) {
+        var pontoJpa = PontoJpaMapper.toEntity(ponto);
+        var id = pontoJpa.getId();
+        if (pontoJpaRepository.existsById(id)) {
+            throw new PontoInexistenteException(id.getUsuario().getMatricula(), id.getDia());
+        }
+        return salvaPontoComRegistros(pontoJpa, registros);
+    }
+
+    private Ponto salvaPontoComRegistros(PontoJpa pontoJpa, List<Registro> registros) {
+        pontoJpa = pontoJpaRepository.save(pontoJpa);
+        List<RegistroJpa> registrosJpa = new ArrayList<>();
+        for (var registro : registros) {
+            var registroJpa = RegistroJpaMapper.toEntity(registro);
+            registroJpa.setPonto(pontoJpa);
+            registrosJpa.add(registroJpa);
+        }
+        registrosJpa = registroJpaRepository.saveAll(registrosJpa);
+        pontoJpa.setRegistros(registrosJpa);
+        pontoJpaRepository.save(pontoJpa);
+        return PontoJpaMapper.toDomain(pontoJpa);
     }
 }

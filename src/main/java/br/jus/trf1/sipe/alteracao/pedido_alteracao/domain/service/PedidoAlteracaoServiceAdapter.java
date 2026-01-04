@@ -14,20 +14,19 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
-public class PedidoAlteracaoService implements PedidoAlteracaoServicePort {
+public class PedidoAlteracaoServiceAdapter implements PedidoAlteracaoServicePort {
 
     private final PedidoAlteracaoPersistencePort pedidoAlteracaoPersistencePort;
     private final UsuarioServicePort usuarioServicePort;
 
-    public PedidoAlteracaoService(PedidoAlteracaoPersistencePort pedidoAlteracaoPersistencePort,
-                                  UsuarioServicePort usuarioServicePort) {
+    public PedidoAlteracaoServiceAdapter(PedidoAlteracaoPersistencePort pedidoAlteracaoPersistencePort,
+                                         UsuarioServicePort usuarioServicePort) {
         this.pedidoAlteracaoPersistencePort = pedidoAlteracaoPersistencePort;
         this.usuarioServicePort = usuarioServicePort;
     }
 
     @Override
     public PedidoAlteracao criarPedidoAlteracao(Ponto ponto, String justificativa, Usuario usuarioSolicitante) {
-
         var pedidoAlteracao = PedidoAlteracao.builder()
                 .ponto(ponto)
                 .usuarioSolicitante(usuarioSolicitante)

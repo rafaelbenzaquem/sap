@@ -41,7 +41,7 @@ public class AlteracaoRegistroService implements AlteracaoRegistroServicePort {
     }
 
     @Override
-    public void apagar(Long id) {
+    public void  apagar(Long id) {
         alteracaoRegistroPersistencePort.buscaPorId(id).ifPresent(alteracaoRegistroPersistencePort::apaga);
     }
 

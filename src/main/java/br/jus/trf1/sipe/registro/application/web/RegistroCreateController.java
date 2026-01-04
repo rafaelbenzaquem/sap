@@ -1,9 +1,8 @@
 package br.jus.trf1.sipe.registro.application.web;
 
-import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.service.PedidoAlteracaoService;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.service.PedidoAlteracaoServiceAdapter;
 import br.jus.trf1.sipe.ponto.domain.service.PontoServiceAdapter;
 import br.jus.trf1.sipe.registro.domain.model.Registro;
-import br.jus.trf1.sipe.registro.infrastructure.jpa.RegistroJpa;
 import br.jus.trf1.sipe.registro.application.web.dto.RegistroNovoRequest;
 import br.jus.trf1.sipe.registro.application.web.dto.RegistroResponse;
 import br.jus.trf1.sipe.registro.domain.port.in.RegistroServicePort;
@@ -31,10 +30,10 @@ public class RegistroCreateController {
 
     private final RegistroServicePort registroServicePort;
     private final PontoServiceAdapter pontoServiceAdapter;
-    private final PedidoAlteracaoService pedidoAlteracaoService;
+    private final PedidoAlteracaoServiceAdapter pedidoAlteracaoService;
 
 
-    public RegistroCreateController(RegistroServicePort registroServicePort, PontoServiceAdapter pontoServiceAdapter, PedidoAlteracaoService pedidoAlteracaoService) {
+    public RegistroCreateController(RegistroServicePort registroServicePort, PontoServiceAdapter pontoServiceAdapter, PedidoAlteracaoServiceAdapter pedidoAlteracaoService) {
         this.registroServicePort = registroServicePort;
         this.pontoServiceAdapter = pontoServiceAdapter;
         this.pedidoAlteracaoService = pedidoAlteracaoService;
@@ -58,8 +57,8 @@ public class RegistroCreateController {
 
         var pedidoAlteracao = pedidoAlteracaoService.buscaPedidoAlteracao(idPedidoAlteracao);
         var ponto = pontoServiceAdapter.buscaPonto(matricula, dia);
-        List<Registro> registros = registroServicePort.addRegistros(pedidoAlteracao,ponto,
-                registrosNovos.stream().map(RegistroNovoRequest::toModel).toList());
+        List<Registro> registros = registroServicePort.salva(pedidoAlteracao,ponto,
+                registrosNovos.stream().map(RegistroNovoRequest::toDomain).toList());
 
         return ResponseEntity.ok(addLinksHATEOAS(registros));
     }

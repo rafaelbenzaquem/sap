@@ -29,11 +29,11 @@ public class Ponto {
 
     private String descricao;
 
-//    @Transient
+    //    @Transient
     @Builder.Default
     private Integer numeroRegistrosCalculados = 0;
 
-//    @Transient
+    //    @Transient
     @Builder.Default
     private Duration horasPermanencia = Duration.ZERO;
 
@@ -44,19 +44,19 @@ public class Ponto {
     private Folha folha;
 
     public Duration getHorasPermanencia() {
-        log.info("getHorasPermanencia - buscando registros do pontoJpa id:{}", this.id);
+        log.debug("getHorasPermanencia - buscando registros do pontoJpa id:{}", this.id);
         var registros = getRegistros();
         if (registros == null || registros.isEmpty()) {
-            log.info("getHorasPermanencia - registros encontrados: 0");
+            log.debug("getHorasPermanencia - registros encontrados: 0");
             return Duration.ZERO;
         }
-        registros = getRegistros().stream().filter(r -> r.getRegistroNovo() == null && r.getAtivo()).toList();
-        log.info("getHorasPermanencia - registros encontrados:{}", registros.size());
+        registros = getRegistros().stream().filter(r -> r.getRegistroNovo() == null && (r.getAtivo() != null && r.getAtivo())).toList();
+        log.debug("getHorasPermanencia - registros encontrados:{}", registros.size());
         if (horasPermanencia.isZero() || !Objects.equals(numeroRegistrosCalculados, registros.size())) {
             horasPermanencia = calculaHorasPermanencia(this);
             // Atualiza o contador de registros calculados para evitar recálculos desnecessários
             numeroRegistrosCalculados = registros.size();
-            log.info("horas {}", horasPermanencia.toString());
+            log.debug("horas {}", horasPermanencia.toString());
         }
         return horasPermanencia;
     }
@@ -69,7 +69,7 @@ public class Ponto {
                 (pedidoAlteracao.getDataAprovacao() == null &&
                         !(pedidoAlteracao.getAlteracaoRegistros() == null || pedidoAlteracao.getAlteracaoRegistros().isEmpty())
                 )).count();
-        log.info("Pedido alteraço de pendente: {}", i);
+        log.debug("Pedido alteraço de pendente: {}", i);
         return i > 0;
     }
 

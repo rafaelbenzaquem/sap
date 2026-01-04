@@ -14,7 +14,7 @@ public interface UsuarioServicePort {
 
     List<Usuario> lista();
 
-    long conta();
+    long contaTodos();
 
     long contaPorNomeOuCrachaOuMatricula(String nome, Integer cracha, String matricula);
 

@@ -48,7 +48,7 @@ public class UsuarioReadController {
         if (nome == null && cracha == null && matricula == null) {
             log.info("Pagina listaUsuarios All");
             usuarios = usuarioService.pagina(page, size);
-            totalElements = usuarioService.conta();
+            totalElements = usuarioService.contaTodos();
         } else {
             var isNumerico = cracha != null && cracha.matches("\\d{3,16}");
             log.info("Pagina listaUsuarios filtered");

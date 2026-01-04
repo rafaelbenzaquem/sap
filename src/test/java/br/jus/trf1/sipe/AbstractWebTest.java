@@ -1,5 +1,6 @@
 package br.jus.trf1.sipe;
 
+import br.jus.trf1.sipe.comum.config.SecurityConstants;
 import br.jus.trf1.sipe.comum.config.TestJwtDecoderConfig;
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
@@ -8,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+
+import static br.jus.trf1.sipe.comum.config.SecurityConstants.*;
 
 /**
  * Classe base para testes funcionais de Controllers.
@@ -44,10 +47,7 @@ import org.springframework.test.context.ActiveProfiles;
 public abstract class AbstractWebTest {
 
     protected static final String MATRICULA_PADRAO = "RR20178";
-    protected static final String AUTHORITY_ADMIN = "GRP_SIPE_ADMIN";
-    protected static final String AUTHORITY_DIRETOR = "GRP_SIPE_DIRETOR";
-    protected static final String AUTHORITY_RH = "GRP_SIPE_RH";
-    protected static final String AUTHORITY_USERS = "GRP_SIPE_USERS";
+
 
     @Value("${local.server.port}")
     private int port;

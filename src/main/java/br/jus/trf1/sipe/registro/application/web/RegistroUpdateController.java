@@ -1,14 +1,13 @@
 package br.jus.trf1.sipe.registro.application.web;
 
-import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.service.PedidoAlteracaoService;
+import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.port.in.PedidoAlteracaoServicePort;
 import br.jus.trf1.sipe.ponto.domain.model.Ponto;
-import br.jus.trf1.sipe.ponto.domain.service.PontoServiceAdapter;
+import br.jus.trf1.sipe.ponto.domain.port.in.PontoServicePort;
 import br.jus.trf1.sipe.registro.domain.model.Registro;
-import br.jus.trf1.sipe.registro.infrastructure.jpa.RegistroJpa;
 import br.jus.trf1.sipe.registro.application.web.dto.RegistroAtualizadoRequest;
 import br.jus.trf1.sipe.registro.application.web.dto.RegistroResponse;
 import br.jus.trf1.sipe.registro.domain.port.in.RegistroServicePort;
-import br.jus.trf1.sipe.servidor.domain.service.ServidorServiceAdapter;
+import br.jus.trf1.sipe.servidor.domain.port.in.ServidorServicePort;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -34,16 +33,19 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class RegistroUpdateController {
 
     private final RegistroServicePort registroServicePort;
-    private final PontoServiceAdapter pontoServiceAdapter;
-    private final ServidorServiceAdapter servidorService;
-    private final PedidoAlteracaoService pedidoAlteracaoService;
+    private final PontoServicePort pontoServicePort;
+    private final ServidorServicePort servidorServicePort;
+    private final PedidoAlteracaoServicePort pedidoAlteracaoServicePort;
 
 
-    public RegistroUpdateController(RegistroServicePort registroServicePort, PontoServiceAdapter pontoServiceAdapter, ServidorServiceAdapter servidorService, PedidoAlteracaoService pedidoAlteracaoService) {
+    public RegistroUpdateController(RegistroServicePort registroServicePort,
+                                    PontoServicePort pontoServicePort,
+                                    ServidorServicePort servidorServicePort,
+                                    PedidoAlteracaoServicePort pedidoAlteracaoServicePort) {
         this.registroServicePort = registroServicePort;
-        this.pontoServiceAdapter = pontoServiceAdapter;
-        this.servidorService = servidorService;
-        this.pedidoAlteracaoService = pedidoAlteracaoService;
+        this.pontoServicePort = pontoServicePort;
+        this.servidorServicePort = servidorServicePort;
+        this.pedidoAlteracaoServicePort = pedidoAlteracaoServicePort;
     }
 
     @PatchMapping("/pontos")
@@ -57,8 +59,8 @@ public class RegistroUpdateController {
         log.info("Atualizando Registros do ponto - {} - {}", matricula, dia);
 
 
-        Ponto ponto = pontoServiceAdapter.buscaPonto(matricula, dia);
-        List<Registro> registros = registroServicePort.atualizaRegistrosSistemaDeAcesso(ponto);
+        Ponto ponto = pontoServicePort.buscaPonto(matricula, dia);
+        List<Registro> registros = registroServicePort.salvaNovosDeSistemaExternoEmBaseInterna(ponto);
 
         return ResponseEntity.ok(addLinksHATEOAS(registros));
     }
@@ -67,7 +69,7 @@ public class RegistroUpdateController {
     @PreAuthorize("hasAnyAuthority('GRP_SIPE_ADMIN', 'GRP_SIPE_RH', 'GRP_SIPE_DIRETOR')")
     public ResponseEntity<EntityModel<RegistroResponse>> aprovaRegistro(@PathVariable("id_registro") Long idRegistro) {
 
-        var registro = registroServicePort.aprovarRegistro(idRegistro);
+        var registro = registroServicePort.aprova(idRegistro);
 
         var registroModel = EntityModel.of(RegistroResponse.of(registro),
                 linkTo(methodOn(RegistroReadController.class).buscaRegistro(registro.getId())).withSelfRel());
@@ -91,9 +93,9 @@ public class RegistroUpdateController {
 
         log.info("Adiciona novo registro no Ponto - {} - {}",
                 matricula, paraString(dia, PADRAO_SAIDA_DATA));
-        var pedidoAlteracao = pedidoAlteracaoService.buscaPedidoAlteracao(idPedidoAlteracao);
-        var ponto = pontoServiceAdapter.buscaPonto(matricula, dia);
-        var registroAtualizado = registroServicePort.atualizaRegistro(pedidoAlteracao, ponto, registroAtualizadoRequest.toModel());
+        var pedidoAlteracao = pedidoAlteracaoServicePort.buscaPedidoAlteracao(idPedidoAlteracao);
+        var ponto = pontoServicePort.buscaPonto(matricula, dia);
+        var registroAtualizado = registroServicePort.atualiza(pedidoAlteracao, ponto, registroAtualizadoRequest.toModel());
         var registroModel = EntityModel.of(RegistroResponse.of(registroAtualizado),
                 linkTo(methodOn(RegistroReadController.class).buscaRegistro(registroAtualizado.getId())).withSelfRel());
 
