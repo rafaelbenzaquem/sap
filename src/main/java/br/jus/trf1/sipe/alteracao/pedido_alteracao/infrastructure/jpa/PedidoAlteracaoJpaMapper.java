@@ -1,6 +1,5 @@
 package br.jus.trf1.sipe.alteracao.pedido_alteracao.infrastructure.jpa;
 
-import br.jus.trf1.sipe.alteracao.alteracao_registro.domain.model.AlteracaoRegistro;
 import br.jus.trf1.sipe.alteracao.alteracao_registro.infrastructure.jpa.AlteracaoRegistroJpa;
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.model.PedidoAlteracao;
 import br.jus.trf1.sipe.ponto.domain.model.Ponto;
@@ -10,6 +9,11 @@ import br.jus.trf1.sipe.usuario.infrastructure.jpa.UsuarioJpa;
 import br.jus.trf1.sipe.usuario.infrastructure.jpa.UsuarioJpaMapper;
 
 public class PedidoAlteracaoJpaMapper {
+
+
+    private PedidoAlteracaoJpaMapper() {
+    }
+
     public static PedidoAlteracaoJpa toEntity(PedidoAlteracao pedidoAlteracao) {
         return PedidoAlteracaoJpa.builder()
                 .id(pedidoAlteracao.getId())
@@ -24,8 +28,8 @@ public class PedidoAlteracaoJpaMapper {
                 .ponto(PontoJpa.builder()
                         .id(PontoJpaMapper.toEntityId(pedidoAlteracao.getPonto().getId()))
                         .build())
-                .alteracaoRegistros(pedidoAlteracao.getAlteracaoRegistros() == null ? null :
-                        pedidoAlteracao.getAlteracaoRegistros().stream().map(ar -> AlteracaoRegistroJpa.builder()
+                .alteracaoRegistros(pedidoAlteracao.getAlteracoesRegistros() == null ? null :
+                        pedidoAlteracao.getAlteracoesRegistros().stream().map(ar -> AlteracaoRegistroJpa.builder()
                                 .id(ar.getId())
                                 .build()).toList())
                 .build();
@@ -43,11 +47,6 @@ public class PedidoAlteracaoJpaMapper {
                         .id(PontoJpaMapper.toDomainId(pedidoAlteracaoJpa.getPonto().getId()))
                         .build())
                 .usuarioSolicitante(UsuarioJpaMapper.toDomain(pedidoAlteracaoJpa.getUsuarioSolicitante()))
-                .alteracaoRegistros(pedidoAlteracaoJpa.getAlteracaoRegistros() == null ? null :
-                        pedidoAlteracaoJpa.getAlteracaoRegistros().stream().map(ar -> AlteracaoRegistro.builder()
-                                .id(ar.getId())
-                                .build()).toList())
-
                 .build();
     }
 }

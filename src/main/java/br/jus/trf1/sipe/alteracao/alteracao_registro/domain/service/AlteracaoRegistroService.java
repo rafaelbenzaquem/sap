@@ -23,21 +23,8 @@ public class AlteracaoRegistroService implements AlteracaoRegistroServicePort {
     }
 
     @Override
-    public AlteracaoRegistro salvarAlteracaoNoRegistroDePonto(long idPedidoAlteracao, Long idRegistroOriginal, long idRegistroNovo, Acao acao) {
-        AlteracaoRegistro alteracaoRegistro = AlteracaoRegistro.builder()
-                .peidoAlteracao(PedidoAlteracao.builder()
-                        .id(idPedidoAlteracao)
-                        .build())
-                .registroOriginal(idRegistroOriginal == null ? null : Registro.builder()
-                        .id(idRegistroOriginal)
-                        .build())
-                .registroNovo(Registro.builder()
-                        .id(idRegistroNovo)
-                        .build())
-                .acao(acao)
-                .build();
-
-        return alteracaoRegistroPersistencePort.salva(alteracaoRegistro);
+    public AlteracaoRegistro salvaAlteracaoNoRegistroDePonto(PedidoAlteracao pedidoAlteracao, Registro registroOriginal, Registro registroNovo, Acao acao) {
+        return alteracaoRegistroPersistencePort.salvaAlteracaoDeRegistroDePonto(pedidoAlteracao,registroOriginal,registroNovo,acao);
     }
 
     @Override
@@ -48,7 +35,7 @@ public class AlteracaoRegistroService implements AlteracaoRegistroServicePort {
     @Override
     public void apagarPorIdPedidoAlteracao(Long idPedidoAlteracao) {
         pedidoAlteracaoServicePort.buscaPedidoAlteracao(idPedidoAlteracao)
-                .getAlteracaoRegistros()
+                .getAlteracoesRegistros()
                 .forEach(alteracaoRegistroPersistencePort::apaga);
 
     }

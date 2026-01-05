@@ -3,6 +3,7 @@ package br.jus.trf1.sipe.registro.application.web;
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.port.in.PedidoAlteracaoServicePort;
 import br.jus.trf1.sipe.ponto.domain.model.Ponto;
 import br.jus.trf1.sipe.ponto.domain.port.in.PontoServicePort;
+import br.jus.trf1.sipe.ponto.exceptions.PontoInexistenteException;
 import br.jus.trf1.sipe.registro.domain.model.Registro;
 import br.jus.trf1.sipe.registro.application.web.dto.RegistroAtualizadoRequest;
 import br.jus.trf1.sipe.registro.application.web.dto.RegistroResponse;
@@ -59,7 +60,8 @@ public class RegistroUpdateController {
         log.info("Atualizando Registros do ponto - {} - {}", matricula, dia);
 
 
-        Ponto ponto = pontoServicePort.buscaPonto(matricula, dia);
+        Ponto ponto = pontoServicePort.buscaPonto(matricula, dia).
+                orElseThrow(() -> new PontoInexistenteException(matricula, dia));
         List<Registro> registros = registroServicePort.salvaNovosDeSistemaExternoEmBaseInterna(ponto);
 
         return ResponseEntity.ok(addLinksHATEOAS(registros));
@@ -94,7 +96,7 @@ public class RegistroUpdateController {
         log.info("Adiciona novo registro no Ponto - {} - {}",
                 matricula, paraString(dia, PADRAO_SAIDA_DATA));
         var pedidoAlteracao = pedidoAlteracaoServicePort.buscaPedidoAlteracao(idPedidoAlteracao);
-        var ponto = pontoServicePort.buscaPonto(matricula, dia);
+        var ponto = pontoServicePort.buscaPonto(matricula, dia).orElseThrow(() -> new PontoInexistenteException(matricula, dia));
         var registroAtualizado = registroServicePort.atualiza(pedidoAlteracao, ponto, registroAtualizadoRequest.toModel());
         var registroModel = EntityModel.of(RegistroResponse.of(registroAtualizado),
                 linkTo(methodOn(RegistroReadController.class).buscaRegistro(registroAtualizado.getId())).withSelfRel());

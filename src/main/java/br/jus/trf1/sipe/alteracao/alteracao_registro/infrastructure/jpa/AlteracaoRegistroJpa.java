@@ -27,7 +27,7 @@ public class AlteracaoRegistroJpa {
     @JoinColumns(value = {
             @JoinColumn(name = "pedido_alteracao_id", referencedColumnName = "id", nullable = false)
     }, foreignKey = @ForeignKey(name = "fk_ar_pedido_alteracao_id"))
-    private PedidoAlteracaoJpa peidoAlteracao;
+    private PedidoAlteracaoJpa pedidoAlteracao;
 
     @ManyToOne
     @JoinColumns(value = {

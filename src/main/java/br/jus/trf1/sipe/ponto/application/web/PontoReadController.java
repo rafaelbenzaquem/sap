@@ -3,6 +3,7 @@ package br.jus.trf1.sipe.ponto.application.web;
 import br.jus.trf1.sipe.ponto.application.web.dto.PontoResponse;
 import br.jus.trf1.sipe.ponto.domain.model.Ponto;
 import br.jus.trf1.sipe.ponto.domain.port.in.PontoServicePort;
+import br.jus.trf1.sipe.ponto.exceptions.PontoInexistenteException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.CollectionModel;
@@ -41,7 +42,8 @@ public class PontoReadController {
                                                                  LocalDate dia) {
         var diaFormatado = paraString(dia);
         log.info("Buscando Ponto - {} - {}", matricula, diaFormatado);
-        var ponto = pontoServicePort.buscaPonto(matricula, dia);
+        var pontoOpt = pontoServicePort.buscaPonto(matricula, dia);
+        var ponto = pontoOpt.orElseThrow(() -> new PontoInexistenteException(matricula, dia));
         var uri = ServletUriComponentsBuilder.fromCurrentContextPath().
                 path("/v1/sipe/registros/pontos?matricula={matricula}&dia={dia}").
                 buildAndExpand(matricula, diaFormatado).toUriString();

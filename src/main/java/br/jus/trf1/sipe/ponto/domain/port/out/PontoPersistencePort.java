@@ -5,6 +5,7 @@ import br.jus.trf1.sipe.registro.domain.model.Registro;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface PontoPersistencePort {
 
@@ -12,7 +13,7 @@ public interface PontoPersistencePort {
 
     boolean existe(String matricula, LocalDate dia);
 
-    Ponto busca(String matricula, LocalDate dia);
+    Optional<Ponto> busca(String matricula, LocalDate dia);
 
     List<Ponto> listaPorPeriodo(String matricula, LocalDate inicio, LocalDate fim);
 

@@ -88,9 +88,9 @@ public class PontoServiceAdapter implements PontoServicePort {
      * @return ponto encontrado
      */
     @Override
-    public Ponto buscaPonto(String matricula, LocalDate dia) {
+    public Optional<Ponto> buscaPonto(String matricula, LocalDate dia) {
         log.info("Buscando Ponto - {} - {} ", paraString(dia), matricula);
-        usuarioSecurityPort.permissoesNivelUsuario(matricula);
+//TODO        usuarioSecurityPort.permissoesNivelUsuario(matricula);
         return pontoPersistencePort.busca(matricula, dia);
     }
 

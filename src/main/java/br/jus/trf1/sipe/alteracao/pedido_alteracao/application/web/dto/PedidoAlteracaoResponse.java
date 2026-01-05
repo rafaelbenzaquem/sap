@@ -36,7 +36,7 @@ public record PedidoAlteracaoResponse(Long id,
                 .diaPonto(pedidoAlteracao.getPonto().getId().getDia())
                 .status(pedidoAlteracao.getStatus().name())
                 .justificativa(pedidoAlteracao.getJustificativa())
-                .alteracoes(pedidoAlteracao.getAlteracaoRegistros() == null ? List.of() : pedidoAlteracao.getAlteracaoRegistros().stream().map(AlteracaoRegistroResponse::from).toList())
+                .alteracoes(pedidoAlteracao.getAlteracoesRegistros() == null ? List.of() : pedidoAlteracao.getAlteracoesRegistros().stream().map(AlteracaoRegistroResponse::from).toList())
                 .build();
 
     }

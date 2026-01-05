@@ -42,7 +42,7 @@ public class PedidoAlteracaoJpa {
     @Column(name = "justificativa_aprovador", nullable = true)
     private String justificativaAprovador;
 
-    @OneToMany(mappedBy = "peidoAlteracao", orphanRemoval = true)
+    @OneToMany(mappedBy = "pedidoAlteracao", orphanRemoval = true)
     private List<AlteracaoRegistroJpa> alteracaoRegistros;
 
     @ManyToOne

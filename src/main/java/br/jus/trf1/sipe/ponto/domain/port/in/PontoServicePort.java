@@ -4,6 +4,7 @@ import br.jus.trf1.sipe.ponto.domain.model.Ponto;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface PontoServicePort {
 
@@ -11,7 +12,7 @@ public interface PontoServicePort {
 
     boolean existe(String matricula, LocalDate dia);
 
-    Ponto buscaPonto(String matricula, LocalDate dia);
+    Optional<Ponto> buscaPonto(String matricula, LocalDate dia);
 
     List<Ponto> buscarPontos(String matricula, LocalDate inicio, LocalDate fim);
 

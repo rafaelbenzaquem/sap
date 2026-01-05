@@ -1,6 +1,5 @@
 package br.jus.trf1.sipe.alteracao.pedido_alteracao.infrastructure.jpa;
 
-import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.model.PedidoAlteracao;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -29,7 +28,7 @@ public interface PedidoAlteracaoJpaRepository extends JpaRepository<PedidoAltera
     @Query("""
             SELECT pa FROM PedidoAlteracaoJpa pa WHERE pa.id =:id
             """)
-    Optional<PedidoAlteracaoJpa> buscaPedidoAlteracaoPorId(@Param("id") Long id);
+    Optional<PedidoAlteracaoJpa> buscaPorId(@Param("id") Long id);
 
     @Transactional
     @Modifying

@@ -49,7 +49,7 @@ public class RegistroJpaAdapter implements RegistroPersistencePort {
     }
 
     @Override
-    public Registro salvar(Registro registro) {
+    public Registro salva(Registro registro) {
         var registroJpa = RegistroJpaMapper.toEntity(registro);
         registroJpa = registroJpaRepository.save(registroJpa);
         return RegistroJpaMapper.toDomain(registroJpa);

@@ -8,6 +8,7 @@ import br.jus.trf1.sipe.alteracao.pedido_alteracao.application.web.dto.PedidoAlt
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.application.web.dto.PedidoAlteracaoUpdateRequest;
 import br.jus.trf1.sipe.comum.util.DataTempoUtil;
 import br.jus.trf1.sipe.ponto.domain.port.in.PontoServicePort;
+import br.jus.trf1.sipe.ponto.exceptions.PontoInexistenteException;
 import br.jus.trf1.sipe.usuario.domain.port.out.UsuarioSecurityPort;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +49,7 @@ public class PedidoAlteracaoController {
         var justificativaAprovador = pedidoAlteracaoRequest.justificativaAprovador();
         var status = StatusPedido.valueOf(pedidoAlteracaoRequest.status());
         var pedidoAlteracaoOpt = pedidoAlteracaoServicePort.buscaPedidoAlteracao(matriculaPonto, diaPonto);
-        log.info("Atualizando realizando Pedido de Alteracao de Ponto - {} - {}", matriculaPonto, diaPonto);
+        log.info("Atualizando pedido de alteracao de ponto - {} - {}", matriculaPonto, diaPonto);
 
         if (pedidoAlteracaoOpt.isPresent()) {
             var pedidoAlteracao = pedidoAlteracaoOpt.get();
@@ -56,7 +57,7 @@ public class PedidoAlteracaoController {
             pedidoAlteracao.setJustificativaAprovador(justificativaAprovador);
             pedidoAlteracao.setStatus(status);
 
-            pedidoAlteracaoServicePort.atualizaPedidoAlteracao(pedidoAlteracao);
+            pedidoAlteracao = pedidoAlteracaoServicePort.atualizaPedidoAlteracao(pedidoAlteracao);
 
             return ResponseEntity.ok(PedidoAlteracaoResponse.from(pedidoAlteracao));
         }
@@ -71,10 +72,11 @@ public class PedidoAlteracaoController {
         var diaPonto = pedidoAlteracaoRequest.diaPonto();
         var justificativa = pedidoAlteracaoRequest.justificativa();
 
-        log.info("Atualizando realizando Pedido de Alteracao de Ponto - {} - {}", matriculaPonto, diaPonto);
+        log.info("Realizando pedido alteração de ponto - {} - {}", matriculaPonto, diaPonto);
 
         var usuario = usuarioSecurityPort.getUsuarioAutenticado();
-        var ponto = pontoServicePort.buscaPonto(matriculaPonto, diaPonto);
+        var pontoOpt = pontoServicePort.buscaPonto(matriculaPonto, diaPonto);
+        var ponto = pontoOpt.orElseThrow(() -> new PontoInexistenteException(matriculaPonto, diaPonto));
         var pedidoAlteracao = pedidoAlteracaoServicePort.criarPedidoAlteracao(ponto, justificativa, usuario);
 
         return ResponseEntity.ok(PedidoAlteracaoResponse.from(pedidoAlteracao));
@@ -84,7 +86,7 @@ public class PedidoAlteracaoController {
     @PreAuthorize("hasAuthority('GRP_SIPE_USERS')")
     public ResponseEntity<PedidoAlteracaoResponse> apagarPedido(@PathVariable("idPedido") long idPedido) {
 
-        log.info("Apagando Pedido de Alteracao de Ponto - {}", idPedido);
+        log.info("Apagando pedido de alteracao de ponto - {}", idPedido);
 
         var pedidoAlteracao = pedidoAlteracaoServicePort.apagar(idPedido);
 
@@ -116,8 +118,6 @@ public class PedidoAlteracaoController {
 
         var pedidoAlteracao = pedidoAlteracaoServicePort.buscaPedidoAlteracao(matricula, dia).orElseThrow(() ->
                 new PedidoAlteracaoInexistenteException("Não existe pedido de alteração para o ponto matricula: " + matricula + " dia: " + DataTempoUtil.paraString(dia)));
-        ;
-
         return ResponseEntity.ok(PedidoAlteracaoResponse.from(pedidoAlteracao));
     }
 

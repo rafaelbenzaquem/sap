@@ -5,23 +5,31 @@ import br.jus.trf1.sipe.alteracao.pedido_alteracao.infrastructure.jpa.PedidoAlte
 import br.jus.trf1.sipe.registro.infrastructure.jpa.RegistroJpaMapper;
 
 public class AlteracaoRegistroJpaMapper {
+
+    private AlteracaoRegistroJpaMapper() {
+    }
+
     public static AlteracaoRegistroJpa toEntity(AlteracaoRegistro alteracaoRegistro) {
-            return AlteracaoRegistroJpa.builder()
-                    .id(alteracaoRegistro.getId())
-                    .acao(alteracaoRegistro.getAcao())
-                    .peidoAlteracao(PedidoAlteracaoJpaMapper.toEntity(alteracaoRegistro.getPeidoAlteracao()))
-                    .registroOriginal(RegistroJpaMapper.toEntity(alteracaoRegistro.getRegistroOriginal()))
-                    .registroNovo(RegistroJpaMapper.toEntity(alteracaoRegistro.getRegistroNovo()))
-                    .build();
+        return AlteracaoRegistroJpa.builder()
+                .id(alteracaoRegistro.getId())
+                .acao(alteracaoRegistro.getAcao())
+                .pedidoAlteracao(PedidoAlteracaoJpaMapper.toEntity(alteracaoRegistro.getPedidoAlteracao()))
+                .registroOriginal((alteracaoRegistro.getRegistroOriginal() == null ? null
+                        : RegistroJpaMapper.toEntity(alteracaoRegistro.getRegistroOriginal())))
+                .registroNovo((alteracaoRegistro.getRegistroNovo() == null ? null
+                        : RegistroJpaMapper.toEntity(alteracaoRegistro.getRegistroNovo())))
+                .build();
     }
 
     public static AlteracaoRegistro toDomain(AlteracaoRegistroJpa alteracaoRegistroJpa) {
         return AlteracaoRegistro.builder()
                 .id(alteracaoRegistroJpa.getId())
                 .acao(alteracaoRegistroJpa.getAcao())
-                .peidoAlteracao(PedidoAlteracaoJpaMapper.toDomain(alteracaoRegistroJpa.getPeidoAlteracao()))
-                .registroOriginal(RegistroJpaMapper.toDomain(alteracaoRegistroJpa.getRegistroOriginal()))
-                .registroNovo(RegistroJpaMapper.toDomain(alteracaoRegistroJpa.getRegistroNovo()))
+                .pedidoAlteracao(PedidoAlteracaoJpaMapper.toDomain(alteracaoRegistroJpa.getPedidoAlteracao()))
+                .registroOriginal(alteracaoRegistroJpa.getRegistroOriginal() == null ? null
+                        : RegistroJpaMapper.toDomain(alteracaoRegistroJpa.getRegistroOriginal()))
+                .registroNovo(alteracaoRegistroJpa.getRegistroNovo() == null ? null
+                        : RegistroJpaMapper.toDomain(alteracaoRegistroJpa.getRegistroNovo()))
                 .build();
     }
 }

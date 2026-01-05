@@ -13,8 +13,6 @@ public interface PedidoAlteracaoServicePort {
 
     PedidoAlteracao atualizaPedidoAlteracao(PedidoAlteracao pedidoAlteracao);
 
-//    RegistroJpa aprovarRegistro(Long idRegistro);
-
     PedidoAlteracao buscaPedidoAlteracao(Long idPedidoAlteracao);
 
     Optional<PedidoAlteracao> buscaPedidoAlteracao(String matricula, LocalDate dia);

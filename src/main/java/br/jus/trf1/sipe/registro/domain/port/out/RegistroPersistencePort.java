@@ -17,7 +17,7 @@ public interface RegistroPersistencePort {
 
     List<Registro> listaRegistrosProvenientesDoSistemaExternoPorPonto(String matricula, LocalDate dia);
 
-    Registro salvar(Registro registro);
+    Registro salva(Registro registro);
 
     void apagarPorId(Long idRegistro);
 

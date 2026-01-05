@@ -2,6 +2,7 @@ package br.jus.trf1.sipe.registro.application.web;
 
 import br.jus.trf1.sipe.alteracao.pedido_alteracao.domain.service.PedidoAlteracaoServiceAdapter;
 import br.jus.trf1.sipe.ponto.domain.service.PontoServiceAdapter;
+import br.jus.trf1.sipe.ponto.exceptions.PontoInexistenteException;
 import br.jus.trf1.sipe.registro.domain.model.Registro;
 import br.jus.trf1.sipe.registro.application.web.dto.RegistroNovoRequest;
 import br.jus.trf1.sipe.registro.application.web.dto.RegistroResponse;
@@ -56,7 +57,8 @@ public class RegistroCreateController {
                 matricula, paraString(dia, PADRAO_SAIDA_DATA), registrosNovos.size());
 
         var pedidoAlteracao = pedidoAlteracaoService.buscaPedidoAlteracao(idPedidoAlteracao);
-        var ponto = pontoServiceAdapter.buscaPonto(matricula, dia);
+        var pontoOpt = pontoServiceAdapter.buscaPonto(matricula, dia);
+        var ponto = pontoOpt.orElseThrow(() -> new PontoInexistenteException(matricula, dia));
         List<Registro> registros = registroServicePort.salva(pedidoAlteracao,ponto,
                 registrosNovos.stream().map(RegistroNovoRequest::toDomain).toList());
 

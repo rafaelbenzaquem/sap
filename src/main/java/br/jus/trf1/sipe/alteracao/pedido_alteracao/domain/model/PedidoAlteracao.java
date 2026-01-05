@@ -30,7 +30,7 @@ public class PedidoAlteracao {
 
     private String justificativaAprovador;
 
-    private List<AlteracaoRegistro> alteracaoRegistros;
+    private List<AlteracaoRegistro> alteracoesRegistros;
 
     private Usuario usuarioSolicitante;
 
@@ -38,7 +38,7 @@ public class PedidoAlteracao {
 
     private Ponto ponto;
 
-    public void setJustificativa(String justificativa) {
-        this.justificativa = this.justificativa ==null? justificativa: this.justificativa +" - "+justificativa;
-    }
+//TODO    public void setJustificativa(String justificativa) {
+//        this.justificativa = this.justificativa ==null? justificativa: this.justificativa +" - "+justificativa;
+//    }
 }

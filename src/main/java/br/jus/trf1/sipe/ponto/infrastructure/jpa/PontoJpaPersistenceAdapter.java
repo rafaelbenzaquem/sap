@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PontoJpaPersistenceAdapter implements PontoPersistencePort {
@@ -44,9 +45,8 @@ public class PontoJpaPersistenceAdapter implements PontoPersistencePort {
     }
 
     @Override
-    public Ponto busca(String matricula, LocalDate dia) {
-        return pontoJpaRepository.buscaPonto(matricula, dia).map(PontoJpaMapper::toDomain)
-                .orElseThrow(() -> new PontoInexistenteException(matricula, dia));
+    public Optional<Ponto> busca(String matricula, LocalDate dia) {
+        return pontoJpaRepository.buscaPonto(matricula, dia).map(PontoJpaMapper::toDomain);
     }
 
     @Override
