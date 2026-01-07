@@ -8,10 +8,12 @@ import java.util.Optional;
 
 public interface FeriadoServicePort {
 
-    List<Feriado> buscaFeriadosDoAno(int ano);
+    List<Feriado> listaPorAno(int ano);
 
-    List<Feriado> buscaFeriadosDoPeriodo(LocalDate inicio, LocalDate fim);
+    List<Feriado> listaPorPeriodo(LocalDate inicio, LocalDate fim);
 
     Optional<Feriado> buscaFeriadoDoDia(LocalDate dia);
+
+    List<Feriado> persisteFeriadosDoAno(int ano);
 
 }

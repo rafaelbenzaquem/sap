@@ -8,6 +8,7 @@ import java.util.List;
 public interface ServidorServicePort {
 
     Servidor atualizaDadosDoSarh(String matricula);
+    Servidor atualizaDadosDoSarh(Servidor servidor);
 
     Servidor servidorAtual();
 

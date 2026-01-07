@@ -19,17 +19,17 @@ public class FeriadoJSarhAdapter implements FeriadoExternoPort {
     }
 
     @Override
-    public List<Feriado> buscaFeriadosDoAno(int ano) {
+    public List<Feriado> listaPorAno(int ano) {
         return feriadoJSarhClient.buscaFeriados(null, null, ano).stream().map(FeriadoJSarhResponse::toModel).toList();
     }
 
     @Override
-    public List<Feriado> buscaFeriadosDoPeriodo(LocalDate inicio, LocalDate fim) {
+    public List<Feriado> listaPorPeriodo(LocalDate inicio, LocalDate fim) {
         return feriadoJSarhClient.buscaFeriados(inicio, fim, null).stream().map(FeriadoJSarhResponse::toModel).toList();
     }
 
     @Override
-    public Optional<Feriado> buscaFeriadoDoDia(LocalDate dia) {
+    public Optional<Feriado> busca(LocalDate dia) {
         return feriadoJSarhClient.buscaFeriadoDoDia(dia).map(FeriadoJSarhResponse::toModel);
     }
 

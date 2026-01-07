@@ -6,11 +6,15 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface FeriadoExternoPort {
+public interface FeriadoPersistencePort {
 
-    List<Feriado> listaPorAno(int ano);
+    Optional<Feriado> busca(LocalDate data);
 
     List<Feriado> listaPorPeriodo(LocalDate inicio, LocalDate fim);
 
-    Optional<Feriado> busca(LocalDate dia);
+    void apaga(LocalDate data);
+
+    List<Feriado> listaPorAno(int ano);
+
+    List<Feriado> substitui(List<Feriado> feriadosAtuais, List<Feriado> feriadosNovos);
 }

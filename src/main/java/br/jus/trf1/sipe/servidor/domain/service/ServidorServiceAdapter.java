@@ -43,10 +43,15 @@ public class ServidorServiceAdapter implements ServidorServicePort {
 
     @Override
     public Servidor atualizaDadosDoSarh(String matricula) {
-        log.info("Buscando usuário com matricula: {}", matricula);
         var usuario = usuarioServicePort.buscaPorMatricula(matricula);
-
         var servidor = (Servidor) usuario;
+        return atualizaDadosDoSarh(servidor);
+    }
+
+    @Override
+    public Servidor atualizaDadosDoSarh(Servidor servidor) {
+        var matricula = servidor.getMatricula();
+        log.info("Atualizando usuário com matricula: {}", matricula);
         var servidorExternoOpt = servidorExternoPort.buscaServidorExterno(matricula);
         if (servidorExternoOpt.isPresent()) {
             var servidorExterno = servidorExternoOpt.get();
@@ -55,9 +60,8 @@ public class ServidorServiceAdapter implements ServidorServicePort {
             return servidorPersistencePort.salva(servidor);
         }
         log.info("Não foi possível atualizar os dados do servidor : {}", matricula);
-        return (Servidor) usuario;
+        return servidor;
     }
-
 
     @Override
     public Servidor servidorAtual() {

@@ -73,7 +73,8 @@ public class RelatorioLotacaoService implements RelatorioService {
         usuarioSecurityAdapter.permissoesNivelUsuario(matricula);
         log.info("Carregando pontos para o período especificado...");
 
-        var servidorPrincipal = servidorService.atualizaDadosDoSarh(matricula);
+//        var servidorPrincipal = servidorService.atualizaDadosDoSarh(matricula);
+        var servidorPrincipal = servidorService.buscaPorMatricula(matricula);
 
         var subordinados = servidorService.listar(servidorPrincipal.getLotacao().getId());
 

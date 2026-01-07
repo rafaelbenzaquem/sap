@@ -27,7 +27,6 @@ public class RegistroServiceAdapter implements RegistroServicePort {
 
     private final RegistroExternoPort registroExternoPort;
     private final RegistroPersistencePort registroPersistencePort;
-
     private final AlteracaoRegistroServicePort alteracaoRegistroServicePort;
 
     public RegistroServiceAdapter(ServidorServicePort servidorServicePort,
