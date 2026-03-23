@@ -1,5 +1,6 @@
 package br.jus.trf1.sipe.usuario.web;
 
+import br.jus.trf1.sipe.servidor.Servidor;
 import br.jus.trf1.sipe.servidor.ServidorService;
 import br.jus.trf1.sipe.usuario.UsuarioService;
 import br.jus.trf1.sipe.usuario.web.dto.UsuarioNovoRequest;
@@ -34,14 +35,16 @@ public class UsuarioCreateController {
     public ResponseEntity<EntityModel<UsuarioResponse>> cadastraUsuario(@RequestBody @Valid UsuarioNovoRequest request) {
         log.info("Criando usuario: {}", request);
 
+        var usuario = request.paraEntidade();
+        var servidor = new Servidor(usuario, null, null, null, null);
+        servidor = servidorService.cadastrarNovoServidor(servidor);
+//        var usuario = usuarioService.salve(request.paraEntidade());
 
-        var usuario = usuarioService.salve(request.paraEntidade());
+//        servidorService.atualizaDadosNoSarh(usuario.getMatricula());
 
-        servidorService.atualizaDadosNoSarh(usuario.getMatricula());
+        var uriResponse = ServletUriComponentsBuilder.fromCurrentContextPath().path("/usuarios/{matricula}").buildAndExpand(servidor.getMatricula()).toUri();
 
-        var uriResponse = ServletUriComponentsBuilder.fromCurrentContextPath().path("/usuarios/{matricula}").buildAndExpand(usuario.getMatricula()).toUri();
-
-        var entityModel = EntityModel.of(usuario.toResponse(), linkTo(methodOn(UsuarioReadController.class).buscaUsuario(usuario.getMatricula())).withSelfRel(),
+        var entityModel = EntityModel.of(servidor.toResponse(), linkTo(methodOn(UsuarioReadController.class).buscaUsuario(servidor.getMatricula())).withSelfRel(),
                 linkTo(methodOn(UsuarioDeleteController.class).apagaVinculo(usuario.getId())).withRel("delete"));
 
         return ResponseEntity.created(uriResponse).body(entityModel);

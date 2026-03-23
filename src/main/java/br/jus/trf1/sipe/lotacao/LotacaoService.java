@@ -10,19 +10,23 @@ import java.util.stream.Collectors;
 @Service
 public class LotacaoService {
 
-    private LotacaoRepository lotacaoRepository;
+    private final LotacaoRepository lotacaoRepository;
 
     public LotacaoService(LotacaoRepository lotacaoRepository) {
         this.lotacaoRepository = lotacaoRepository;
     }
 
 
-    public Set<Integer> getLotacaos(Integer idLotacao) {
+    public Set<Integer> getIdsLotacoes(Integer idLotacao) {
         return lotacaoRepository.findLotacoesRecursivas(idLotacao).stream().map(Lotacao::getId).collect(Collectors.toSet());
     }
 
+    public Set<Lotacao> getLotacoes(Integer idLotacao) {
+        return lotacaoRepository.findLotacoesRecursivas(idLotacao);
+    }
+
     public void atualizarLotacao(Lotacao lotacao, LotacaoExterna lotacaoExterna) {
-        if(!Objects.equals(lotacao.getId(), lotacaoExterna.id())) {
+        if(lotacao==null||!Objects.equals(lotacao.getId(), lotacaoExterna.id())) {
             if(!lotacaoRepository.existsById(lotacaoExterna.id())){
                 lotacao =  LotacaoMapping.toModel(lotacaoExterna);
                 lotacaoRepository.save(lotacao);

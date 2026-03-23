@@ -6,6 +6,7 @@ import br.jus.trf1.sipe.servidor.externo.jsarh.ServidorExternoService;
 import br.jus.trf1.sipe.lotacao.LotacaoNaoTemDiretorDireto;
 import br.jus.trf1.sipe.lotacao.LotacaoService;
 import br.jus.trf1.sipe.servidor.exceptions.ServidorInexistenteException;
+import br.jus.trf1.sipe.servidor.externo.jsarh.exceptions.ServidorExternoInexistenteException;
 import br.jus.trf1.sipe.usuario.UsuarioService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -40,6 +41,20 @@ public class ServidorService {
         this.ausenciaExternaService = ausenciaExternaService;
         this.ausenciaRepository = ausenciaRepository;
         this.lotacaoService = lotacaoService;
+    }
+
+
+    public Servidor cadastrarNovoServidor(Servidor servidor) {
+        var servidorExternoOpt = servidorExternoService.buscaServidorExterno(servidor.getMatricula());
+        if (servidorExternoOpt.isPresent()) {
+            var servidorExterno = servidorExternoOpt.get();
+            var lotacaoExterna = servidorExterno.getLotacao();
+            lotacaoService.atualizarLotacao(servidor.getLotacao(), lotacaoExterna);
+            servidor = toModel(servidor, servidorExterno);
+            return servidorRepository.save(servidor);
+        }
+        log.error("Não foi possível atualizar os dados do servidor : {}", servidor.getMatricula());
+        throw new ServidorExternoInexistenteException("Não existe servidor cadastrado no sara");
     }
 
     @Transactional
@@ -78,7 +93,7 @@ public class ServidorService {
         if (usuarioService.permissaoDiretor()) {
             log.info("listar por lotação do Diretor");
             var servidorAtual = servidorAtual();
-            var idsLotacoes = lotacaoService.getLotacaos(servidorAtual.getLotacao().getId());
+            var idsLotacoes = lotacaoService.getIdsLotacoes(servidorAtual.getLotacao().getId());
             return servidorRepository.listarPorLotacoes(idsLotacoes);
         }
         log.info("listarAll: Outros");
@@ -90,10 +105,10 @@ public class ServidorService {
         if (usuarioService.permissaoDiretor()) {
             log.info("listar por lotação do Diretor");
             var servidorAtual = servidorAtual();
-            var idsLotacoes = lotacaoService.getLotacaos(servidorAtual.getLotacao().getId());
+            var idsLotacoes = lotacaoService.getIdsLotacoes(servidorAtual.getLotacao().getId());
             return servidorRepository.listarPorLotacoes(idsLotacoes);
         }
-        var idsLotacoes = lotacaoService.getLotacaos(idLotacaoPai);
+        var idsLotacoes = lotacaoService.getIdsLotacoes(idLotacaoPai);
         return servidorRepository.listarPorLotacoes(idsLotacoes);
     }
 
@@ -104,11 +119,11 @@ public class ServidorService {
         if (usuarioService.permissaoDiretor()) {
             log.info("Paginar filtrado: Diretor");
             var servidorAtual = servidorAtual();
-            var idsLotacoes = lotacaoService.getLotacaos(servidorAtual.getLotacao().getId());
+            var idsLotacoes = lotacaoService.getIdsLotacoes(servidorAtual.getLotacao().getId());
             return servidorRepository.listarPorNomeOuCrachaOuMatriculaEeLotacoes(nome, cracha, matricula, idsLotacoes);
         }
         log.info("Paginar filtrado: Outros");
-        var idsLotacoes = lotacaoService.getLotacaos(idLotacao);
+        var idsLotacoes = lotacaoService.getIdsLotacoes(idLotacao);
         return servidorRepository.listarPorNomeOuCrachaOuMatriculaEeLotacoes(nome, cracha, matricula, idsLotacoes);
     }
 
@@ -117,7 +132,7 @@ public class ServidorService {
         if (usuarioService.permissaoDiretor()) {
             log.info("listar por lotação do Diretor");
             var servidorAtual = servidorAtual();
-            var idsLotacoes = lotacaoService.getLotacaos(servidorAtual.getLotacao().getId());
+            var idsLotacoes = lotacaoService.getIdsLotacoes(servidorAtual.getLotacao().getId());
             return servidorRepository.paginarPorLotacoes(idsLotacoes, pageable);
         }
         log.info("listarAll: Outros");
@@ -163,6 +178,17 @@ public class ServidorService {
     }
 
     public Servidor buscaDiretorLotacao(Integer idLotacao) {
+        //idLotacao IN (112,124, 136, 215) AND s.lotacao.id IN (115,127, 140, 218)
+        if (idLotacao == 112 || idLotacao == 124 || idLotacao == 136 || idLotacao == 215) {
+            var lotacoes = lotacaoService.getLotacoes(idLotacao);
+            var lotacaoOptional = lotacoes.stream()
+                    .filter(l -> l.getSigla().equals("SECVA"))
+                    .findFirst();
+            if (lotacaoOptional.isPresent()) {
+                var lotacao = lotacaoOptional.get();
+                idLotacao = lotacao.getId();
+            }
+        }
         Optional<Servidor> optServidor = servidorRepository.buscaDiretorLotacao(idLotacao);
 
         if (optServidor.isPresent()) {

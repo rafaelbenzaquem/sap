@@ -74,8 +74,11 @@ public class RelatorioLotacaoService implements RelatorioService {
         log.info("Carregando pontos para o período especificado...");
 
         var servidorPrincipal = servidorService.atualizaDadosNoSarh(matricula);
-
-        var subordinados = servidorService.listar(servidorPrincipal.getLotacao().getId());
+        var idLotacao = servidorPrincipal.getLotacao().getId();
+        if (servidorPrincipal.getLotacao().getSigla().equals("SECVA")) {
+            idLotacao = servidorPrincipal.getLotacao().getLotacaoPai().getId();
+        }
+        var subordinados = servidorService.listar(idLotacao);
 
         List<UsuarioModel> subordinadosModel = new ArrayList<>();
 
