@@ -17,8 +17,8 @@ public record FeriasExternasResponse(Integer id,
                                      LocalDateTime dataSuspensao,
                                      String flag) {
 
-    public FeriasExternas toModel() {
-        return new FeriasExternas("ferias:"+id, inicio, fim, OcorrenciaExterna.parse(flag),
+    public FeriasExternas toModel(String matricula) {
+        return new FeriasExternas("ferias:%s:%d".formatted(matricula, id), inicio, fim, OcorrenciaExterna.parse(flag),
                 diasGozados, dataSuspensao);
     }
 }

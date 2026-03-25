@@ -1,11 +1,8 @@
 package br.jus.trf1.sipe.ausencia.externo.jsrh;
 
 import br.jus.trf1.sipe.ausencia.especial.externo.jsarh.FrequenciaEspecialExternaClient;
-import br.jus.trf1.sipe.ausencia.especial.externo.jsarh.dto.FrequencialEspecialExternaResponse;
 import br.jus.trf1.sipe.ausencia.ferias.externo.jsarh.FeriasExternasClient;
-import br.jus.trf1.sipe.ausencia.ferias.externo.jsarh.dto.FeriasExternasResponse;
 import br.jus.trf1.sipe.ausencia.licenca.externo.jsarh.LicencaExternaClient;
-import br.jus.trf1.sipe.ausencia.licenca.externo.jsarh.dto.LicencaExternoResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -31,13 +28,13 @@ public class AusenciaExternaService {
     public List<AusenciaExterna> buscaAusenciasServidorPorPeriodo(String matricula, LocalDate inicio, LocalDate fim) {
         log.info("Consultando licenças, férias e ausências especiais do servidor no SARH...");
         var licencas = licencasExternalService.buscaLicencaServidorPorPeriodo(matricula, inicio, fim).
-                stream().map(LicencaExternoResponse::toModel).toList();
+                stream().map(l -> l.toModel(matricula)).toList();
 
         var especiais = frequenciaEspecialExternaClient.buscaAusenciasEspeciaisServidorPorPeriodo(matricula, inicio, fim).
-                stream().map(FrequencialEspecialExternaResponse::toModel).toList();
+                stream().map(f -> f.toModel(matricula)).toList();
 
         var ferias = feriasExternalService.buscaFeriasServidorPorPeriodo(matricula.toUpperCase(), inicio, fim).
-                stream().map(FeriasExternasResponse::toModel).toList();
+                stream().map(f -> f.toModel(matricula)).toList();
 
         var ausencias = new ArrayList<AusenciaExterna>(licencas);
         ausencias.addAll(especiais);
@@ -51,20 +48,20 @@ public class AusenciaExternaService {
         log.info("Consultando licenças, férias e ausências especiais do servidor no SARH...");
 
         var ferias = feriasExternalService.buscaFeriasServidorNoDia(matricula, dia).
-                map(FeriasExternasResponse::toModel);
+                map(f -> f.toModel(matricula));
         if (ferias.isPresent()) {
             log.info("Possui férias - férias possui prioridade 1");
             return Optional.of(ferias.get());
         }
         var licenca = licencasExternalService.buscaLicencaServidorNoDia(matricula, dia)
-                .map(LicencaExternoResponse::toModel);
+                .map(l -> l.toModel(matricula));
         if (licenca.isPresent()) {
             log.info("Possui licença - licença possui prioridade 2");
             return Optional.of(licenca.get());
         }
         log.info("Possui ausência especial ou não possui ausência no dia");
         return frequenciaEspecialExternaClient.buscaAusenciaEspecialServidorNoDia(matricula, dia).
-                map(FrequencialEspecialExternaResponse::toModel);
+                map(f -> f.toModel(matricula));
     }
 
 }
