@@ -48,7 +48,7 @@ public class PontoService {
         this.usuarioAtualService = usuarioAtualService;
     }
 
-    public  Boolean existePontoComPedidoAlteracaoPendenteNoPeriodo(String matricula, LocalDate inicio, LocalDate fim) {
+    public Boolean existePontoComPedidoAlteracaoPendenteNoPeriodo(String matricula, LocalDate inicio, LocalDate fim) {
         return pontoRepository.existePontosComAlteracaoRegistroPendentePorData(matricula, inicio, fim);
     }
 
@@ -79,16 +79,17 @@ public class PontoService {
     public Ponto buscaPonto(String matricula, LocalDate dia) {
         log.info("Buscando Ponto - {} - {} ", paraString(dia), matricula);
         usuarioAtualService.permissoesNivelUsuario(matricula);
-        var pontoOpt = pontoRepository.findById(PontoId.builder().
+        var idPonto = PontoId.builder().
                 usuario(Usuario.builder()
                         .matricula(matricula)
                         .build()).
                 dia(dia).
-                build()
-        );
-        return pontoOpt.orElseThrow(
-                () -> new PontoInexistenteException(matricula, dia)
-        );
+                build();
+        var pontoOpt = pontoRepository.findById(idPonto);
+        var ponto = Ponto.builder()
+                .id(idPonto)
+                .build();
+        return pontoOpt.orElse(pontoRepository.save(ponto));
     }
 
 

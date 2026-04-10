@@ -42,6 +42,7 @@ public class PontoReadController {
         var diaFormatado = paraString(dia);
         log.info("Buscando Ponto - {} - {}", matricula, diaFormatado);
         var ponto = pontoService.buscaPonto(matricula, dia);
+        ponto = pontoService.atualizaPonto(ponto);
         var uri = ServletUriComponentsBuilder.fromCurrentContextPath().
                 path("/v1/sipe/registros/pontos?matricula={matricula}&dia={dia}").
                 buildAndExpand(matricula, diaFormatado).toUriString();
@@ -103,9 +104,9 @@ public class PontoReadController {
                                                                 LocalDate inicio,
                                                                 @RequestParam
                                                                 @DateTimeFormat(pattern = PADRAO_ENTRADA_DATA)
-                                                                LocalDate fim){
+                                                                LocalDate fim) {
 
-        Boolean temPontoPendente = pontoService.existePontoComPedidoAlteracaoPendenteNoPeriodo(matricula,inicio,fim);
+        Boolean temPontoPendente = pontoService.existePontoComPedidoAlteracaoPendenteNoPeriodo(matricula, inicio, fim);
 
         return ResponseEntity.ok(temPontoPendente);
     }
