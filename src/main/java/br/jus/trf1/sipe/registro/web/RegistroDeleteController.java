@@ -1,9 +1,6 @@
 package br.jus.trf1.sipe.registro.web;
 
-import br.jus.trf1.sipe.alteracao.pedido_alteracao.PedidoAlteracaoService;
-import br.jus.trf1.sipe.ponto.PontoService;
 import br.jus.trf1.sipe.registro.RegistroService;
-import br.jus.trf1.sipe.usuario.UsuarioService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

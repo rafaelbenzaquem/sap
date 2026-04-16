@@ -45,7 +45,7 @@ public final class Registro implements Comparable<Registro> {
     }, foreignKey = @ForeignKey(name = "fk_criador_registro"))
     private Servidor servidorCriador;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "registro_novo_id", foreignKey = @ForeignKey(name = "fk_registro_novo"))
     private Registro registroNovo;
 

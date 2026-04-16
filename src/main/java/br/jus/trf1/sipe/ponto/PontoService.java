@@ -89,7 +89,7 @@ public class PontoService {
         var ponto = Ponto.builder()
                 .id(idPonto)
                 .build();
-        return pontoOpt.orElse(pontoRepository.save(ponto));
+        return pontoOpt.orElseGet(() -> pontoRepository.save(ponto));
     }
 
 
